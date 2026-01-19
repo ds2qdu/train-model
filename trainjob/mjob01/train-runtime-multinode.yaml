@@ -21,9 +21,12 @@ spec:
             spec:
               template:
                 metadata:
+                  labels:
+                    # kai-scheduler가 동일한 PodGroup으로 묶도록 설정
+                    kai.scheduler/podgroup-name: "trainjob-multi-node-ddp-gang"
                   annotations:
-                    # kai-scheduler가 JobSet 단위로 PodGroup 생성하도록 설정
-                    kai.scheduler/podgroup-toplogy-key: "jobset.sigs.k8s.io/jobset-name"
+                    # minMember 설정 - 2개 Pod이 모두 스케줄링되어야 함
+                    kai.scheduler/podgroup-min-available: "2"
                 spec:
                   schedulerName: kai-scheduler
                   containers:
