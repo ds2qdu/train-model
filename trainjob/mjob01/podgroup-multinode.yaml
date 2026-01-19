@@ -1,0 +1,10 @@
+apiVersion: scheduling.run.ai/v2alpha2
+kind: PodGroup
+metadata:
+  name: trainjob-multi-node-ddp-gang
+  namespace: jhchoi
+spec:
+  # Gang scheduling - 2개 Pod이 모두 스케줄링되어야 함
+  minMember: 2
+  priorityClassName: train
+  queue: default-queue
