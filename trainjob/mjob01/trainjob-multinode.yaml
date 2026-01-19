@@ -126,8 +126,12 @@ spec:
     - targetJobs:
         - name: node
       spec:
+        schedulerName: kai-scheduler
         tolerations:
           - key: "nvidia.com/gpu"
             operator: "Equal"
             value: "true"
             effect: "NoSchedule"
+  annotations:
+    # Gang scheduling
+    scheduling.x-k8s.io/pod-group-min-available: "2"
