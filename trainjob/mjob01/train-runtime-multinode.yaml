@@ -21,12 +21,9 @@ spec:
             spec:
               template:
                 metadata:
-                  labels:
-                    # kai-scheduler가 동일한 PodGroup으로 묶도록 설정
-                    kai.scheduler/podgroup-name: "trainjob-multi-node-ddp-gang"
                   annotations:
-                    # minMember 설정 - 2개 Pod이 모두 스케줄링되어야 함
-                    kai.scheduler/podgroup-min-available: "2"
+                    # kai-scheduler가 기존 PodGroup을 사용하도록 지정
+                    kai.scheduler/podgroup-name: "trainjob-multi-node-ddp-gang"
                 spec:
                   schedulerName: kai-scheduler
                   containers:
