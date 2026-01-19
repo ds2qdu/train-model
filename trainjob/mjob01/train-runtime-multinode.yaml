@@ -20,6 +20,10 @@ spec:
                 trainer.kubeflow.org/trainjob-ancestor-step: trainer
             spec:
               template:
+                metadata:
+                  annotations:
+                    # kai-scheduler가 JobSet 단위로 PodGroup 생성하도록 설정
+                    kai.scheduler/podgroup-toplogy-key: "jobset.sigs.k8s.io/jobset-name"
                 spec:
                   schedulerName: kai-scheduler
                   containers:
