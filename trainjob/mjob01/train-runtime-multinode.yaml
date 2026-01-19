@@ -12,7 +12,8 @@ spec:
       numProcPerNode: 1  # 노드당 GPU Count
   podGroupPolicy:
     # Gang scheduling 활성화 - 모든 Pod이 동시에 스케줄링되어야 함
-    podGroupPolicySource: Coscheduling
+    coscheduling:
+      scheduleTimeoutSeconds: 300
   template:
     spec:
       replicatedJobs:
