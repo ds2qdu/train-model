@@ -1,0 +1,27 @@
+apiVersion: trainer.kubeflow.org/v1alpha1
+kind: TrainingRuntime
+metadata:
+  name: multi-node-torch-distributed
+  namespace: jhchoi
+  labels:
+    trainer.kubeflow.org/framework: torch
+spec:
+  mlPolicy:
+    numNodes: 2
+    torch:
+      numProcPerNode: 1  # 노드당 GPU Count
+  template:
+    spec:
+      replicatedJobs:
+        - name: node
+          template:
+            metadata:
+              labels:
+                trainer.kubeflow.org/trainjob-ancestor-step: trainer
+            spec:
+              template:
+                spec:
+                  schedulerName: kai-scheduler
+                  containers:
+                    - name: node
+                      image: nvcr.io/nvidia/pytorch:25.01-py3

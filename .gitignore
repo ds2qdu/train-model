@@ -1,0 +1,11 @@
+# misc
+*.swp
+
+# bin
+bin/*
+
+# log
+log/*.log
+
+# Environment variables (NEVER commit secrets!)
+.env
