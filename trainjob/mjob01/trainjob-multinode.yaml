@@ -107,6 +107,12 @@ spec:
     env:
       - name: NCCL_DEBUG
         value: "INFO"
+      - name: NCCL_SOCKET_FAMILY
+        value: "AF_INET"
+      - name: GLOO_SOCKET_IFNAME
+        value: "eth0"
+      - name: NCCL_SOCKET_IFNAME
+        value: "eth0"
     resourcesPerNode:
       limits:
         cpu: 4

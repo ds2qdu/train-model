@@ -9,6 +9,11 @@ sinlge GPU
 ### mjob01
 multi GPU
 
+#### Environment
+NCCL_SOCKET_FAMILY : AF_INET (IPv4만 사용)
+GLOO_SOCKET_IFNAME : eth0 (Gloo 백엔드 인터페이스 지정)
+NCCL_SOCKET_IFNAME : eth0 (NCCL 통신 인터페이스 지정)
+
 =======================================================
 setup value     | description
 =======================================================
