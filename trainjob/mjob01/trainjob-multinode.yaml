@@ -59,9 +59,35 @@ spec:
         # Training Operator 환경변수를 표준 변수로 매핑
         export WORLD_SIZE=${PET_NNODES:-2}
         export RANK=${PET_NODE_RANK:-${JOB_COMPLETION_INDEX:-0}}
-        export MASTER_ADDR=${PET_MASTER_ADDR:-$(hostname -i)}
         export MASTER_PORT=${PET_MASTER_PORT:-29500}
         export LOCAL_RANK=0
+
+        # MASTER_ADDR: IPv4 주소만 사용
+        if [ "$RANK" == "0" ]; then
+            # Rank 0은 자신의 IPv4 주소 사용
+            export MASTER_ADDR=$(hostname -i | awk '{print $1}')
+        else
+            # Worker는 Master의 DNS를 IPv4로 변환
+            MASTER_DNS="${PET_MASTER_ADDR}.jhchoi.svc.cluster.local"
+            echo "Resolving master DNS: $MASTER_DNS"
+
+            # DNS 해석 대기 (IPv4만 추출)
+            for i in $(seq 1 60); do
+                MASTER_ADDR=$(getent ahostsv4 "$MASTER_DNS" 2>/dev/null | head -1 | awk '{print $1}')
+                if [ -n "$MASTER_ADDR" ]; then
+                    echo "Resolved master IPv4: $MASTER_ADDR"
+                    break
+                fi
+                echo "Waiting for DNS resolution... ($i/60)"
+                sleep 1
+            done
+
+            if [ -z "$MASTER_ADDR" ]; then
+                echo "ERROR: Could not resolve master DNS!"
+                exit 1
+            fi
+            export MASTER_ADDR
+        fi
 
         echo "=== Mapped Environment ==="
         echo "WORLD_SIZE=$WORLD_SIZE"
