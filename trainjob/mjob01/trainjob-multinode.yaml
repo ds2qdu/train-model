@@ -98,20 +98,34 @@ spec:
         from torch.nn.parallel import DistributedDataParallel as DDP
 
         def main():
-            # 분산 환경 초기화 - GLOO로 테스트 (CPU 기반, 네트워크 확인용)
-            dist.init_process_group(backend="gloo")
-            rank = dist.get_rank()
-            world_size = dist.get_world_size()
-            local_rank = int(os.environ.get("LOCAL_RANK", 0))
+            rank = int(os.environ["RANK"])
+            world_size = int(os.environ["WORLD_SIZE"])
+            master_addr = os.environ["MASTER_ADDR"]
+            master_port = os.environ["MASTER_PORT"]
+            local_rank = 0  # 노드당 1개 GPU
 
+            print(f"[Rank {rank}] Initializing process group...")
+            print(f"[Rank {rank}] MASTER_ADDR={master_addr}, MASTER_PORT={master_port}")
+            print(f"[Rank {rank}] WORLD_SIZE={world_size}")
+
+            # TCP init_method 사용 (torchrun 없이 직접 연결)
+            init_method = f"tcp://{master_addr}:{master_port}"
+            print(f"[Rank {rank}] init_method={init_method}")
+
+            # GLOO backend로 테스트 (네트워크 확인용)
+            dist.init_process_group(
+                backend="gloo",
+                init_method=init_method,
+                rank=rank,
+                world_size=world_size
+            )
+
+            print(f"[Rank {rank}/{world_size}] Process group initialized!")
             print(f"[Rank {rank}/{world_size}] Running on {torch.cuda.get_device_name(local_rank)}")
-            print(f"[Rank {rank}] MASTER_ADDR={os.environ.get('MASTER_ADDR')}")
-            print(f"[Rank {rank}] MASTER_PORT={os.environ.get('MASTER_PORT')}")
 
             # 모델 생성 및 DDP 래핑
             torch.cuda.set_device(local_rank)
             model = nn.Linear(1000, 1000).cuda(local_rank)
-            # GLOO backend는 CPU tensor 동기화만 지원하므로 device_ids 제거
             model = DDP(model)
 
             # 10분간 지속적인 학습 테스트
@@ -152,13 +166,7 @@ spec:
             main()
         EOF
 
-        torchrun \
-          --nnodes=$WORLD_SIZE \
-          --node_rank=$RANK \
-          --master_addr=$MASTER_ADDR \
-          --master_port=$MASTER_PORT \
-          --nproc_per_node=1 \
-          /tmp/ddp_train.py
+        python /tmp/ddp_train.py
     env:
       - name: NCCL_DEBUG
         value: "TRACE"
