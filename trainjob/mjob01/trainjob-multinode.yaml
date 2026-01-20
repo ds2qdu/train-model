@@ -11,6 +11,19 @@ spec:
     - name: torchrun
       port: 29500
       targetPort: 29500
+    # NCCL Socket 통신용 포트 범위
+    - name: nccl-1
+      port: 29600
+      targetPort: 29600
+    - name: nccl-2
+      port: 29601
+      targetPort: 29601
+    - name: nccl-3
+      port: 29602
+      targetPort: 29602
+    - name: nccl-4
+      port: 29603
+      targetPort: 29603
 
 ---
 
@@ -85,8 +98,8 @@ spec:
         from torch.nn.parallel import DistributedDataParallel as DDP
 
         def main():
-            # 분산 환경 초기화
-            dist.init_process_group(backend="nccl")
+            # 분산 환경 초기화 - GLOO로 테스트 (CPU 기반, 네트워크 확인용)
+            dist.init_process_group(backend="gloo")
             rank = dist.get_rank()
             world_size = dist.get_world_size()
             local_rank = int(os.environ.get("LOCAL_RANK", 0))
@@ -98,7 +111,8 @@ spec:
             # 모델 생성 및 DDP 래핑
             torch.cuda.set_device(local_rank)
             model = nn.Linear(1000, 1000).cuda(local_rank)
-            model = DDP(model, device_ids=[local_rank])
+            # GLOO backend는 CPU tensor 동기화만 지원하므로 device_ids 제거
+            model = DDP(model)
 
             # 10분간 지속적인 학습 테스트
             import time
@@ -172,6 +186,17 @@ spec:
         value: "Ring"
       - name: NCCL_PROTO
         value: "Simple"
+      # NCCL 소켓 포트 범위 지정 (고정 포트 사용)
+      - name: NCCL_SOCKET_NTHREADS
+        value: "4"
+      - name: NCCL_NSOCKS_PERTHREAD
+        value: "1"
+      # 타임아웃 증가 (기본 30분 -> 60분)
+      - name: NCCL_TIMEOUT
+        value: "3600"
+      # 디버깅용 - 연결 재시도 횟수
+      - name: NCCL_NET_GDR_LEVEL
+        value: "0"
     resourcesPerNode:
       limits:
         cpu: 4
