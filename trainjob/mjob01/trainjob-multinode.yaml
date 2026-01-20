@@ -132,20 +132,29 @@ spec:
             print(f"[Rank {rank}] init_method={init_method}", flush=True)
 
             # GLOO backend로 테스트 (네트워크 확인용)
+            import datetime
             dist.init_process_group(
                 backend="gloo",
                 init_method=init_method,
                 rank=rank,
-                world_size=world_size
+                world_size=world_size,
+                timeout=datetime.timedelta(minutes=10)
             )
 
             print(f"[Rank {rank}/{world_size}] Process group initialized!", flush=True)
             print(f"[Rank {rank}/{world_size}] Running on {torch.cuda.get_device_name(local_rank)}", flush=True)
 
+            # 모든 프로세스가 동기화될 때까지 대기
+            print(f"[Rank {rank}] Waiting at barrier...", flush=True)
+            dist.barrier()
+            print(f"[Rank {rank}] Passed barrier!", flush=True)
+
             # 모델 생성 및 DDP 래핑
             torch.cuda.set_device(local_rank)
             model = nn.Linear(1000, 1000).cuda(local_rank)
+            print(f"[Rank {rank}] Creating DDP model...", flush=True)
             model = DDP(model)
+            print(f"[Rank {rank}] DDP model created!", flush=True)
 
             # 10분간 지속적인 학습 테스트
             import time
