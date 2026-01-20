@@ -20,7 +20,7 @@ spec:
       - --master_port=$(MASTER_PORT)
       - /workspace/train.py
     numNodes: 2
-    numProcPerNode: "1"
+    numProcPerNode: auto
     resourcesPerNode:
       requests:
         cpu: "4"
