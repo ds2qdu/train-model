@@ -40,20 +40,32 @@ spec:
         export LOCAL_RANK=0
 
         # MASTER_ADDR: Rank 0 Pod의 IP 사용 (Headless Service 기반)
-        # Pod hostname 형식: trainjob-multi-node-ddp-node-0-{index}-{hash}
-        # Headless Service DNS: {pod-hostname}.{service-name}.{namespace}.svc.cluster.local
+        MY_IP=$(hostname -i)
+
         if [ "$RANK" == "0" ]; then
-            export MASTER_ADDR=$(hostname -i)
+            export MASTER_ADDR=$MY_IP
         else
             # Rank 0 Pod의 IP를 가져오기 위해 대기
             echo "Waiting for master (Rank 0) to be ready..."
-            sleep 5
-            # Headless Service를 통해 Rank 0의 IP 조회
-            export MASTER_ADDR=$(getent hosts trainjob-multi-node-ddp | head -1 | awk '{print $1}')
+            echo "My IP: $MY_IP"
+
+            # 최대 60초 대기하면서 Rank 0의 IP 조회
+            for i in $(seq 1 60); do
+                # Headless Service에서 자신의 IP를 제외한 다른 IP 조회
+                MASTER_ADDR=$(getent hosts trainjob-multi-node-ddp | awk '{print $1}' | grep -v "^${MY_IP}$" | head -1)
+                if [ -n "$MASTER_ADDR" ]; then
+                    echo "Found master IP: $MASTER_ADDR"
+                    break
+                fi
+                echo "Waiting for master... ($i/60)"
+                sleep 1
+            done
+
             if [ -z "$MASTER_ADDR" ]; then
-                # fallback: 자신의 서브넷에서 Rank 0 추정
-                export MASTER_ADDR=$(hostname -i | sed 's/\.[0-9]*$/.1/')
+                echo "ERROR: Could not find master IP!"
+                exit 1
             fi
+            export MASTER_ADDR
         fi
 
         echo "=== Configured Environment ==="
