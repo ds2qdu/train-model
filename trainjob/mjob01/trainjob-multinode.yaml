@@ -142,6 +142,13 @@ spec:
         value: "eth0"
       - name: NCCL_SOCKET_IFNAME
         value: "eth0"
+      # 노드 간 통신 개선 설정
+      - name: NCCL_IB_DISABLE
+        value: "1"
+      - name: NCCL_P2P_DISABLE
+        value: "1"
+      - name: NCCL_SHM_DISABLE
+        value: "1"
     resourcesPerNode:
       limits:
         cpu: 4
