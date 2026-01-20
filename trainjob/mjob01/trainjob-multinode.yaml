@@ -147,20 +147,31 @@ spec:
           /tmp/ddp_train.py
     env:
       - name: NCCL_DEBUG
-        value: "INFO"
+        value: "TRACE"
+      - name: NCCL_DEBUG_SUBSYS
+        value: "ALL"
       - name: NCCL_SOCKET_FAMILY
         value: "AF_INET"
       - name: GLOO_SOCKET_IFNAME
         value: "eth0"
       - name: NCCL_SOCKET_IFNAME
         value: "eth0"
-      # 노드 간 통신 개선 설정
+      # 노드 간 통신 - TCP Socket만 사용
       - name: NCCL_IB_DISABLE
         value: "1"
       - name: NCCL_P2P_DISABLE
         value: "1"
       - name: NCCL_SHM_DISABLE
         value: "1"
+      - name: NCCL_NET
+        value: "Socket"
+      # NCCL 버퍼 및 알고리즘 설정
+      - name: NCCL_BUFFSIZE
+        value: "4194304"
+      - name: NCCL_ALGO
+        value: "Ring"
+      - name: NCCL_PROTO
+        value: "Simple"
     resourcesPerNode:
       limits:
         cpu: 4
