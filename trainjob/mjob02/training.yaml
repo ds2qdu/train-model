@@ -1,47 +1,9 @@
-apiVersion: kubeflow.org/v2alpha1
-kind: TrainingRuntime
-metadata:
-  name: pytorch-distributed
-  namespace: ml-team-a  # 팀/프로젝트별 namespace
-spec:
-  mlPolicy:
-    numNodes: 2
-    torch:
-      numProcPerNode: "1"
-  template:
-    spec:
-      schedulerName: kai-scheduler
-      containers:
-        - name: trainer
-          image: nvcr.io/nvidia/pytorch:24.05-py3
-          env:
-            - name: NCCL_DEBUG
-              value: "INFO"
-            - name: NCCL_IB_DISABLE
-              value: "1"
-          resources:
-            requests:
-              cpu: "4"
-              memory: "16Gi"
-              nvidia.com/gpu: "1"
-            limits:
-              cpu: "8"
-              memory: "32Gi"
-              nvidia.com/gpu: "1"
-          volumeMounts:
-            - name: shm
-              mountPath: /dev/shm
-      volumes:
-        - name: shm
-          emptyDir:
-            medium: Memory
-            sizeLimit: 8Gi
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: pytorch-train-script
-  namespace: ml-team-a  # 동일 namespace
+  namespace: ml-team-a
 data:
   train.py: |
     import os
@@ -137,19 +99,56 @@ data:
 
     if __name__ == "__main__":
         main()
-
 ---
-
-apiVersion: kubeflow.org/v2alpha1
+apiVersion: trainer.kubeflow.org/v1alpha1
+kind: TrainingRuntime
+metadata:
+  name: pytorch-distributed
+  namespace: ml-team-a
+spec:
+  mlPolicy:
+    numNodes: 2
+    torch:
+      numProcPerNode: "1"
+  template:
+    spec:
+      schedulerName: kai-scheduler
+      containers:
+        - name: trainer
+          image: nvcr.io/nvidia/pytorch:24.05-py3
+          env:
+            - name: NCCL_DEBUG
+              value: "INFO"
+            - name: NCCL_IB_DISABLE
+              value: "1"
+          resources:
+            requests:
+              cpu: "4"
+              memory: "16Gi"
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "8"
+              memory: "32Gi"
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: shm
+              mountPath: /dev/shm
+      volumes:
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+---
+apiVersion: trainer.kubeflow.org/v1alpha1
 kind: TrainJob
 metadata:
   name: pytorch-distributed-sample
-  namespace: ml-team-a  # 동일 namespace
+  namespace: ml-team-a
   annotations:
-    kai.scheduler/queue: "ml-team-a-queue"  # KAI Queue 지정
+    kai.scheduler/queue: "ml-team-a-queue"
 spec:
   runtimeRef:
-    name: pytorch-distributed  # 같은 namespace의 TrainingRuntime 참조
+    name: pytorch-distributed
   trainer:
     command:
       - torchrun
@@ -167,4 +166,3 @@ spec:
       - name: training-scripts
         configMap:
           name: pytorch-train-script
----
