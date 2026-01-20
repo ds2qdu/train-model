@@ -8,7 +8,8 @@ metadata:
 spec:
   mlPolicy:
     numNodes: 2
-    # torch mlPolicy 제거 - 수동으로 분산 환경 설정
+    torch:
+      numProcPerNode: 1
   template:
     spec:
       replicatedJobs:
@@ -26,5 +27,5 @@ spec:
                 spec:
                   schedulerName: kai-scheduler
                   containers:
-                    - name: trainer
+                    - name: node
                       image: nvcr.io/nvidia/pytorch:25.01-py3
