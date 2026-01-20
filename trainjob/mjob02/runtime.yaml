@@ -1,0 +1,55 @@
+---
+apiVersion: trainer.kubeflow.org/v1alpha1
+kind: TrainingRuntime
+metadata:
+  name: pytorch-distributed
+  namespace: ml-team-a
+spec:
+  mlPolicy:
+    numNodes: 2
+    torch:
+      numProcPerNode: "1"
+  template:
+    spec:
+      replicatedJobs:
+        - name: trainer
+          replicas: 1
+          template:
+            spec:
+              parallelism: 2
+              completions: 2
+              template:
+                spec:
+                  schedulerName: kai-scheduler
+                  containers:
+                    - name: trainer
+                      image: nvcr.io/nvidia/pytorch:25.01-py3
+                      env:
+                        - name: NCCL_DEBUG
+                          value: "INFO"
+                        - name: NCCL_IB_DISABLE
+                          value: "1"
+                      resources:
+                        requests:
+                          cpu: "4"
+                          memory: "16Gi"
+                          nvidia.com/gpu: "1"
+                        limits:
+                          cpu: "8"
+                          memory: "32Gi"
+                          nvidia.com/gpu: "1"
+                      volumeMounts:
+                        - name: shm
+                          mountPath: /dev/shm
+                        - name: training-scripts
+                          mountPath: /workspace
+                  volumes:
+                    - name: shm
+                      emptyDir:
+                        medium: Memory
+                        sizeLimit: 8Gi
+                    - name: training-scripts
+                      configMap:
+                        name: pytorch-train-script
+                  restartPolicy: OnFailure
+
