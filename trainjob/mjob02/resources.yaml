@@ -1,0 +1,19 @@
+# namespace 생성
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ml-team-a
+  labels:
+    team: team-a
+---
+# KAI Scheduler Queue 설정
+apiVersion: scheduling.run.ai/v2
+kind: Queue
+metadata:
+  name: ml-team-a-queue
+spec:
+  resources:
+    gpu:
+      quota: 2        # 이 팀에 할당된 GPU 수
+      limit: 2
+      overQuotaWeight: 1
