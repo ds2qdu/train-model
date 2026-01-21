@@ -4,10 +4,42 @@
 Kubeflow 를 이용한 train job 샘플
 
 ### job01
-sinlge GPU
+sinlge GPU : 샘플 training job
 
 ### mjob02
-multi GPU
+multi GPU : 샘플 multinode training job
+
+### mjob03
+숫자 한자리 인식
+
+# 1. 학습 하기
+```
+kubectl apply -f training.yaml
+```
+
+# 2. 모델 배포
+```
+kubectl apply -f deploy.yaml
+```
+
+# 3. 테스트 실행
+```
+kubectl apply -f testing.yaml
+```
+
+# Storage Structure
+```
+/mnt/storage/
+├── checkpoints/
+│   ├── checkpoint_latest.pt
+│   └── checkpoint_best.pt
+└── models/
+    ├── model.pt          # TorchScript
+    ├── model.onnx        # ONNX (Triton용)
+    ├── metadata.json     # 모델 정보
+    └── training_summary.json
+```
+
 
 #### Environment
 

@@ -1,0 +1,133 @@
+# 05-test.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mnist-test-script
+  namespace: mlteam
+data:
+  test.py: |
+    import numpy as np
+    import tritonclient.http as httpclient
+    from PIL import Image, ImageDraw, ImageFont
+    import io
+    import base64
+
+    def create_digit_image(digit):
+        """테스트용 숫자 이미지 생성"""
+        img = Image.new('L', (28, 28), color=0)
+        draw = ImageDraw.Draw(img)
+        
+        # 숫자 그리기
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+        except:
+            font = ImageFont.load_default()
+        
+        bbox = draw.textbbox((0, 0), str(digit), font=font)
+        w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        draw.text(((28-w)/2, (28-h)/2 - 2), str(digit), fill=255, font=font)
+        
+        return np.array(img, dtype=np.float32)
+
+    def preprocess(image_array):
+        """이미지 전처리"""
+        # Normalize
+        image = (image_array / 255.0 - 0.1307) / 0.3081
+        # Add batch and channel dims
+        return image.reshape(1, 1, 28, 28).astype(np.float32)
+
+    def predict(client, image):
+        """추론 실행"""
+        inputs = [httpclient.InferInput("input", image.shape, "FP32")]
+        inputs[0].set_data_from_numpy(image)
+        outputs = [httpclient.InferRequestedOutput("output")]
+        
+        result = client.infer("mnist", inputs, outputs=outputs)
+        logits = result.as_numpy("output")[0]
+        
+        # Softmax
+        exp_logits = np.exp(logits - np.max(logits))
+        probs = exp_logits / exp_logits.sum()
+        
+        predicted = np.argmax(probs)
+        confidence = probs[predicted] * 100
+        
+        return predicted, confidence, probs
+
+    def main():
+        print("=" * 50)
+        print("MNIST Digit Recognition Test")
+        print("=" * 50)
+        
+        # Triton 연결
+        client = httpclient.InferenceServerClient(url="mnist-triton-svc:8000")
+        
+        if not client.is_server_ready():
+            print("❌ Server not ready!")
+            return
+        
+        print("✅ Connected to Triton server\n")
+        
+        # 0-9 모든 숫자 테스트
+        print("Testing digits 0-9:")
+        print("-" * 40)
+        
+        correct = 0
+        for digit in range(10):
+            # 이미지 생성
+            img = create_digit_image(digit)
+            processed = preprocess(img)
+            
+            # 예측
+            predicted, confidence, probs = predict(client, processed)
+            
+            status = "✅" if predicted == digit else "❌"
+            print(f"{status} Input: {digit} → Predicted: {predicted} ({confidence:.1f}%)")
+            
+            if predicted == digit:
+                correct += 1
+        
+        print("-" * 40)
+        print(f"Accuracy: {correct}/10 ({correct*10}%)")
+        
+        # 상세 테스트 (숫자 7)
+        print("\n" + "=" * 50)
+        print("Detailed test for digit '7':")
+        print("=" * 50)
+        
+        img = create_digit_image(7)
+        processed = preprocess(img)
+        predicted, confidence, probs = predict(client, processed)
+        
+        print(f"Predicted: {predicted} (confidence: {confidence:.2f}%)\n")
+        print("All probabilities:")
+        for i, p in enumerate(probs):
+            bar = "█" * int(p * 30)
+            print(f"  {i}: {bar} {p*100:.2f}%")
+
+    if __name__ == "__main__":
+        main()
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mnist-test
+  namespace: mlteam
+spec:
+  containers:
+    - name: test
+      image: nvcr.io/nvidia/pytorch:25.12-py3
+      command:
+        - /bin/bash
+        - -c
+        - |
+          pip install tritonclient[http] pillow -q
+          python /workspace/test.py
+      volumeMounts:
+        - name: scripts
+          mountPath: /workspace
+  volumes:
+    - name: scripts
+      configMap:
+        name: mnist-test-script
+  restartPolicy: Never

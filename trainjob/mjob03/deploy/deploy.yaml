@@ -1,0 +1,122 @@
+# 04-triton.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mnist-triton-config
+  namespace: mlteam
+data:
+  config.pbtxt: |
+    name: "mnist"
+    platform: "onnxruntime_onnx"
+    max_batch_size: 64
+    input [
+      {
+        name: "input"
+        data_type: TYPE_FP32
+        dims: [ 1, 28, 28 ]
+      }
+    ]
+    output [
+      {
+        name: "output"
+        data_type: TYPE_FP32
+        dims: [ 10 ]
+      }
+    ]
+    instance_group [
+      {
+        count: 1
+        kind: KIND_GPU
+      }
+    ]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mnist-triton
+  namespace: mlteam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mnist-triton
+  template:
+    metadata:
+      labels:
+        app: mnist-triton
+    spec:
+      initContainers:
+        - name: setup
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /models/mnist/1
+              cp /mnt/storage/models/model.onnx /models/mnist/1/model.onnx
+              cp /config/config.pbtxt /models/mnist/config.pbtxt
+              echo "Model ready!"
+              ls -la /models/mnist/
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+            - name: models
+              mountPath: /models
+            - name: config
+              mountPath: /config
+      containers:
+        - name: triton
+          image: nvcr.io/nvidia/tritonserver:25.12-py3
+          args:
+            - tritonserver
+            - --model-repository=/models
+            - --strict-model-config=false
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 8001
+              name: grpc
+          resources:
+            requests:
+              nvidia.com/gpu: "1"
+            limits:
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: shm
+              mountPath: /dev/shm
+          readinessProbe:
+            httpGet:
+              path: /v2/health/ready
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: mnist-pipeline-storage
+        - name: models
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: mnist-triton-config
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mnist-triton-svc
+  namespace: mlteam
+spec:
+  selector:
+    app: mnist-triton
+  ports:
+    - name: http
+      port: 8000
+    - name: grpc
+      port: 8001

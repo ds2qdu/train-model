@@ -1,0 +1,13 @@
+# 01-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mnist-pipeline-storage
+  namespace: ml-team
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-client  # 환경에 맞게 수정
