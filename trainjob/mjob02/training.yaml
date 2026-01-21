@@ -3,9 +3,9 @@ apiVersion: trainer.kubeflow.org/v1alpha1
 kind: TrainJob
 metadata:
   name: pytorch-distributed-sample
-  namespace: ml-team-a
+  namespace: mlteam
   annotations:
-    kai.scheduler/queue: "ml-team-a-queue"
+    kai.scheduler/queue: "mlteam-queue"
 spec:
   runtimeRef:
     name: pytorch-distributed

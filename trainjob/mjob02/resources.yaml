@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ml-team-a
+  name: mlteam
 ---
 # KAI Scheduler Queue 설정
 apiVersion: scheduling.run.ai/v2
 kind: Queue
 metadata:
-  name: ml-team-a-queue
+  name: mlteam-queue
 spec:
   resources:
     gpu:

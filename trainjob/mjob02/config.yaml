@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: pytorch-train-script
-  namespace: ml-team-a
+  namespace: mlteam
 data:
   train.py: |
     import os

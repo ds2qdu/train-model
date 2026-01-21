@@ -3,7 +3,7 @@ apiVersion: trainer.kubeflow.org/v1alpha1
 kind: TrainingRuntime
 metadata:
   name: pytorch-distributed
-  namespace: ml-team-a
+  namespace: mlteam
 spec:
   mlPolicy:
     numNodes: 2
