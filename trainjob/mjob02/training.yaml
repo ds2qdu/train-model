@@ -39,7 +39,7 @@ spec:
         value: "1"
   podTemplateOverrides:
     - targetJobs:
-        - name: node
+        - name: trainer
       spec:
         tolerations:
           - key: "nvidia.com/gpu"
