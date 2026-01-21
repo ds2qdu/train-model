@@ -40,14 +40,17 @@ spec:
                           if [ "$RANK" == "0" ]; then
                               export MASTER_ADDR=$MY_IP
                           else
-                              # Headless Service를 통해 Rank 0 Pod IP 조회
+                              # Headless Service를 통해 다른 Pod IP 조회 (자신 제외)
                               echo "Waiting for master pod..."
+                              echo "My IP: $MY_IP"
                               for i in $(seq 1 60); do
-                                  MASTER_ADDR=$(getent ahostsv4 pytorch-distributed-sample-trainer-0-0.pytorch-distributed-sample 2>/dev/null | head -1 | awk '{print $1}')
+                                  # Service의 모든 IP 중 자신이 아닌 것 선택
+                                  MASTER_ADDR=$(getent ahostsv4 pytorch-distributed-sample.mlteam.svc.cluster.local 2>/dev/null | awk '{print $1}' | grep -v "^${MY_IP}$" | head -1)
                                   if [ -n "$MASTER_ADDR" ]; then
                                       echo "Found master: $MASTER_ADDR"
                                       break
                                   fi
+                                  echo "Waiting... ($i/60)"
                                   sleep 1
                               done
                               export MASTER_ADDR
