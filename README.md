@@ -15,7 +15,7 @@ multi GPU : 샘플 multinode training job
 # 실행순서
 ```
 # 1. 네임스페이스 생성 (없으면)
-kubectl create namespace ml-team-a
+kubectl create namespace mlteam
 
 # 2. PVC 생성
 kubectl apply -f 01-pvc.yaml
@@ -27,30 +27,30 @@ kubectl apply -f 02-configmap.yaml
 kubectl apply -f 03-training.yaml
 
 # 5. 학습 상태 확인
-kubectl get trainjob -n ml-team-a -w
+kubectl get trainjob -n mlteam -w
 
 # 6. 로그 확인
-kubectl logs -f -n ml-team-a -l training.kubeflow.org/trainjob-name=mnist-training
+kubectl logs -f -n mlteam -l training.kubeflow.org/trainjob-name=mnist-training
 
 # 7. 학습 완료 후 모델 확인
-kubectl exec -it -n ml-team-a <pod-name> -- ls -la /mnt/storage/models/mnist/
+kubectl exec -it -n mlteam <pod-name> -- ls -la /mnt/storage/models/mnist/
 
 # 8. KServe 배포
 kubectl apply -f 04-kserve.yaml
 
 # 9. KServe 상태 확인
-kubectl get inferenceservice -n ml-team-a -w
+kubectl get inferenceservice -n mlteam -w
 
 # 10. 배포 완료되면 테스트
 kubectl apply -f 05-test.yaml
-kubectl logs -f -n ml-team-a mnist-test
+kubectl logs -f -n mlteam mnist-test
 ```
 
 
 ### KServe 상태
 ```
 NAME               URL                                              READY   AGE
-mnist-classifier   http://mnist-classifier.ml-team-a.example.com    True    2m
+mnist-classifier   http://mnist-classifier.mlteam.example.com    True    2m
 ```
 
 # File Structure

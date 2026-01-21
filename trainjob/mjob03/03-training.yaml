@@ -3,7 +3,7 @@ apiVersion: trainer.kubeflow.org/v1alpha1
 kind: TrainingRuntime
 metadata:
   name: mnist-runtime
-  namespace: ml-team-a
+  namespace: mlteam
 spec:
   mlPolicy:
     numNodes: 2
@@ -64,9 +64,9 @@ apiVersion: trainer.kubeflow.org/v1alpha1
 kind: TrainJob
 metadata:
   name: mnist-training
-  namespace: ml-team-a
+  namespace: mlteama
   annotations:
-    kai.scheduler/queue: "ml-team-a-queue"
+    kai.scheduler/queue: "mlteam-queue"
 spec:
   runtimeRef:
     name: mnist-runtime
