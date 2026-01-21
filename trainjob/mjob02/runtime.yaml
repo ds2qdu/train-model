@@ -92,8 +92,6 @@ spec:
                           value: "eth0"
                         - name: NCCL_NET
                           value: "Socket"
-                        - name: GLOO_SOCKET_IFNAME
-                          value: "eth0"
                       resources:
                         requests:
                           cpu: "4"
