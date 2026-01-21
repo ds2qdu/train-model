@@ -4,6 +4,21 @@ kind: Namespace
 metadata:
   name: mlteam
 ---
+# Headless Service for Pod DNS resolution
+apiVersion: v1
+kind: Service
+metadata:
+  name: pytorch-distributed-sample
+  namespace: mlteam
+spec:
+  clusterIP: None
+  selector:
+    trainer.kubeflow.org/trainjob-name: pytorch-distributed-sample
+  ports:
+    - name: torchrun
+      port: 29500
+      targetPort: 29500
+---
 # KAI Scheduler Queue 설정
 apiVersion: scheduling.run.ai/v2
 kind: Queue
