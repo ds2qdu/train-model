@@ -12,32 +12,70 @@ multi GPU : 샘플 multinode training job
 ### mjob03
 숫자 한자리 인식
 
-# 1. 학습 하기
+# 실행순서
 ```
-kubectl apply -f training.yaml
+# 1. 네임스페이스 생성 (없으면)
+kubectl create namespace ml-team-a
+
+# 2. PVC 생성
+kubectl apply -f 01-pvc.yaml
+
+# 3. 학습 스크립트 생성
+kubectl apply -f 02-configmap.yaml
+
+# 4. 학습 시작
+kubectl apply -f 03-training.yaml
+
+# 5. 학습 상태 확인
+kubectl get trainjob -n ml-team-a -w
+
+# 6. 로그 확인
+kubectl logs -f -n ml-team-a -l training.kubeflow.org/trainjob-name=mnist-training
+
+# 7. 학습 완료 후 모델 확인
+kubectl exec -it -n ml-team-a <pod-name> -- ls -la /mnt/storage/models/mnist/
+
+# 8. KServe 배포
+kubectl apply -f 04-kserve.yaml
+
+# 9. KServe 상태 확인
+kubectl get inferenceservice -n ml-team-a -w
+
+# 10. 배포 완료되면 테스트
+kubectl apply -f 05-test.yaml
+kubectl logs -f -n ml-team-a mnist-test
 ```
 
-# 2. 모델 배포
+
+### KServe 상태
 ```
-kubectl apply -f deploy.yaml
+NAME               URL                                              READY   AGE
+mnist-classifier   http://mnist-classifier.ml-team-a.example.com    True    2m
 ```
 
-# 3. 테스트 실행
+# File Structure
 ```
-kubectl apply -f testing.yaml
+mnist-pipeline/
+├── 01-pvc.yaml              # 저장소
+├── 02-configmap.yaml        # 학습 스크립트
+├── 03-training.yaml         # TrainingRuntime + TrainJob
+├── 04-kserve.yaml           # KServe 배포
+└── 05-test.yaml             # 추론 테스트
 ```
 
-# Storage Structure
+# 학습 완료후 Storage Structure
 ```
 /mnt/storage/
 ├── checkpoints/
 │   ├── checkpoint_latest.pt
 │   └── checkpoint_best.pt
-└── models/
-    ├── model.pt          # TorchScript
-    ├── model.onnx        # ONNX (Triton용)
-    ├── metadata.json     # 모델 정보
-    └── training_summary.json
+├── models/
+│   ├── mnist/
+│   │   ├── config.pbtxt      # Triton 설정
+│   │   └── 1/
+│   │       └── model.onnx    # ONNX 모델
+│   ├── metadata.json
+│   └── training_summary.json
 ```
 
 

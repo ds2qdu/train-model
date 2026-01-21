@@ -1,0 +1,19 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: mnist-classifier
+  namespace: ml-team-a
+spec:
+  predictor:
+    triton:
+      storageUri: "pvc://mnist-pipeline-storage/models"
+      runtimeVersion: "24.01-py3"
+      resources:
+        requests:
+          cpu: "1"
+          memory: "4Gi"
+          nvidia.com/gpu: "1"
+        limits:
+          cpu: "2"
+          memory: "8Gi"
+          nvidia.com/gpu: "1"

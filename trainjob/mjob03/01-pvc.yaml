@@ -1,9 +1,8 @@
-# 01-pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mnist-pipeline-storage
-  namespace: ml-team
+  namespace: ml-team-a
 spec:
   accessModes:
     - ReadWriteMany
