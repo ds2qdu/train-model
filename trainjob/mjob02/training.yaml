@@ -37,3 +37,13 @@ spec:
         value: "INFO"
       - name: NCCL_IB_DISABLE
         value: "1"
+  podTemplateOverrides:
+    - targetJobs:
+        - name: node
+      spec:
+        tolerations:
+          - key: "nvidia.com/gpu"
+            operator: "Equal"
+            value: "true"
+            effect: "NoSchedule"
+
