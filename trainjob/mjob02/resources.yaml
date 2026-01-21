@@ -13,7 +13,7 @@ metadata:
 spec:
   clusterIP: None
   selector:
-    trainer.kubeflow.org/trainjob-name: pytorch-distributed-sample
+    jobset.sigs.k8s.io/jobset-name: pytorch-distributed-sample
   ports:
     - name: torchrun
       port: 29500
