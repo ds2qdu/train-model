@@ -51,6 +51,16 @@ kubectl logs -f -n mlteam mnist-test
 ```
 NAME               URL                                              READY   AGE
 mnist-classifier   http://mnist-classifier.mlteam.example.com    True    2m
+
+```
+
+# Triton Server 상태
+```
+//--- 이미지 PULL 테스트
+kubectl run triton-check --rm -it --image=nvcr.io/nvidia/tritonserver:25.12-py3 -n mlteam --command -- tritonserver --version   --pod-running-timeout=30m
+
+//--- 사용가능 TAG 리스트
+https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver/tags
 ```
 
 # File Structure
