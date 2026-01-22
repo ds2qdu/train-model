@@ -56,6 +56,7 @@ mnist-classifier   http://mnist-classifier.mlteam.example.com    True    2m
 # File Structure
 ```
 mnist-pipeline/
+├── 00-resources.yaml        # namespace + Queue
 ├── 01-pvc.yaml              # 저장소
 ├── 02-configmap.yaml        # 학습 스크립트
 ├── 03-training.yaml         # TrainingRuntime + TrainJob
