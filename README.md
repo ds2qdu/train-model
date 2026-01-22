@@ -109,6 +109,12 @@ curl -X POST http://localhost:8080/v2/models/mnist/infer \
 }
 ```
 
+### kserve-test
+
+```
+pip install requests numpy torch torchvision
+```
+
 # File Structure
 ```
 mnist-pipeline/
@@ -117,7 +123,7 @@ mnist-pipeline/
 ├── 02-configmap.yaml        # 학습 스크립트
 ├── 03-training.yaml         # TrainingRuntime + TrainJob
 ├── 04-kserve.yaml           # KServe 배포
-└── 05-test.yaml             # 추론 테스트
+└── 05-kserve-test.ipynb     # 추론 테스트
 ```
 
 # 학습 완료후 Storage Structure
