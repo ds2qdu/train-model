@@ -7,7 +7,7 @@ spec:
   predictor:
     triton:
       storageUri: "pvc://mnist-pipeline-storage/models"
-      runtimeVersion: "24.01-py3"
+      runtimeVersion: "25.12-py3"
       resources:
         requests:
           cpu: "1"
