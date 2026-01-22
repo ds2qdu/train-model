@@ -148,7 +148,7 @@ spec:
       - --checkpoint-dir=/mnt/storage/checkpoints
       - --export-dir=/mnt/storage/models
     numNodes: 2
-    numProcPerNode: "1"
+    numProcPerNode: 1
     resourcesPerNode:
       requests:
         cpu: "4"
