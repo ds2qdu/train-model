@@ -1,0 +1,32 @@
+# namespace 생성
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mlteam
+---
+# Headless Service for Pod DNS resolution
+apiVersion: v1
+kind: Service
+metadata:
+  name: mnist-training
+  namespace: mlteam
+spec:
+  clusterIP: None
+  selector:
+    jobset.sigs.k8s.io/jobset-name: mnist-training
+  ports:
+    - name: torchrun
+      port: 29500
+      targetPort: 29500
+---
+# KAI Scheduler Queue 설정
+apiVersion: scheduling.run.ai/v2
+kind: Queue
+metadata:
+  name: mlteam-queue
+spec:
+  resources:
+    gpu:
+      quota: 2        # 이 팀에 할당된 GPU 수
+      limit: 2
+      overQuotaWeight: 1
