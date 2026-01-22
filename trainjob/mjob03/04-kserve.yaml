@@ -3,6 +3,8 @@ kind: InferenceService
 metadata:
   name: mnist-classifier
   namespace: mlteam
+  annotations:
+    serving.kserve.io/deploymentMode: RawDeployment
 spec:
   predictor:
     tolerations:
