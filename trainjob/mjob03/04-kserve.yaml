@@ -5,6 +5,11 @@ metadata:
   namespace: mlteam
 spec:
   predictor:
+    tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
     triton:
       storageUri: "pvc://mnist-pipeline-storage/models"
       # nvcr.io/nvidia/tritonserver:25.12-py3
