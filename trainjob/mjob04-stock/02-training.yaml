@@ -43,7 +43,9 @@ spec:
                         - -c
                         - |
                           # Install dependencies
-                          pip install yfinance scikit-learn transformers chromadb --quiet
+                          echo "=== Installing dependencies ==="
+                          pip install --root-user-action=ignore yfinance scikit-learn transformers chromadb
+                          echo "=== Dependencies installed successfully ==="
 
                           # Environment setup
                           export WORLD_SIZE=2
@@ -124,6 +126,8 @@ spec:
                           value: "demo"  # Replace with your API key or use Secret
                         - name: HF_HOME
                           value: "/mnt/storage/huggingface"
+                        - name: PIP_USE_FEATURE
+                          value: "build-constraint"
                       resources:
                         requests:
                           cpu: "4"
