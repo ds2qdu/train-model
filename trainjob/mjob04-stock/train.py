@@ -380,7 +380,7 @@ def prepare_data(data_dir, seq_length=30, pred_length=5, rank=0, chromadb_dir="/
 
     if raw_data_path.exists():
         print(f"[Rank {rank}] Loading existing raw data...")
-        existing_data = torch.load(raw_data_path)
+        existing_data = torch.load(raw_data_path, map_location='cpu', weights_only=False)
         last_date = existing_data.get('last_date')
         print(f"[Rank {rank}] Existing data: {existing_data['num_days']} days, last_date: {last_date}")
 
@@ -401,8 +401,8 @@ def prepare_data(data_dir, seq_length=30, pred_length=5, rank=0, chromadb_dir="/
     if len(new_df) == 0 and existing_data:
         print(f"[Rank {rank}] No new data available. Using existing data.")
         # Load existing processed data
-        train_data = torch.load(data_path / 'train_data.pt')
-        test_data = torch.load(data_path / 'test_data.pt')
+        train_data = torch.load(data_path / 'train_data.pt', map_location='cpu', weights_only=False)
+        test_data = torch.load(data_path / 'test_data.pt', map_location='cpu', weights_only=False)
         with open(data_path / 'scaler.pkl', 'rb') as f:
             scaler = pickle.load(f)
         return train_data, test_data, scaler
@@ -623,7 +623,7 @@ def load_checkpoint(model, optimizer, scheduler, checkpoint_dir, device):
 
     if checkpoint_path.exists():
         print(f"Loading checkpoint: {checkpoint_path}")
-        checkpoint = torch.load(checkpoint_path, map_location=device)
+        checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
         model.module.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         if scheduler and checkpoint.get('scheduler_state_dict'):
@@ -786,8 +786,8 @@ def main():
     dist.barrier()
 
     # Load data on all ranks
-    train_data = torch.load(data_path / 'train_data.pt')
-    test_data = torch.load(data_path / 'test_data.pt')
+    train_data = torch.load(data_path / 'train_data.pt', map_location='cpu', weights_only=False)
+    test_data = torch.load(data_path / 'test_data.pt', map_location='cpu', weights_only=False)
 
     # Create datasets
     train_dataset = StockNewsDataset(
@@ -884,7 +884,7 @@ def main():
 
         best_ckpt = Path(args.checkpoint_dir) / 'checkpoint_best.pt'
         if best_ckpt.exists():
-            ckpt = torch.load(best_ckpt)
+            ckpt = torch.load(best_ckpt, map_location=device, weights_only=False)
             model.module.load_state_dict(ckpt['model_state_dict'])
             print(f"Loaded best model: loss {ckpt['best_loss']:.6f}")
 
