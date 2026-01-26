@@ -123,7 +123,7 @@ spec:
                         - name: NCCL_NET
                           value: "Socket"
                         - name: FINNHUB_API_KEY
-                          value: "d5rfmh1r01qunvpsi5egd5rfmh1r01qunvpsi5f0"
+                          value: "demo"
                         - name: HF_HOME
                           value: "/mnt/storage/huggingface"
                         - name: TOKENIZERS_PARALLELISM
