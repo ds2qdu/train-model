@@ -39,6 +39,44 @@ def cleanup():
     dist.destroy_process_group()
 
 # ============================================
+# GPU Monitoring
+# ============================================
+def get_gpu_info():
+    """Get GPU utilization and memory info"""
+    if not torch.cuda.is_available():
+        return "GPU: N/A"
+
+    try:
+        import subprocess
+        result = subprocess.run(
+            ['nvidia-smi', '--query-gpu=utilization.gpu,memory.used,memory.total', '--format=csv,noheader,nounits'],
+            capture_output=True, text=True, timeout=5
+        )
+        if result.returncode == 0:
+            lines = result.stdout.strip().split('\n')
+            gpu_info = []
+            for i, line in enumerate(lines):
+                util, mem_used, mem_total = line.split(', ')
+                gpu_info.append(f"GPU{i}: {util}% | {mem_used}/{mem_total}MB")
+            return ' | '.join(gpu_info)
+    except:
+        pass
+
+    # Fallback to PyTorch info
+    device = torch.cuda.current_device()
+    mem_used = torch.cuda.memory_allocated(device) / 1024**3
+    mem_total = torch.cuda.get_device_properties(device).total_memory / 1024**3
+    return f"GPU{device}: Mem {mem_used:.1f}/{mem_total:.1f}GB"
+
+def print_gpu_status(rank, epoch=None, batch_idx=None):
+    """Print GPU status with rank info"""
+    gpu_info = get_gpu_info()
+    if epoch is not None and batch_idx is not None:
+        print(f"[Rank {rank}] Epoch {epoch+1} Batch {batch_idx} | {gpu_info}")
+    else:
+        print(f"[Rank {rank}] {gpu_info}")
+
+# ============================================
 # News Data Collection (Finnhub)
 # ============================================
 class NewsCollector:
@@ -876,8 +914,17 @@ def main():
             optimizer.step()
             total_loss += loss.item()
 
+            # GPU 상태 출력 (매 50 배치마다)
+            if batch_idx % 50 == 0:
+                print_gpu_status(rank, epoch, batch_idx)
+                print(f"[Rank {rank}] Epoch [{epoch+1}/{args.epochs}] Batch [{batch_idx}/{len(train_loader)}] Loss: {loss.item():.6f}")
+
         scheduler.step()
         avg_loss = total_loss / len(train_loader)
+
+        # 에폭 종료 시 GPU 상태 출력
+        print_gpu_status(rank)
+        print(f"[Rank {rank}] Epoch [{epoch+1}/{args.epochs}] completed. Avg Loss: {avg_loss:.6f}")
 
         # Evaluation (rank 0)
         if rank == 0:

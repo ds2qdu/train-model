@@ -48,6 +48,44 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"Using device: {device}")
 
 # ============================================
+# GPU Monitoring
+# ============================================
+def get_gpu_info():
+    """Get GPU utilization and memory info"""
+    if not torch.cuda.is_available():
+        return "GPU: N/A"
+
+    try:
+        import subprocess
+        result = subprocess.run(
+            ['nvidia-smi', '--query-gpu=utilization.gpu,memory.used,memory.total', '--format=csv,noheader,nounits'],
+            capture_output=True, text=True, timeout=5
+        )
+        if result.returncode == 0:
+            lines = result.stdout.strip().split('\n')
+            gpu_info = []
+            for i, line in enumerate(lines):
+                util, mem_used, mem_total = line.split(', ')
+                gpu_info.append(f"GPU{i}: {util}% | {mem_used}/{mem_total}MB")
+            return ' | '.join(gpu_info)
+    except:
+        pass
+
+    # Fallback to PyTorch info
+    device_id = torch.cuda.current_device()
+    mem_used = torch.cuda.memory_allocated(device_id) / 1024**3
+    mem_total = torch.cuda.get_device_properties(device_id).total_memory / 1024**3
+    return f"GPU{device_id}: Mem {mem_used:.1f}/{mem_total:.1f}GB"
+
+def print_gpu_status(epoch=None, batch_idx=None):
+    """Print GPU status"""
+    gpu_info = get_gpu_info()
+    if epoch is not None and batch_idx is not None:
+        print(f"Epoch {epoch+1} Batch {batch_idx} | {gpu_info}")
+    else:
+        print(f"{gpu_info}")
+
+# ============================================
 # News Data Collection (Finnhub)
 # ============================================
 class NewsCollector:
@@ -777,11 +815,16 @@ def train():
             total_loss += loss.item()
 
             if batch_idx % 50 == 0:
+                print_gpu_status(epoch, batch_idx)
                 print(f"  Batch [{batch_idx}/{len(train_loader)}] Loss: {loss.item():.6f}")
 
         scheduler.step()
         avg_loss = total_loss / len(train_loader)
         train_losses.append(avg_loss)
+
+        # 에폭 종료 시 GPU 상태 출력
+        print_gpu_status()
+        print(f"Epoch [{epoch+1}/{args.epochs}] completed. Avg Loss: {avg_loss:.6f}")
 
         # Evaluation
         test_loss = evaluate(model, test_loader, criterion, device)

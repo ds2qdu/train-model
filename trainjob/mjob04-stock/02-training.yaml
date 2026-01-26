@@ -123,9 +123,11 @@ spec:
                         - name: NCCL_NET
                           value: "Socket"
                         - name: FINNHUB_API_KEY
-                          value: "demo"  # Replace with your API key or use Secret
+                          value: "d5rfmh1r01qunvpsi5egd5rfmh1r01qunvpsi5f0"
                         - name: HF_HOME
                           value: "/mnt/storage/huggingface"
+                        - name: TOKENIZERS_PARALLELISM
+                          value: "false"
                         - name: PIP_USE_FEATURE
                           value: "build-constraint"
                       resources:
