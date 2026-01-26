@@ -18,13 +18,14 @@ spec:
       port: 29500
       targetPort: 29500
 ---
-apiVersion: scheduling.x-k8s.io/v1alpha1
+# KAI Scheduler Queue 설정
+apiVersion: scheduling.run.ai/v2
 kind: Queue
 metadata:
   name: mlteam-queue
-  namespace: mlteam
 spec:
-  resourceGroups:
-    - name: gpu-group
-      resources:
-        - nvidia.com/gpu: "2"
+  resources:
+    gpu:
+      quota: 2        # 이 팀에 할당된 GPU 수
+      limit: 2
+      overQuotaWeight: 1
