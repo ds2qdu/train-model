@@ -52,7 +52,7 @@ print(f"Using device: {device}")
 # ============================================
 class NewsCollector:
     def __init__(self, api_key=None):
-        self.api_key = api_key or os.environ.get('FINNHUB_API_KEY', 'demo')
+        self.api_key = api_key or os.environ.get('FINNHUB_API_KEY', 'd5rfmh1r01qunvpsi5egd5rfmh1r01qunvpsi5f0')
         self.base_url = "https://finnhub.io/api/v1"
 
     def get_news(self, symbol="SPY", from_date=None, to_date=None):
@@ -162,15 +162,26 @@ class NewsVectorStore:
         documents = []
         metadatas = []
         embedding_list = []
+        seen_ids = set()  # 배치 내 중복 체크용
 
         for i, news in enumerate(news_items):
             news_datetime = news.get('datetime', 0)
             headline = news.get('headline', '')
-            news_id = f"{news_datetime}_{hash(headline) % 1000000}"
+            # 더 고유한 ID 생성: datetime + headline hash + index
+            news_id = f"{news_datetime}_{hash(headline) % 1000000}_{i}"
 
-            existing = self.collection.get(ids=[news_id])
-            if existing and len(existing['ids']) > 0:
+            # 배치 내 중복 체크
+            if news_id in seen_ids:
                 continue
+            seen_ids.add(news_id)
+
+            # DB 내 중복 체크
+            try:
+                existing = self.collection.get(ids=[news_id])
+                if existing and len(existing['ids']) > 0:
+                    continue
+            except:
+                pass
 
             ids.append(news_id)
             documents.append(headline)
@@ -186,13 +197,16 @@ class NewsVectorStore:
             embedding_list.append(embeddings[i].tolist() if torch.is_tensor(embeddings[i]) else embeddings[i])
 
         if ids:
-            self.collection.add(
-                ids=ids,
-                documents=documents,
-                metadatas=metadatas,
-                embeddings=embedding_list
-            )
-            print(f"Added {len(ids)} news items to ChromaDB")
+            try:
+                self.collection.add(
+                    ids=ids,
+                    documents=documents,
+                    metadatas=metadatas,
+                    embeddings=embedding_list
+                )
+                print(f"Added {len(ids)} news items to ChromaDB")
+            except Exception as e:
+                print(f"Warning: ChromaDB add failed: {e}")
 
     def get_by_date(self, date):
         """Get all news for a specific date"""
@@ -598,21 +612,30 @@ def export_model_for_triton(model, export_dir, seq_length=30, pred_length=5, new
     dummy_news = torch.randn(1, seq_length, news_dim).to(model_device)
 
     onnx_path = triton_model_dir / 'model.onnx'
-    torch.onnx.export(
-        model,
-        (dummy_price, dummy_news),
-        str(onnx_path),
-        export_params=True,
-        opset_version=17,
-        input_names=['price_input', 'news_input'],
-        output_names=['output'],
-        dynamic_axes={
-            'price_input': {0: 'batch'},
-            'news_input': {0: 'batch'},
-            'output': {0: 'batch'}
-        }
-    )
-    print(f"ONNX model saved: {onnx_path}")
+
+    try:
+        torch.onnx.export(
+            model,
+            (dummy_price, dummy_news),
+            str(onnx_path),
+            export_params=True,
+            opset_version=17,
+            input_names=['price_input', 'news_input'],
+            output_names=['output'],
+            dynamic_axes={
+                'price_input': {0: 'batch'},
+                'news_input': {0: 'batch'},
+                'output': {0: 'batch'}
+            },
+            dynamo=False  # Use legacy export to avoid onnxscript dependency
+        )
+        print(f"ONNX model saved: {onnx_path}")
+    except Exception as e:
+        print(f"Warning: ONNX export failed: {e}")
+        print("Skipping ONNX export. Install onnxscript for full export support: pip install onnxscript")
+        # Save PyTorch model instead
+        torch.save(model.state_dict(), triton_model_dir / 'model.pt')
+        print(f"PyTorch model saved: {triton_model_dir / 'model.pt'}")
 
     config_content = f"""name: "stock_predictor"
 platform: "onnxruntime_onnx"

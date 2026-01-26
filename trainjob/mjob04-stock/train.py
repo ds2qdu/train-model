@@ -179,17 +179,26 @@ class NewsVectorStore:
         documents = []
         metadatas = []
         embedding_list = []
+        seen_ids = set()  # 배치 내 중복 체크용
 
         for i, news in enumerate(news_items):
-            # Create unique ID based on datetime and headline hash
+            # Create unique ID based on datetime, headline hash, and index
             news_datetime = news.get('datetime', 0)
             headline = news.get('headline', '')
-            news_id = f"{news_datetime}_{hash(headline) % 1000000}"
+            news_id = f"{news_datetime}_{hash(headline) % 1000000}_{i}"
 
-            # Skip if already exists
-            existing = self.collection.get(ids=[news_id])
-            if existing and len(existing['ids']) > 0:
+            # 배치 내 중복 체크
+            if news_id in seen_ids:
                 continue
+            seen_ids.add(news_id)
+
+            # DB 내 중복 체크
+            try:
+                existing = self.collection.get(ids=[news_id])
+                if existing and len(existing['ids']) > 0:
+                    continue
+            except:
+                pass
 
             ids.append(news_id)
             documents.append(headline)
@@ -205,13 +214,16 @@ class NewsVectorStore:
             embedding_list.append(embeddings[i].tolist() if torch.is_tensor(embeddings[i]) else embeddings[i])
 
         if ids:
-            self.collection.add(
-                ids=ids,
-                documents=documents,
-                metadatas=metadatas,
-                embeddings=embedding_list
-            )
-            print(f"Added {len(ids)} news items to ChromaDB")
+            try:
+                self.collection.add(
+                    ids=ids,
+                    documents=documents,
+                    metadatas=metadatas,
+                    embeddings=embedding_list
+                )
+                print(f"Added {len(ids)} news items to ChromaDB")
+            except Exception as e:
+                print(f"Warning: ChromaDB add failed: {e}")
 
     def search(self, query_embedding, n_results=10, date_filter=None):
         """
@@ -668,21 +680,28 @@ def export_model_for_triton(model, export_dir, seq_length=30, pred_length=5, new
 
     # ONNX export
     onnx_path = triton_model_dir / 'model.onnx'
-    torch.onnx.export(
-        model,
-        (dummy_price, dummy_news),
-        str(onnx_path),
-        export_params=True,
-        opset_version=17,
-        input_names=['price_input', 'news_input'],
-        output_names=['output'],
-        dynamic_axes={
-            'price_input': {0: 'batch'},
-            'news_input': {0: 'batch'},
-            'output': {0: 'batch'}
-        }
-    )
-    print(f"ONNX model saved: {onnx_path}")
+    try:
+        torch.onnx.export(
+            model,
+            (dummy_price, dummy_news),
+            str(onnx_path),
+            export_params=True,
+            opset_version=17,
+            input_names=['price_input', 'news_input'],
+            output_names=['output'],
+            dynamic_axes={
+                'price_input': {0: 'batch'},
+                'news_input': {0: 'batch'},
+                'output': {0: 'batch'}
+            },
+            dynamo=False  # Use legacy export to avoid onnxscript issues
+        )
+        print(f"ONNX model saved: {onnx_path}")
+    except Exception as e:
+        print(f"Warning: ONNX export failed: {e}")
+        # Save PyTorch model as fallback
+        torch.save(model.state_dict(), triton_model_dir / 'model.pt')
+        print(f"PyTorch model saved: {triton_model_dir / 'model.pt'}")
 
     # Triton config
     config_content = f"""name: "stock_predictor"
