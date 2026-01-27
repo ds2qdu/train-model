@@ -220,10 +220,13 @@ class NewsVectorStore:
         seen_ids = set()  # 배치 내 중복 체크용
 
         for i, news in enumerate(news_items):
-            # Create unique ID based on datetime, headline hash, and index
+            # Create unique ID based on datetime and URL/headline hash
             news_datetime = news.get('datetime', 0)
             headline = news.get('headline', '')
-            news_id = f"{news_datetime}_{hash(headline) % 1000000}_{i}"
+            url = news.get('url', '')
+            # URL이 있으면 URL hash 사용, 없으면 headline hash 사용
+            unique_key = url if url else headline
+            news_id = f"{news_datetime}_{hash(unique_key) % 10000000}"
 
             # 배치 내 중복 체크
             if news_id in seen_ids:
@@ -411,7 +414,7 @@ class StockNewsTransformer(nn.Module):
 # ============================================
 # Data Preparation (Incremental)
 # ============================================
-def prepare_data(data_dir, seq_length=30, pred_length=5, rank=0, chromadb_dir="/mnt/storage/chromadb"):
+def prepare_data(data_dir, seq_length=30, pred_length=5, rank=0, chromadb_dir="/mnt/storage/chromadb", skip_news_fetch=False):
     """
     Prepare price and news data with incremental loading.
     - If raw_data.pt exists: load existing data and append new data only
@@ -485,28 +488,32 @@ def prepare_data(data_dir, seq_length=30, pred_length=5, rank=0, chromadb_dir="/
         pickle.dump(scaler, f)
 
     # 2. Collect news data (only for new dates)
-    print(f"[Rank {rank}] Collecting news data...")
-    news_collector = NewsCollector()
-
-    # Determine news collection range
-    if last_date:
-        news_start = datetime.strptime(last_date, '%Y-%m-%d') + timedelta(days=1)
-    else:
-        news_start = start_date
-
     all_news = []
-    for symbol in ['SPY', 'AAPL', 'MSFT', 'GOOGL']:
-        news = news_collector.get_news(
-            symbol=symbol,
-            from_date=news_start.strftime('%Y-%m-%d'),
-            to_date=end_date.strftime('%Y-%m-%d')
-        )
-        all_news.extend(news)
 
-    market_news = news_collector.get_market_news()
-    all_news.extend(market_news)
+    if skip_news_fetch:
+        print(f"[Rank {rank}] Skipping news fetch (--skip-news-fetch enabled)")
+    else:
+        print(f"[Rank {rank}] Collecting news data...")
+        news_collector = NewsCollector()
 
-    print(f"[Rank {rank}] Collected {len(all_news)} new news articles")
+        # Determine news collection range
+        if last_date:
+            news_start = datetime.strptime(last_date, '%Y-%m-%d') + timedelta(days=1)
+        else:
+            news_start = start_date
+
+        for symbol in ['SPY', 'AAPL', 'MSFT', 'GOOGL']:
+            news = news_collector.get_news(
+                symbol=symbol,
+                from_date=news_start.strftime('%Y-%m-%d'),
+                to_date=end_date.strftime('%Y-%m-%d')
+            )
+            all_news.extend(news)
+
+        market_news = news_collector.get_market_news()
+        all_news.extend(market_news)
+
+        print(f"[Rank {rank}] Collected {len(all_news)} new news articles")
 
     # Organize news by date
     news_by_date = {}
@@ -817,6 +824,7 @@ def main():
     parser.add_argument('--export-dir', type=str, default='/mnt/storage/models')
     parser.add_argument('--chromadb-dir', type=str, default='/mnt/storage/chromadb')
     parser.add_argument('--resume', action='store_true', help='Resume from checkpoint (incremental learning)')
+    parser.add_argument('--skip-news-fetch', action='store_true', help='Skip fetching new news from API (use existing ChromaDB data)')
     args = parser.parse_args()
 
     local_rank = setup()
@@ -837,7 +845,8 @@ def main():
     data_path = Path(args.data_dir)
     if rank == 0:
         train_data, test_data, scaler = prepare_data(
-            args.data_dir, args.seq_length, args.pred_length, rank, args.chromadb_dir
+            args.data_dir, args.seq_length, args.pred_length, rank, args.chromadb_dir,
+            skip_news_fetch=args.skip_news_fetch
         )
 
     dist.barrier()

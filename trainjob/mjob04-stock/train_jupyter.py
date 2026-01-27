@@ -205,8 +205,10 @@ class NewsVectorStore:
         for i, news in enumerate(news_items):
             news_datetime = news.get('datetime', 0)
             headline = news.get('headline', '')
-            # 더 고유한 ID 생성: datetime + headline hash + index
-            news_id = f"{news_datetime}_{hash(headline) % 1000000}_{i}"
+            url = news.get('url', '')
+            # URL이 있으면 URL hash 사용, 없으면 headline hash 사용
+            unique_key = url if url else headline
+            news_id = f"{news_datetime}_{hash(unique_key) % 10000000}"
 
             # 배치 내 중복 체크
             if news_id in seen_ids:

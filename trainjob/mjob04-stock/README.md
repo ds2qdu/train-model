@@ -166,6 +166,11 @@ kubectl exec -n mlteam <pod> -- rm -rf /mnt/storage/checkpoints/*
 ./run-training.sh
 ```
 
+### TRAIN Scenario
+```
+
+```
+
 ## Model Details
 
 ### Transformer Architecture
