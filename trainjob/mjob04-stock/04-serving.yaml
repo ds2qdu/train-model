@@ -18,6 +18,11 @@ spec:
       labels:
         app: stock-predictor-triton
     spec:
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       containers:
         - name: triton
           image: nvcr.io/nvidia/tritonserver:24.01-py3
