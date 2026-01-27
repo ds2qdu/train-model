@@ -295,6 +295,74 @@ Current date: {current_date}
             self.histories[session_id] = []
         return self.histories[session_id]
 
+    def _is_prediction_query(self, message: str) -> bool:
+        """Check if message is asking for stock prediction"""
+        prediction_keywords = [
+            'predict', 'prediction', 'forecast', 'outlook', 'future',
+            '예측', '전망', '앞으로', '내일', '다음주', '향후',
+            'tomorrow', 'next week', 'price target', 'going up', 'going down',
+            '오를까', '내릴까', '상승', '하락', 'trend'
+        ]
+        message_lower = message.lower()
+        return any(kw in message_lower for kw in prediction_keywords)
+
+    def _get_prediction_context(self) -> str:
+        """Get stock prediction from Triton model"""
+        if not self.triton_client.is_healthy():
+            return "\n\n[Prediction Model: Not available]"
+
+        try:
+            # Get recent S&P 500 prices using yfinance
+            import yfinance as yf
+            ticker = yf.Ticker("^GSPC")
+            hist = ticker.history(period="60d")
+
+            if len(hist) < 30:
+                return "\n\n[Prediction: Insufficient price data]"
+
+            # Get last 30 days of closing prices
+            prices = hist['Close'].tail(30).values
+
+            # Normalize
+            min_price = prices.min()
+            max_price = prices.max()
+            normalized = (prices - min_price) / (max_price - min_price + 1e-8)
+
+            # Prepare input
+            price_input = normalized.reshape(1, 30, 1).astype(np.float32)
+            news_input = np.zeros((1, 30, 768), dtype=np.float32)
+
+            # Get prediction
+            predictions = self.triton_client.predict(price_input, news_input)
+
+            if predictions is None:
+                return "\n\n[Prediction: Model inference failed]"
+
+            # Denormalize
+            pred_prices = predictions[0] * (max_price - min_price) + min_price
+            current_price = prices[-1]
+
+            # Calculate changes
+            changes = [(p - current_price) / current_price * 100 for p in pred_prices]
+
+            prediction_text = f"""
+
+[S&P 500 AI Prediction - trained model results]
+Current Price: ${current_price:,.2f}
+Predicted Prices (Next 5 days):
+  Day 1: ${pred_prices[0]:,.2f} ({changes[0]:+.2f}%)
+  Day 2: ${pred_prices[1]:,.2f} ({changes[1]:+.2f}%)
+  Day 3: ${pred_prices[2]:,.2f} ({changes[2]:+.2f}%)
+  Day 4: ${pred_prices[3]:,.2f} ({changes[3]:+.2f}%)
+  Day 5: ${pred_prices[4]:,.2f} ({changes[4]:+.2f}%)
+Overall 5-day change: {changes[4]:+.2f}%
+Note: This prediction is from the Transformer model trained on historical data and news embeddings.
+"""
+            return prediction_text
+
+        except Exception as e:
+            return f"\n\n[Prediction Error: {str(e)}]"
+
     def chat(self, message: str, session_id: str = "default") -> ChatResponse:
         """Process a chat message and return response"""
         if not self.llm_provider.is_available():
@@ -313,21 +381,26 @@ Current date: {current_date}
             for i, news in enumerate(relevant_news, 1):
                 news_context += f"{i}. [{news['date']}] {news['headline']} (Source: {news['source']})\n"
 
-        # 3. Get conversation history
+        # 3. Check if prediction is requested and add prediction context
+        prediction_context = ""
+        if self._is_prediction_query(message):
+            prediction_context = self._get_prediction_context()
+
+        # 4. Get conversation history
         history = self.get_history(session_id)
 
-        # 4. Build messages
+        # 5. Build messages
         system_message = self.system_prompt.format(
             current_date=datetime.now().strftime('%Y-%m-%d')
         )
 
         messages = [
-            SystemMessage(content=system_message + news_context),
+            SystemMessage(content=system_message + news_context + prediction_context),
             *history[-10:],  # Keep last 10 messages to avoid context overflow
             HumanMessage(content=message)
         ]
 
-        # 5. Get LLM response
+        # 6. Get LLM response
         assistant_response = self.llm_provider.invoke(messages)
 
         # Save to history

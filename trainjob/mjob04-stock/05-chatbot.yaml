@@ -131,8 +131,8 @@ spec:
             - |
               # Install dependencies
               pip install --no-cache-dir \
-                fastapi uvicorn chromadb langchain langchain-ollama \
-                requests numpy pydantic
+                fastapi uvicorn chromadb langchain langchain-ollama langchain-core \
+                requests numpy pydantic yfinance
 
               # Run chatbot server
               cd /app
