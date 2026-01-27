@@ -287,5 +287,5 @@ Ollama  : llama3.1 - 자연어대화
 
 ## Port Forwarding
 ```
-kubectl port-forward svc/stock-chatbot-ui 8501:8501 -n mlteam
+kubectl port-forward svc/stock-chatbot-ui 8501:8501 -n mlteam --address 0.0.0.0
 ```
