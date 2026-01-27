@@ -17,7 +17,13 @@ trainjob/mjob04-stock/
 ├── run-training.sh       # 학습 실행 스크립트
 ├── 00-resources.yaml     # Namespace, Headless Service, Queue
 ├── 01-pvc.yaml           # PVC
-└── 02-training.yaml      # TrainingRuntime + TrainJob
+├── 02-training.yaml      # TrainingRuntime + TrainJob
+├── 03-secret.yaml        # Token 
+├── 04-serving.yaml       # Triton Server
+├── 05-chatbot.yaml       # ollama + chatBot Backend
+├── 06-chatbot-ui.yaml    # Streamlit UI
+├── chatbot.py            # RAG Chatbot (Ollama)
+└── chatbot_ui.py         # Streamlit UI
 ```
 
 ## Storage Structure
@@ -267,3 +273,15 @@ response = requests.post(
 )
 print(response.json())
 ```
+
+## Service Architecture
+
+Streamlit UI (8501) -> FastAPI ChatBot (8080) -> Triton Server (8000, train model)
+                                              -> ChromaDB (News RAG)
+                                              -> Ollama (11434, chatbot)
+
+## Model Role
+Triton  : stock_predictor(ONNX) - 5일 가격예측 - train.py 학습
+ChromaDB: FinBERT Embeded - 뉴스 유사도 검색 - train.py 저장
+Ollama  : llama3.1 - 자연어대화 
+
