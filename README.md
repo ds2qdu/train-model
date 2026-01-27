@@ -13,6 +13,9 @@ multi GPU : 샘플 multinode training job
 Single Digit Recognition (숫자 인식)
 Inference Service (Kserve  배포)
 
+### mjob04-stock
+Stock Prediction with News (Transformer + FinBERT)
+
 
 ## Environment
 
