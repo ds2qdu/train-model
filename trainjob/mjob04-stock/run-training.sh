@@ -26,6 +26,7 @@ echo ""
 echo "Applying resources..."
 kubectl apply -f ${SCRIPT_DIR}/00-resources.yaml
 kubectl apply -f ${SCRIPT_DIR}/01-pvc.yaml
+kubectl apply -f ${SCRIPT_DIR}/03-secret.yaml
 kubectl apply -f ${SCRIPT_DIR}/02-training.yaml
 
 # 3. Wait for pods to start
