@@ -111,13 +111,13 @@ spec:
       initContainers:
         # Wait for Ollama to be ready
         - name: wait-ollama
-          image: curlimages/curl:latest
+          image: busybox:1.36
           command:
             - /bin/sh
             - -c
             - |
               echo "Waiting for Ollama..."
-              until curl -s http://ollama:11434/api/tags > /dev/null; do
+              until wget -q --spider http://ollama:11434/api/tags; do
                 echo "Ollama not ready, waiting..."
                 sleep 5
               done
