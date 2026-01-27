@@ -12,6 +12,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset
 import yfinance as yf
 from datetime import datetime, timedelta
+import pytz
 from sklearn.preprocessing import MinMaxScaler
 from pathlib import Path
 import json
@@ -371,7 +372,14 @@ def prepare_data(data_dir, seq_length=30, pred_length=5, chromadb_dir="/tmp/chro
     data_path.mkdir(parents=True, exist_ok=True)
 
     ticker = "^GSPC"
-    end_date = datetime.now()
+
+    # Use US Eastern timezone for market dates
+    us_eastern = pytz.timezone('US/Eastern')
+    now_eastern = datetime.now(us_eastern)
+    end_date = now_eastern.replace(tzinfo=None)  # yfinance expects naive datetime
+
+    print(f"Current US Eastern time: {now_eastern.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+
     raw_data_path = data_path / 'raw_data.pt'
 
     # Check for existing data
@@ -386,7 +394,18 @@ def prepare_data(data_dir, seq_length=30, pred_length=5, chromadb_dir="/tmp/chro
 
     # Determine download range
     if last_date:
-        start_date = datetime.strptime(last_date, '%Y-%m-%d') + timedelta(days=1)
+        start_date = datetime.strptime(last_date, '%Y-%m-%d')
+
+        # If start_date is today or in the future, no new data to download
+        if start_date.date() >= end_date.date():
+            print("Data is up to date. No new download needed.")
+            if existing_data:
+                train_data = torch.load(data_path / 'train_data.pt', map_location='cpu', weights_only=False)
+                test_data = torch.load(data_path / 'test_data.pt', map_location='cpu', weights_only=False)
+                with open(data_path / 'scaler.pkl', 'rb') as f:
+                    scaler = pickle.load(f)
+                return train_data, test_data, scaler
+
         print(f"Incremental mode: downloading from {start_date.strftime('%Y-%m-%d')}")
     else:
         start_date = end_date - timedelta(days=3600)
@@ -394,10 +413,12 @@ def prepare_data(data_dir, seq_length=30, pred_length=5, chromadb_dir="/tmp/chro
 
     # 1. Download price data
     print(f"Downloading {ticker} price data...")
+    print(f"Date range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
     new_df = yf.download(ticker, start=start_date, end=end_date, progress=True)
 
-    if len(new_df) == 0 and existing_data:
-        print("No new data available. Using existing data.")
+    if len(new_df) == 0:
+        if existing_data:
+            print("No new data available (market closed or weekend). Using existing data.")
         train_data = torch.load(data_path / 'train_data.pt', map_location='cpu', weights_only=False)
         test_data = torch.load(data_path / 'test_data.pt', map_location='cpu', weights_only=False)
         with open(data_path / 'scaler.pkl', 'rb') as f:

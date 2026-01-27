@@ -44,7 +44,7 @@ spec:
                         - |
                           # Install dependencies
                           echo "=== Installing dependencies ==="
-                          pip install --root-user-action=ignore yfinance scikit-learn transformers chromadb onnxscript
+                          pip install --root-user-action=ignore yfinance scikit-learn transformers chromadb onnxscript pytz
                           echo "=== Dependencies installed successfully ==="
 
                           # Environment setup
