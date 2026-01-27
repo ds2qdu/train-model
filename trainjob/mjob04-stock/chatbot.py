@@ -19,8 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # LangChain imports
-from langchain.schema import HumanMessage, SystemMessage
-from langchain.memory import ConversationBufferMemory
+from langchain_core.messages import HumanMessage, SystemMessage
 
 # Configuration
 CHROMADB_PATH = os.environ.get("CHROMADB_PATH", "/mnt/storage/chromadb")
@@ -272,8 +271,8 @@ class StockChatbot:
         # Initialize LLM (Local or Cloud)
         self.llm_provider = LLMProvider(LLM_PROVIDER, LLM_MODEL)
 
-        # Conversation memory per session
-        self.memories: Dict[str, ConversationBufferMemory] = {}
+        # Simple conversation history per session (list of messages)
+        self.histories: Dict[str, List] = {}
 
         # System prompt
         self.system_prompt = """You are a helpful stock market analyst assistant. You have access to:
@@ -290,14 +289,11 @@ When answering questions:
 Current date: {current_date}
 """
 
-    def get_memory(self, session_id: str) -> ConversationBufferMemory:
-        """Get or create conversation memory for a session"""
-        if session_id not in self.memories:
-            self.memories[session_id] = ConversationBufferMemory(
-                return_messages=True,
-                memory_key="history"
-            )
-        return self.memories[session_id]
+    def get_history(self, session_id: str) -> List:
+        """Get or create conversation history for a session"""
+        if session_id not in self.histories:
+            self.histories[session_id] = []
+        return self.histories[session_id]
 
     def chat(self, message: str, session_id: str = "default") -> ChatResponse:
         """Process a chat message and return response"""
@@ -318,8 +314,7 @@ Current date: {current_date}
                 news_context += f"{i}. [{news['date']}] {news['headline']} (Source: {news['source']})\n"
 
         # 3. Get conversation history
-        memory = self.get_memory(session_id)
-        history = memory.load_memory_variables({}).get("history", [])
+        history = self.get_history(session_id)
 
         # 4. Build messages
         system_message = self.system_prompt.format(
@@ -328,18 +323,17 @@ Current date: {current_date}
 
         messages = [
             SystemMessage(content=system_message + news_context),
-            *history,
+            *history[-10:],  # Keep last 10 messages to avoid context overflow
             HumanMessage(content=message)
         ]
 
         # 5. Get LLM response
         assistant_response = self.llm_provider.invoke(messages)
 
-        # Save to memory
-        memory.save_context(
-            {"input": message},
-            {"output": assistant_response}
-        )
+        # Save to history
+        from langchain_core.messages import AIMessage
+        history.append(HumanMessage(content=message))
+        history.append(AIMessage(content=assistant_response))
 
         return ChatResponse(
             response=assistant_response,
