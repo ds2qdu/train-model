@@ -38,11 +38,9 @@ spec:
             requests:
               memory: "4Gi"
               cpu: "2"
-              nvidia.com/gpu: "1"
             limits:
               memory: "8Gi"
               cpu: "4"
-              nvidia.com/gpu: "1"
           volumeMounts:
             - name: storage
               mountPath: /mnt/storage
