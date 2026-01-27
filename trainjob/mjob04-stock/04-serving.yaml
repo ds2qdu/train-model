@@ -61,7 +61,7 @@ spec:
       volumes:
         - name: storage
           persistentVolumeClaim:
-            claimName: mlteam-stock-pipeline-storage-pvc
+            claimName: stock-pipeline-storage
 ---
 apiVersion: v1
 kind: Service

@@ -55,7 +55,7 @@ spec:
       volumes:
         - name: ollama-data
           persistentVolumeClaim:
-            claimName: mlteam-stock-pipeline-storage-pvc
+            claimName: stock-pipeline-storage
 ---
 apiVersion: v1
 kind: Service
@@ -170,7 +170,7 @@ spec:
       volumes:
         - name: storage
           persistentVolumeClaim:
-            claimName: mlteam-stock-pipeline-storage-pvc
+            claimName: stock-pipeline-storage
         - name: app-code
           configMap:
             name: chatbot-code
