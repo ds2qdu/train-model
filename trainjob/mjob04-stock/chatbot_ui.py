@@ -38,7 +38,7 @@ def chat_with_api(message: str) -> dict:
                 "message": message,
                 "session_id": st.session_state.session_id
             },
-            timeout=60
+            timeout=600
         )
         if response.status_code == 200:
             return response.json()
@@ -295,7 +295,7 @@ with tab3:
                             "prices": prices,
                             "news_query": news_query if news_query else None
                         },
-                        timeout=60
+                        timeout=600
                     )
 
                 if response.status_code == 200:
