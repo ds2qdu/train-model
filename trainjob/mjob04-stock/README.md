@@ -285,3 +285,7 @@ Triton  : stock_predictor(ONNX) - 5일 가격예측 - train.py 학습
 ChromaDB: FinBERT Embeded - 뉴스 유사도 검색 - train.py 저장
 Ollama  : llama3.1 - 자연어대화 
 
+## Port Forwarding
+```
+kubectl port-forward svc/stock-chatbot-ui 8501:8501 -n mlteam
+```
