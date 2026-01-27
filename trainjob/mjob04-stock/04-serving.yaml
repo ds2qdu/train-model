@@ -1,0 +1,108 @@
+# ============================================
+# Stock Predictor - Triton Inference Server
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-predictor-triton
+  namespace: mlteam
+  labels:
+    app: stock-predictor-triton
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stock-predictor-triton
+  template:
+    metadata:
+      labels:
+        app: stock-predictor-triton
+    spec:
+      containers:
+        - name: triton
+          image: nvcr.io/nvidia/tritonserver:24.01-py3
+          command:
+            - tritonserver
+          args:
+            - --model-repository=/mnt/storage/models
+            - --strict-model-config=false
+            - --log-verbose=1
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 8001
+              name: grpc
+            - containerPort: 8002
+              name: metrics
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+              nvidia.com/gpu: "1"
+            limits:
+              memory: "8Gi"
+              cpu: "4"
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+          livenessProbe:
+            httpGet:
+              path: /v2/health/live
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /v2/health/ready
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: mlteam-stock-pipeline-storage-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-predictor-triton
+  namespace: mlteam
+  labels:
+    app: stock-predictor-triton
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+    - port: 8001
+      targetPort: 8001
+      name: grpc
+    - port: 8002
+      targetPort: 8002
+      name: metrics
+  selector:
+    app: stock-predictor-triton
+---
+# Optional: Expose Triton via Ingress (for external access)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stock-predictor-triton-ingress
+  namespace: mlteam
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: stock-predictor.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: stock-predictor-triton
+                port:
+                  number: 8000

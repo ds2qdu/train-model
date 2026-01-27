@@ -1,0 +1,107 @@
+# ============================================
+# Stock Chatbot - Streamlit UI
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-chatbot-ui
+  namespace: mlteam
+  labels:
+    app: stock-chatbot-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stock-chatbot-ui
+  template:
+    metadata:
+      labels:
+        app: stock-chatbot-ui
+    spec:
+      containers:
+        - name: streamlit
+          image: python:3.11-slim
+          command:
+            - bash
+            - -c
+            - |
+              # Install dependencies
+              pip install --no-cache-dir streamlit requests
+
+              # Run Streamlit
+              cd /app
+              streamlit run chatbot_ui.py \
+                --server.port=8501 \
+                --server.address=0.0.0.0 \
+                --server.headless=true
+          ports:
+            - containerPort: 8501
+              name: http
+          env:
+            - name: CHATBOT_API_URL
+              value: "http://stock-chatbot:8080"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: app-code
+              mountPath: /app
+          livenessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: app-code
+          configMap:
+            name: chatbot-ui-code
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-chatbot-ui
+  namespace: mlteam
+  labels:
+    app: stock-chatbot-ui
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8501
+      targetPort: 8501
+      name: http
+  selector:
+    app: stock-chatbot-ui
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stock-chatbot-ui-ingress
+  namespace: mlteam
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: stock-ui.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: stock-chatbot-ui
+                port:
+                  number: 8501
