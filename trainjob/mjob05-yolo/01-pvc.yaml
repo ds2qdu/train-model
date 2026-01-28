@@ -1,0 +1,15 @@
+# ============================================
+# YOLO Object Detection - PVC
+# ============================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yolo-training-storage
+  namespace: mlteam
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: nfs-client

@@ -16,6 +16,11 @@ Inference Service (Kserve  배포)
 ### mjob04-stock
 Stock Prediction with News (Transformer + FinBERT)
 
+### mjob05-yolo
+Object Detection 
+
+### mjob06-stable-diffusion
+chatbot -> create image
 
 ## Environment
 

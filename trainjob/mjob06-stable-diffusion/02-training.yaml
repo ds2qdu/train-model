@@ -1,0 +1,95 @@
+# ============================================
+# Stable Diffusion - Fine-tuning Training
+# LoRA / DreamBooth 방식 지원
+# ============================================
+apiVersion: kubeflow.org/v2alpha1
+kind: TrainJob
+metadata:
+  name: stable-diffusion-training
+  namespace: mlteam
+spec:
+  suspend: false
+  runtimeRef:
+    name: torch-distributed-runtime
+  trainer:
+    image: nvcr.io/nvidia/pytorch:24.01-py3
+    command:
+      - bash
+      - -c
+      - |
+        # Install dependencies
+        echo "=== Installing Stable Diffusion dependencies ==="
+        pip install --root-user-action=ignore \
+          diffusers[torch] \
+          transformers \
+          accelerate \
+          safetensors \
+          xformers \
+          bitsandbytes \
+          peft \
+          datasets \
+          Pillow \
+          ftfy
+
+        # Environment setup
+        export HF_HOME=/mnt/storage/huggingface
+        export TRANSFORMERS_CACHE=/mnt/storage/huggingface
+
+        echo "=== GPU Information ==="
+        nvidia-smi
+
+        # Run training
+        echo "=== Starting Stable Diffusion Fine-tuning ==="
+        cd /mnt/storage
+        python /mnt/storage/train.py \
+          --model_name "runwayml/stable-diffusion-v1-5" \
+          --train_data_dir /mnt/storage/data/train \
+          --output_dir /mnt/storage/models \
+          --train_method lora \
+          --epochs 100 \
+          --batch_size 1 \
+          --learning_rate 1e-4 \
+          --resolution 512
+
+        echo "=== Training Complete ==="
+    resourcesPerNode:
+      requests:
+        nvidia.com/gpu: "1"
+        memory: "24Gi"
+        cpu: "4"
+      limits:
+        nvidia.com/gpu: "1"
+        memory: "32Gi"
+        cpu: "8"
+    numNodes: 1
+    env:
+      - name: HF_HOME
+        value: "/mnt/storage/huggingface"
+      - name: TRANSFORMERS_CACHE
+        value: "/mnt/storage/huggingface"
+    volumeMounts:
+      - name: storage
+        mountPath: /mnt/storage
+  podSpecOverrides:
+    - targetJobs:
+        - name: trainer
+      containers:
+        - name: trainer
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+            - name: dshm
+              mountPath: /dev/shm
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: stable-diffusion-storage
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "16Gi"
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"

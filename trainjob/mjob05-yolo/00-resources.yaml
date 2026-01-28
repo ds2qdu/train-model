@@ -1,0 +1,10 @@
+# ============================================
+# YOLO Object Detection - ResourceFlavor
+# ============================================
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ResourceFlavor
+metadata:
+  name: yolo-gpu-flavor
+spec:
+  nodeLabels:
+    nvidia.com/gpu: "true"

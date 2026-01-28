@@ -1,0 +1,16 @@
+# ============================================
+# Stable Diffusion - PVC
+# 모델, 학습 데이터, 생성 이미지 저장용
+# ============================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: stable-diffusion-storage
+  namespace: mlteam
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi  # SD 모델이 크므로 충분히 할당
+  storageClassName: nfs-client

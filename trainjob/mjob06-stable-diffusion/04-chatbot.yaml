@@ -1,0 +1,164 @@
+# ============================================
+# Stable Diffusion - Chatbot with Image Generation
+# Ollama LLM + Image Generation
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sd-chatbot
+  namespace: mlteam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sd-chatbot
+  template:
+    metadata:
+      labels:
+        app: sd-chatbot
+    spec:
+      initContainers:
+        - name: wait-for-server
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for Stable Diffusion server..."
+              until wget -q --spider http://stable-diffusion-server:8000/health 2>/dev/null; do
+                echo "Waiting for SD server..."
+                sleep 5
+              done
+              echo "SD server is ready!"
+      containers:
+        # Ollama LLM
+        - name: ollama
+          image: ollama/ollama:latest
+          ports:
+            - containerPort: 11434
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+            limits:
+              memory: "8Gi"
+              cpu: "4"
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    sleep 10
+                    ollama pull llama3.2:1b || true
+
+        # Chatbot API
+        - name: chatbot
+          image: python:3.10-slim
+          command:
+            - bash
+            - -c
+            - |
+              echo "=== Installing chatbot dependencies ==="
+              pip install --no-cache-dir \
+                fastapi \
+                uvicorn \
+                httpx \
+                langchain \
+                langchain-community \
+                chromadb \
+                sentence-transformers \
+                Pillow \
+                aiohttp
+
+              echo "=== Starting Chatbot ==="
+              python /mnt/storage/chatbot.py
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SD_SERVER_URL
+              value: "http://stable-diffusion-server:8000"
+            - name: OLLAMA_URL
+              value: "http://localhost:11434"
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+            limits:
+              memory: "4Gi"
+              cpu: "2"
+
+        # Streamlit UI
+        - name: ui
+          image: python:3.10-slim
+          command:
+            - bash
+            - -c
+            - |
+              pip install --no-cache-dir streamlit requests Pillow
+              sleep 30
+              streamlit run /mnt/storage/chatbot_ui.py --server.port 8501 --server.address 0.0.0.0
+          ports:
+            - containerPort: 8501
+          env:
+            - name: CHATBOT_URL
+              value: "http://localhost:8080"
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: stable-diffusion-storage
+        - name: ollama-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sd-chatbot
+  namespace: mlteam
+spec:
+  selector:
+    app: sd-chatbot
+  ports:
+    - name: chatbot
+      port: 8080
+      targetPort: 8080
+    - name: ui
+      port: 8501
+      targetPort: 8501
+    - name: ollama
+      port: 11434
+      targetPort: 11434
+  type: ClusterIP
+---
+# NodePort for external access
+apiVersion: v1
+kind: Service
+metadata:
+  name: sd-chatbot-external
+  namespace: mlteam
+spec:
+  selector:
+    app: sd-chatbot
+  ports:
+    - name: ui
+      port: 8501
+      targetPort: 8501
+      nodePort: 30851
+  type: NodePort

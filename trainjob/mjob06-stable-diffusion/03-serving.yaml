@@ -1,0 +1,90 @@
+# ============================================
+# Stable Diffusion - Image Generation Server
+# FastAPI 기반 이미지 생성 API
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stable-diffusion-server
+  namespace: mlteam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stable-diffusion-server
+  template:
+    metadata:
+      labels:
+        app: stable-diffusion-server
+    spec:
+      containers:
+        - name: server
+          image: nvcr.io/nvidia/pytorch:24.01-py3
+          command:
+            - bash
+            - -c
+            - |
+              echo "=== Installing dependencies ==="
+              pip install --root-user-action=ignore \
+                diffusers[torch] \
+                transformers \
+                accelerate \
+                safetensors \
+                xformers \
+                peft \
+                fastapi \
+                uvicorn \
+                python-multipart \
+                Pillow
+
+              export HF_HOME=/mnt/storage/huggingface
+
+              echo "=== Starting Stable Diffusion Server ==="
+              python /mnt/storage/server.py
+          ports:
+            - containerPort: 8000
+          env:
+            - name: HF_HOME
+              value: "/mnt/storage/huggingface"
+            - name: TRANSFORMERS_CACHE
+              value: "/mnt/storage/huggingface"
+          resources:
+            requests:
+              nvidia.com/gpu: "1"
+              memory: "16Gi"
+              cpu: "4"
+            limits:
+              nvidia.com/gpu: "1"
+              memory: "24Gi"
+              cpu: "8"
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+            - name: dshm
+              mountPath: /dev/shm
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: stable-diffusion-storage
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "8Gi"
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stable-diffusion-server
+  namespace: mlteam
+spec:
+  selector:
+    app: stable-diffusion-server
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
