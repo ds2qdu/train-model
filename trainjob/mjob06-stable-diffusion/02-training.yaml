@@ -1,6 +1,6 @@
 # ============================================
-# Stable Diffusion - Fine-tuning Training
-# LoRA / DreamBooth 방식 지원
+# Stable Diffusion - Distributed Fine-tuning
+# LoRA / DreamBooth with Accelerate (2 Nodes)
 # ============================================
 apiVersion: kubeflow.org/v2alpha1
 kind: TrainJob
@@ -35,13 +35,86 @@ spec:
         export HF_HOME=/mnt/storage/huggingface
         export TRANSFORMERS_CACHE=/mnt/storage/huggingface
 
+        # Distributed training environment
+        export WORLD_SIZE=2
+        export RANK=${JOB_COMPLETION_INDEX:-0}
+        export MASTER_PORT=29500
+        export LOCAL_RANK=0
+
+        # Get master address
+        MY_IP=$(hostname -i | awk '{print $1}')
+
+        if [ "$RANK" == "0" ]; then
+            export MASTER_ADDR=$MY_IP
+        else
+            echo "Waiting for master pod..."
+            for i in $(seq 1 60); do
+                MASTER_ADDR=$(getent ahostsv4 stable-diffusion-training.mlteam.svc.cluster.local 2>/dev/null | awk '{print $1}' | grep -v "^${MY_IP}$" | head -1)
+                if [ -n "$MASTER_ADDR" ]; then
+                    echo "Found master: $MASTER_ADDR"
+                    break
+                fi
+                echo "Waiting... ($i/60)"
+                sleep 1
+            done
+            export MASTER_ADDR
+        fi
+
+        echo "=== Distributed Training Config ==="
+        echo "WORLD_SIZE: $WORLD_SIZE"
+        echo "RANK: $RANK"
+        echo "MASTER_ADDR: $MASTER_ADDR"
+        echo "MASTER_PORT: $MASTER_PORT"
+        echo "MY_IP: $MY_IP"
+
         echo "=== GPU Information ==="
         nvidia-smi
 
-        # Run training
-        echo "=== Starting Stable Diffusion Fine-tuning ==="
+        # Worker waits for master port
+        if [ "$RANK" != "0" ]; then
+            echo "Waiting for master port..."
+            for i in $(seq 1 120); do
+                if timeout 1 bash -c "</dev/tcp/$MASTER_ADDR/$MASTER_PORT" 2>/dev/null; then
+                    echo "Master is ready!"
+                    break
+                fi
+                sleep 1
+            done
+        fi
+
+        # Create accelerate config
+        mkdir -p ~/.cache/huggingface/accelerate
+        cat > ~/.cache/huggingface/accelerate/default_config.yaml << EOF
+        compute_environment: LOCAL_MACHINE
+        distributed_type: MULTI_GPU
+        downcast_bf16: 'no'
+        machine_rank: ${RANK}
+        main_process_ip: ${MASTER_ADDR}
+        main_process_port: ${MASTER_PORT}
+        main_training_function: main
+        mixed_precision: fp16
+        num_machines: ${WORLD_SIZE}
+        num_processes: ${WORLD_SIZE}
+        rdzv_backend: static
+        same_network: true
+        tpu_env: []
+        tpu_use_cluster: false
+        tpu_use_sudo: false
+        use_cpu: false
+        EOF
+
+        # Run distributed training with accelerate
+        echo "=== Starting Distributed Stable Diffusion Fine-tuning ==="
         cd /mnt/storage
-        python /mnt/storage/train.py \
+
+        accelerate launch \
+          --num_processes=$WORLD_SIZE \
+          --num_machines=$WORLD_SIZE \
+          --machine_rank=$RANK \
+          --main_process_ip=$MASTER_ADDR \
+          --main_process_port=$MASTER_PORT \
+          --mixed_precision=fp16 \
+          /mnt/storage/train.py \
           --model_name "runwayml/stable-diffusion-v1-5" \
           --train_data_dir /mnt/storage/data/train \
           --output_dir /mnt/storage/models \
@@ -61,12 +134,18 @@ spec:
         nvidia.com/gpu: "1"
         memory: "32Gi"
         cpu: "8"
-    numNodes: 1
+    numNodes: 2
     env:
       - name: HF_HOME
         value: "/mnt/storage/huggingface"
       - name: TRANSFORMERS_CACHE
         value: "/mnt/storage/huggingface"
+      - name: NCCL_DEBUG
+        value: "INFO"
+      - name: NCCL_IB_DISABLE
+        value: "1"
+      - name: NCCL_SOCKET_IFNAME
+        value: "eth0"
     volumeMounts:
       - name: storage
         mountPath: /mnt/storage
