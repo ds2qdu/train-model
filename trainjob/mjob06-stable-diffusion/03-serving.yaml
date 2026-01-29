@@ -30,7 +30,6 @@ spec:
                 transformers \
                 accelerate \
                 safetensors \
-                xformers \
                 peft \
                 fastapi \
                 uvicorn \
