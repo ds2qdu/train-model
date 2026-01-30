@@ -45,8 +45,8 @@ def prepare_dataset(data_dir, resolution):
 
     # 디렉토리가 없으면 생성
     if not data_path.exists():
-        print(f"Data directory not found: {data_dir}")
-        print("Creating directory and sample dataset...")
+        print(f"Data directory not found: {data_dir}", flush=True)
+        print("Creating directory and sample dataset...", flush=True)
         data_path.mkdir(parents=True, exist_ok=True)
     else:
         # 기존 이미지 로드
@@ -62,7 +62,7 @@ def prepare_dataset(data_dir, resolution):
 
     # 이미지가 없으면 샘플 데이터 생성
     if not images:
-        print("No images found. Creating sample dataset...")
+        print("No images found. Creating sample dataset...", flush=True)
         sample_colors = [
             ('red', (255, 0, 0)),
             ('green', (0, 255, 0)),
@@ -81,9 +81,9 @@ def prepare_dataset(data_dir, resolution):
             caption_file = data_path / f"sample_{color_name}.txt"
             with open(caption_file, 'w', encoding='utf-8') as f:
                 f.write(caption)
-        print(f"Created {len(images)} sample images with captions")
+        print(f"Created {len(images)} sample images with captions", flush=True)
 
-    print(f"Dataset: {len(images)} images loaded from {data_dir}")
+    print(f"Dataset: {len(images)} images loaded from {data_dir}", flush=True)
     return {"image_path": images, "caption": captions}
 
 def train_lora(args, accelerator):
@@ -110,6 +110,10 @@ def train_lora(args, accelerator):
     tokenizer = pipe.tokenizer
     noise_scheduler = DDPMScheduler.from_pretrained(args.model_name, subfolder="scheduler")
 
+    # Sync after model loading
+    print(f"[Rank {accelerator.process_index}] Model loaded, syncing...", flush=True)
+    accelerator.wait_for_everyone()
+
     # Configure LoRA
     lora_config = LoraConfig(
         r=args.lora_rank,
@@ -126,7 +130,10 @@ def train_lora(args, accelerator):
     print_status(accelerator, "LoRA configured, preparing dataset...")
 
     # Prepare dataset
+    print(f"[Rank {accelerator.process_index}] Preparing dataset...", flush=True)
     dataset_dict = prepare_dataset(args.train_data_dir, args.resolution)
+    print(f"[Rank {accelerator.process_index}] Dataset ready, syncing...", flush=True)
+    accelerator.wait_for_everyone()
 
     class SDDataset(Dataset):
         def __init__(self, image_paths, captions, tokenizer, resolution):
@@ -181,6 +188,11 @@ def train_lora(args, accelerator):
     # Move VAE and text_encoder to device
     vae = vae.to(accelerator.device, dtype=torch.float16)
     text_encoder = text_encoder.to(accelerator.device, dtype=torch.float16)
+
+    # Synchronize all processes before training
+    print(f"[Rank {accelerator.process_index}] Waiting for all processes...", flush=True)
+    accelerator.wait_for_everyone()
+    print(f"[Rank {accelerator.process_index}] All processes ready!", flush=True)
 
     # Training loop
     print_status(accelerator, f"Starting distributed LoRA training for {args.epochs} epochs...")
@@ -332,8 +344,16 @@ def train_dreambooth(args, accelerator):
     tokenizer = pipe.tokenizer
     noise_scheduler = DDPMScheduler.from_pretrained(args.model_name, subfolder="scheduler")
 
+    # Sync after model loading
+    print(f"[Rank {accelerator.process_index}] Model loaded, syncing...", flush=True)
+    accelerator.wait_for_everyone()
+
     # Prepare dataset
+    print(f"[Rank {accelerator.process_index}] Preparing dataset...", flush=True)
     dataset_dict = prepare_dataset(args.train_data_dir, args.resolution)
+    print(f"[Rank {accelerator.process_index}] Dataset ready, syncing...", flush=True)
+    accelerator.wait_for_everyone()
+
     modified_captions = [f"a photo of {instance_token} {class_token}" for _ in dataset_dict["caption"]]
 
     class DreamBoothDataset(Dataset):
@@ -384,6 +404,11 @@ def train_dreambooth(args, accelerator):
 
     vae = vae.to(accelerator.device, dtype=torch.float16)
     text_encoder = text_encoder.to(accelerator.device, dtype=torch.float16)
+
+    # Synchronize all processes before training
+    print(f"[Rank {accelerator.process_index}] Waiting for all processes...", flush=True)
+    accelerator.wait_for_everyone()
+    print(f"[Rank {accelerator.process_index}] All processes ready!", flush=True)
 
     print_status(accelerator, f"Starting distributed DreamBooth training for {args.epochs} epochs...")
 
