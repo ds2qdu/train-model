@@ -1,0 +1,216 @@
+# ============================================
+# Stock Prediction RAG Chatbot
+# FastAPI + LangChain + ChromaDB + Local LLM
+# ============================================
+
+# ============================================
+# 1. Ollama LLM Server
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: mlteam
+  labels:
+    app: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+        - name: ollama
+          image: ollama/ollama:latest
+          ports:
+            - containerPort: 11434
+              name: http
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+            limits:
+              memory: "16Gi"
+              cpu: "4"
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+          env:
+            - name: OLLAMA_HOST
+              value: "0.0.0.0:11434"
+          # Pull model on startup
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    sleep 10
+                    ollama pull llama3.2
+      volumes:
+        - name: ollama-data
+          persistentVolumeClaim:
+            claimName: stock-pipeline-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+  namespace: mlteam
+  labels:
+    app: ollama
+spec:
+  type: ClusterIP
+  ports:
+    - port: 11434
+      targetPort: 11434
+      name: http
+  selector:
+    app: ollama
+---
+# ============================================
+# 2. Chatbot ConfigMap
+# ============================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatbot-config
+  namespace: mlteam
+data:
+  CHROMADB_PATH: "/mnt/storage/chromadb"
+  TRITON_URL: "http://stock-predictor-triton:8000"
+  LLM_PROVIDER: "ollama"
+  LLM_MODEL: "llama3.2"
+  OLLAMA_URL: "http://ollama:11434"
+---
+# ============================================
+# 3. Chatbot Backend (FastAPI)
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-chatbot
+  namespace: mlteam
+  labels:
+    app: stock-chatbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stock-chatbot
+  template:
+    metadata:
+      labels:
+        app: stock-chatbot
+    spec:
+      initContainers:
+        # Wait for Ollama to be ready
+        - name: wait-ollama
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for Ollama..."
+              until wget -q --spider http://ollama:11434/api/tags; do
+                echo "Ollama not ready, waiting..."
+                sleep 5
+              done
+              echo "Ollama is ready!"
+      containers:
+        - name: chatbot
+          image: python:3.11-slim
+          command:
+            - bash
+            - -c
+            - |
+              # Install dependencies
+              pip install --no-cache-dir \
+                fastapi uvicorn chromadb langchain langchain-ollama langchain-core \
+                requests numpy pydantic yfinance
+
+              # Run chatbot server
+              cd /app
+              python chatbot.py
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: chatbot-config
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2"
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+            - name: app-code
+              mountPath: /app
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 180
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 10
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: stock-pipeline-storage
+        - name: app-code
+          configMap:
+            name: chatbot-code
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-chatbot
+  namespace: mlteam
+  labels:
+    app: stock-chatbot
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  selector:
+    app: stock-chatbot
+---
+# ============================================
+# 4. Ingress for external access
+# ============================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stock-chatbot-ingress
+  namespace: mlteam
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: stock-chatbot.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: stock-chatbot
+                port:
+                  number: 8080
