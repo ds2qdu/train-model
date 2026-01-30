@@ -955,6 +955,11 @@ def main():
                 global_step = epoch * len(train_loader) + batch_idx
                 writer.add_scalar('Loss/train_batch', loss.item(), global_step)
 
+            
+            # TensorBoard: flush to disk every epoch
+            writer.flush()
+ 
+
             # GPU 상태 출력 (매 50 배치마다)
             if batch_idx % 50 == 0:
                 print_gpu_status(rank, epoch, batch_idx)
