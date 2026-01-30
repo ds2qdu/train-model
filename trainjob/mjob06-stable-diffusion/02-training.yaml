@@ -53,11 +53,11 @@ spec:
                             transformers \
                             accelerate \
                             safetensors \
-                            bitsandbytes \
                             peft \
                             datasets \
                             Pillow \
-                            ftfy
+                            ftfy \
+                            tqdm
 
                           # Environment setup
                           export HF_HOME=/mnt/storage/huggingface
@@ -121,6 +121,7 @@ spec:
                             --main_process_ip=$MASTER_ADDR \
                             --main_process_port=$MASTER_PORT \
                             --mixed_precision=fp16 \
+                            --dynamo_backend=no \
                             /workspace/train.py \
                             --model_name "runwayml/stable-diffusion-v1-5" \
                             --train_data_dir /mnt/storage/data/train \

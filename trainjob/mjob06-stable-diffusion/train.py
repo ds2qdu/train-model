@@ -14,6 +14,9 @@ import json
 from accelerate import Accelerator
 from accelerate.utils import set_seed
 
+# Progress bar
+from tqdm import tqdm
+
 def get_gpu_info():
     """Get GPU utilization info"""
     if not torch.cuda.is_available():
@@ -40,28 +43,47 @@ def prepare_dataset(data_dir, resolution):
     images = []
     captions = []
 
-    for img_file in data_path.iterdir():
-        if img_file.suffix.lower() in image_extensions:
-            images.append(str(img_file))
-            caption_file = img_file.with_suffix('.txt')
-            if caption_file.exists():
-                with open(caption_file, 'r', encoding='utf-8') as f:
-                    captions.append(f.read().strip())
-            else:
-                captions.append(img_file.stem.replace('_', ' '))
+    # 디렉토리가 없으면 생성
+    if not data_path.exists():
+        print(f"Data directory not found: {data_dir}")
+        print("Creating directory and sample dataset...")
+        data_path.mkdir(parents=True, exist_ok=True)
+    else:
+        # 기존 이미지 로드
+        for img_file in data_path.iterdir():
+            if img_file.suffix.lower() in image_extensions:
+                images.append(str(img_file))
+                caption_file = img_file.with_suffix('.txt')
+                if caption_file.exists():
+                    with open(caption_file, 'r', encoding='utf-8') as f:
+                        captions.append(f.read().strip())
+                else:
+                    captions.append(img_file.stem.replace('_', ' '))
 
+    # 이미지가 없으면 샘플 데이터 생성
     if not images:
         print("No images found. Creating sample dataset...")
-        data_path.mkdir(parents=True, exist_ok=True)
-        for i, color in enumerate(['red', 'blue', 'green']):
-            img = Image.new('RGB', (resolution, resolution), color)
-            img_path = data_path / f"sample_{color}.png"
+        sample_colors = [
+            ('red', (255, 0, 0)),
+            ('green', (0, 255, 0)),
+            ('blue', (0, 0, 255)),
+            ('yellow', (255, 255, 0)),
+            ('purple', (128, 0, 128)),
+        ]
+        for color_name, rgb in sample_colors:
+            img = Image.new('RGB', (resolution, resolution), rgb)
+            img_path = data_path / f"sample_{color_name}.png"
             img.save(img_path)
             images.append(str(img_path))
-            captions.append(f"a {color} colored image")
-        print(f"Created {len(images)} sample images")
+            caption = f"a solid {color_name} colored image"
+            captions.append(caption)
+            # 캡션 파일도 생성
+            caption_file = data_path / f"sample_{color_name}.txt"
+            with open(caption_file, 'w', encoding='utf-8') as f:
+                f.write(caption)
+        print(f"Created {len(images)} sample images with captions")
 
-    print(f"Dataset: {len(images)} images loaded")
+    print(f"Dataset: {len(images)} images loaded from {data_dir}")
     return {"image_path": images, "caption": captions}
 
 def train_lora(args, accelerator):
@@ -165,12 +187,30 @@ def train_lora(args, accelerator):
     print_status(accelerator, f"World size: {accelerator.num_processes}, Process: {accelerator.process_index}")
 
     global_step = 0
+    total_steps = len(train_dataloader) * args.epochs
 
-    for epoch in range(args.epochs):
+    # Epoch progress bar (main process only)
+    epoch_pbar = tqdm(
+        range(args.epochs),
+        desc="Epochs",
+        disable=not accelerator.is_main_process,
+        position=0
+    )
+
+    for epoch in epoch_pbar:
         unet.train()
         epoch_loss = 0
 
-        for step, batch in enumerate(train_dataloader):
+        # Step progress bar for each epoch
+        step_pbar = tqdm(
+            train_dataloader,
+            desc=f"Epoch {epoch+1}/{args.epochs}",
+            disable=not accelerator.is_main_process,
+            position=1,
+            leave=False
+        )
+
+        for step, batch in enumerate(step_pbar):
             with accelerator.accumulate(unet):
                 pixel_values = batch["pixel_values"].to(dtype=torch.float16)
                 input_ids = batch["input_ids"]
@@ -207,12 +247,23 @@ def train_lora(args, accelerator):
                 epoch_loss += loss.item()
                 global_step += 1
 
-            if global_step % 10 == 0:
-                print_status(accelerator, f"Epoch {epoch+1}/{args.epochs}, Step {step+1}, Loss: {loss.item():.4f}")
+            # Update progress bar with loss info
+            if accelerator.is_main_process:
+                step_pbar.set_postfix({
+                    'loss': f'{loss.item():.4f}',
+                    'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
+                })
 
         # Average loss across all processes
         avg_loss = epoch_loss / len(train_dataloader)
-        print_status(accelerator, f"Epoch {epoch+1}/{args.epochs} completed, Avg Loss: {avg_loss:.4f}")
+
+        # Update epoch progress bar
+        if accelerator.is_main_process:
+            epoch_pbar.set_postfix({
+                'avg_loss': f'{avg_loss:.4f}',
+                'step': f'{global_step}/{total_steps}'
+            })
+            print(f"\n[Epoch {epoch+1}/{args.epochs}] Avg Loss: {avg_loss:.4f} | {get_gpu_info()}")
 
         # Save checkpoint every 10 epochs (only main process)
         if (epoch + 1) % 10 == 0 and accelerator.is_main_process:
@@ -336,11 +387,31 @@ def train_dreambooth(args, accelerator):
 
     print_status(accelerator, f"Starting distributed DreamBooth training for {args.epochs} epochs...")
 
-    for epoch in range(args.epochs):
+    global_step = 0
+    total_steps = len(train_dataloader) * args.epochs
+
+    # Epoch progress bar
+    epoch_pbar = tqdm(
+        range(args.epochs),
+        desc="Epochs",
+        disable=not accelerator.is_main_process,
+        position=0
+    )
+
+    for epoch in epoch_pbar:
         unet.train()
         epoch_loss = 0
 
-        for step, batch in enumerate(train_dataloader):
+        # Step progress bar
+        step_pbar = tqdm(
+            train_dataloader,
+            desc=f"Epoch {epoch+1}/{args.epochs}",
+            disable=not accelerator.is_main_process,
+            position=1,
+            leave=False
+        )
+
+        for step, batch in enumerate(step_pbar):
             with accelerator.accumulate(unet):
                 pixel_values = batch["pixel_values"].to(dtype=torch.float16)
                 input_ids = batch["input_ids"]
@@ -366,12 +437,24 @@ def train_dreambooth(args, accelerator):
                 optimizer.zero_grad()
 
                 epoch_loss += loss.item()
+                global_step += 1
 
-            if (step + 1) % 10 == 0:
-                print_status(accelerator, f"Epoch {epoch+1}/{args.epochs}, Step {step+1}, Loss: {loss.item():.4f}")
+            # Update progress bar
+            if accelerator.is_main_process:
+                step_pbar.set_postfix({
+                    'loss': f'{loss.item():.4f}',
+                    'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
+                })
 
         avg_loss = epoch_loss / len(train_dataloader)
-        print_status(accelerator, f"Epoch {epoch+1}/{args.epochs} completed, Avg Loss: {avg_loss:.4f}")
+
+        # Update epoch progress bar
+        if accelerator.is_main_process:
+            epoch_pbar.set_postfix({
+                'avg_loss': f'{avg_loss:.4f}',
+                'step': f'{global_step}/{total_steps}'
+            })
+            print(f"\n[Epoch {epoch+1}/{args.epochs}] Avg Loss: {avg_loss:.4f} | {get_gpu_info()}")
 
     # Save model
     accelerator.wait_for_everyone()
