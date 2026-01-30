@@ -24,6 +24,7 @@ import requests
 from transformers import AutoTokenizer, AutoModel
 import chromadb
 from chromadb.config import Settings
+from torch.utils.tensorboard import SummaryWriter
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -844,6 +845,7 @@ def main():
     parser.add_argument('--checkpoint-dir', type=str, default='/mnt/storage/checkpoints')
     parser.add_argument('--export-dir', type=str, default='/mnt/storage/models')
     parser.add_argument('--chromadb-dir', type=str, default='/mnt/storage/chromadb')
+    parser.add_argument('--tensorboard-dir', type=str, default='/mnt/tensorboard')
     parser.add_argument('--resume', action='store_true', help='Resume from checkpoint (incremental learning)')
     parser.add_argument('--skip-news-fetch', action='store_true', help='Skip fetching new news from API (use existing ChromaDB data)')
     args = parser.parse_args()
@@ -853,13 +855,17 @@ def main():
     world_size = dist.get_world_size()
     device = torch.device(f'cuda:{local_rank}')
 
+    # TensorBoard writer (rank 0 only)
+    writer = None
     if rank == 0:
+        writer = SummaryWriter(log_dir=args.tensorboard_dir)
         print("=" * 60)
         print("S&P 500 Stock Prediction - Transformer + News")
         print("=" * 60)
         print(f"World size: {world_size}")
         print(f"Device: {device}")
         print(f"Incremental learning: {args.resume}")
+        print(f"TensorBoard log dir: {args.tensorboard_dir}")
         print(f"Arguments: {args}")
 
     # Prepare data (rank 0 only)
@@ -944,6 +950,11 @@ def main():
             optimizer.step()
             total_loss += loss.item()
 
+            # TensorBoard: batch loss
+            if writer is not None:
+                global_step = epoch * len(train_loader) + batch_idx
+                writer.add_scalar('Loss/train_batch', loss.item(), global_step)
+
             # GPU 상태 출력 (매 50 배치마다)
             if batch_idx % 50 == 0:
                 print_gpu_status(rank, epoch, batch_idx)
@@ -964,9 +975,19 @@ def main():
             print(f"Epoch [{epoch+1}/{args.epochs}] "
                   f"Train: {avg_loss:.6f} Test: {test_loss:.6f} LR: {current_lr:.6f}")
 
+            # TensorBoard: epoch metrics
+            writer.add_scalar('Loss/train_epoch', avg_loss, epoch)
+            writer.add_scalar('Loss/test', test_loss, epoch)
+            writer.add_scalar('LearningRate', current_lr, epoch)
+            writer.add_scalars('Loss/comparison', {
+                'train': avg_loss,
+                'test': test_loss,
+            }, epoch)
+
             is_best = test_loss < best_loss
             if is_best:
                 best_loss = test_loss
+                writer.add_scalar('Loss/best', best_loss, epoch)
             save_checkpoint(model, optimizer, scheduler, epoch, test_loss, best_loss,
                           args.checkpoint_dir, is_best)
 
@@ -1013,6 +1034,10 @@ def main():
         print(f"\n Training completed! Best loss: {best_loss:.6f}")
         print(f" Model: Transformer + FinBERT News Embeddings")
         print(f" Exported to: {args.export_dir}/stock_predictor/")
+
+    # Close TensorBoard writer
+    if writer is not None:
+        writer.close()
 
     cleanup()
 
