@@ -112,8 +112,9 @@ spec:
                             --checkpoint-dir=/mnt/storage/checkpoints \
                             --export-dir=/mnt/storage/models \
                             --chromadb-dir=/mnt/storage/chromadb \
-                            --tensorboard-dir=/mnt/tensorboard \
-                            --resume
+                            --tensorboard-dir=/mnt/tensorboard 
+                            # --tensorboard-dir=/mnt/tensorboard \
+                            # --resume
                       env:
                         - name: NCCL_DEBUG
                           value: "INFO"
@@ -138,11 +139,11 @@ spec:
                         requests:
                           cpu: "4"
                           memory: "16Gi"
-                          # nvidia.com/gpu: "1"
+                          nvidia.com/gpu: "1"
                         limits:
                           cpu: "8"
                           memory: "32Gi"
-                          # nvidia.com/gpu: "1"
+                          nvidia.com/gpu: "1"
                       volumeMounts:
                         - name: shm
                           mountPath: /dev/shm
