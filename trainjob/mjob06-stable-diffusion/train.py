@@ -43,28 +43,47 @@ def prepare_dataset(data_dir, resolution):
     images = []
     captions = []
 
-    for img_file in data_path.iterdir():
-        if img_file.suffix.lower() in image_extensions:
-            images.append(str(img_file))
-            caption_file = img_file.with_suffix('.txt')
-            if caption_file.exists():
-                with open(caption_file, 'r', encoding='utf-8') as f:
-                    captions.append(f.read().strip())
-            else:
-                captions.append(img_file.stem.replace('_', ' '))
+    # 디렉토리가 없으면 생성
+    if not data_path.exists():
+        print(f"Data directory not found: {data_dir}")
+        print("Creating directory and sample dataset...")
+        data_path.mkdir(parents=True, exist_ok=True)
+    else:
+        # 기존 이미지 로드
+        for img_file in data_path.iterdir():
+            if img_file.suffix.lower() in image_extensions:
+                images.append(str(img_file))
+                caption_file = img_file.with_suffix('.txt')
+                if caption_file.exists():
+                    with open(caption_file, 'r', encoding='utf-8') as f:
+                        captions.append(f.read().strip())
+                else:
+                    captions.append(img_file.stem.replace('_', ' '))
 
+    # 이미지가 없으면 샘플 데이터 생성
     if not images:
         print("No images found. Creating sample dataset...")
-        data_path.mkdir(parents=True, exist_ok=True)
-        for i, color in enumerate(['red', 'blue', 'green']):
-            img = Image.new('RGB', (resolution, resolution), color)
-            img_path = data_path / f"sample_{color}.png"
+        sample_colors = [
+            ('red', (255, 0, 0)),
+            ('green', (0, 255, 0)),
+            ('blue', (0, 0, 255)),
+            ('yellow', (255, 255, 0)),
+            ('purple', (128, 0, 128)),
+        ]
+        for color_name, rgb in sample_colors:
+            img = Image.new('RGB', (resolution, resolution), rgb)
+            img_path = data_path / f"sample_{color_name}.png"
             img.save(img_path)
             images.append(str(img_path))
-            captions.append(f"a {color} colored image")
-        print(f"Created {len(images)} sample images")
+            caption = f"a solid {color_name} colored image"
+            captions.append(caption)
+            # 캡션 파일도 생성
+            caption_file = data_path / f"sample_{color_name}.txt"
+            with open(caption_file, 'w', encoding='utf-8') as f:
+                f.write(caption)
+        print(f"Created {len(images)} sample images with captions")
 
-    print(f"Dataset: {len(images)} images loaded")
+    print(f"Dataset: {len(images)} images loaded from {data_dir}")
     return {"image_path": images, "caption": captions}
 
 def train_lora(args, accelerator):
