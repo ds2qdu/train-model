@@ -44,7 +44,7 @@ spec:
                         - |
                           # Install dependencies
                           echo "=== Installing dependencies ==="
-                          pip install --root-user-action=ignore yfinance scikit-learn transformers chromadb onnxscript pytz
+                          pip install --root-user-action=ignore yfinance scikit-learn transformers chromadb onnxscript pytz tensorboard
                           echo "=== Dependencies installed successfully ==="
 
                           # Environment setup
@@ -62,7 +62,7 @@ spec:
                               echo "Waiting for master pod..."
                               echo "My IP: $MY_IP"
                               for i in $(seq 1 60); do
-                                  MASTER_ADDR=$(getent ahostsv4 stock-training.mlteam.svc.cluster.local 2>/dev/null | awk '{print $1}' | grep -v "^${MY_IP}$" | head -1)
+                                  MASTER_ADDR=$(getent ahostsv4 stock-training-tensorboard.mlteam.svc.cluster.local 2>/dev/null | awk '{print $1}' | grep -v "^${MY_IP}$" | head -1)
                                   if [ -n "$MASTER_ADDR" ]; then
                                       echo "Found master: $MASTER_ADDR"
                                       break
@@ -112,6 +112,7 @@ spec:
                             --checkpoint-dir=/mnt/storage/checkpoints \
                             --export-dir=/mnt/storage/models \
                             --chromadb-dir=/mnt/storage/chromadb \
+                            --tensorboard-dir=/mnt/tensorboard \
                             --resume
                       env:
                         - name: NCCL_DEBUG
@@ -149,6 +150,8 @@ spec:
                           mountPath: /workspace
                         - name: storage
                           mountPath: /mnt/storage
+                        - name: tensorboard-volume
+                          mountPath: /mnt/tensorboard
                   volumes:
                     - name: shm
                       emptyDir:
@@ -159,12 +162,15 @@ spec:
                     - name: storage
                       persistentVolumeClaim:
                         claimName: stock-pipeline-storage
+                    - name: tensorboard-volume
+                      persistentVolumeClaim:
+                        claimName: stock-tensorboard-storage
                   restartPolicy: OnFailure
 ---
 apiVersion: trainer.kubeflow.org/v1alpha1
 kind: TrainJob
 metadata:
-  name: stock-training
+  name: stock-training-tensorboard
   namespace: mlteam
   annotations:
     kai.scheduler/queue: "mlteam-queue"
