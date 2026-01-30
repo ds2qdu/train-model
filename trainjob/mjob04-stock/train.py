@@ -856,18 +856,36 @@ def main():
     device = torch.device(f'cuda:{local_rank}')
 
     # TensorBoard writer (rank 0 only)
+    # NFS PVC에서 SummaryWriter가 직접 안 되므로 로컬에 쓰고 복사
     writer = None
+    tb_local_dir = None
+    tb_pvc_dir = None
     if rank == 0:
-        # 타임스탬프 서브디렉토리 사용 (노트북과 동일 패턴)
-        run_name = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        tb_log_dir = str(Path(args.tensorboard_dir) / run_name)
-        Path(tb_log_dir).mkdir(parents=True, exist_ok=True)
-        writer = SummaryWriter(log_dir=tb_log_dir)
+        import shutil as _shutil
 
-        # 즉시 초기 이벤트 기록 + flush (파일 생성 보장)
+        run_name = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+        # 로컬 tmpfs에 기록 (빠르고 안정적)
+        tb_local_dir = f"/tmp/tensorboard/{run_name}"
+        Path(tb_local_dir).mkdir(parents=True, exist_ok=True)
+
+        # PVC 복사 대상
+        tb_pvc_dir = str(Path(args.tensorboard_dir) / run_name)
+        Path(args.tensorboard_dir).mkdir(parents=True, exist_ok=True)
+
+        writer = SummaryWriter(log_dir=tb_local_dir)
+
+        # 즉시 초기 이벤트 기록 + flush
         writer.add_scalar('Status/init', 1.0, 0)
         writer.flush()
-        print(f"TensorBoard event file created at: {tb_log_dir}")
+
+        # 로컬 파일 확인
+        import glob as _glob
+        local_events = _glob.glob(f"{tb_local_dir}/events.out.tfevents.*")
+        print(f"TensorBoard local dir: {tb_local_dir}")
+        print(f"Event files created: {len(local_events)}")
+        for ef in local_events:
+            print(f"  {ef} ({os.path.getsize(ef)} bytes)")
 
         print("=" * 60)
         print("S&P 500 Stock Prediction - Transformer + News")
@@ -875,7 +893,8 @@ def main():
         print(f"World size: {world_size}")
         print(f"Device: {device}")
         print(f"Incremental learning: {args.resume}")
-        print(f"TensorBoard log dir: {tb_log_dir}")
+        print(f"TensorBoard local: {tb_local_dir}")
+        print(f"TensorBoard PVC:   {tb_pvc_dir}")
         print(f"Arguments: {args}")
 
     # Prepare data (rank 0 only)
@@ -1038,8 +1057,16 @@ def main():
                 best_loss = test_loss
                 writer.add_scalar('Loss/best', best_loss, epoch)
 
-            # TensorBoard: flush to disk every epoch
+            # TensorBoard: flush + 로컬 → PVC 복사
             writer.flush()
+            if tb_local_dir and tb_pvc_dir:
+                try:
+                    if os.path.exists(tb_pvc_dir):
+                        _shutil.rmtree(tb_pvc_dir)
+                    _shutil.copytree(tb_local_dir, tb_pvc_dir)
+                    print(f"TensorBoard synced to PVC: {tb_pvc_dir}")
+                except Exception as e:
+                    print(f"TensorBoard sync warning: {e}")
 
             save_checkpoint(model, optimizer, scheduler, epoch, test_loss, best_loss,
                           args.checkpoint_dir, is_best)
@@ -1088,7 +1115,7 @@ def main():
         print(f" Model: Transformer + FinBERT News Embeddings")
         print(f" Exported to: {args.export_dir}/stock_predictor/")
 
-    # TensorBoard: 최종 요약 텍스트 + close
+    # TensorBoard: 최종 요약 텍스트 + close + 최종 PVC 복사
     if writer is not None:
         summary_text = (
             f"# Training Summary\n\n"
@@ -1103,6 +1130,19 @@ def main():
         writer.add_text('Summary', summary_text, 0)
         writer.flush()
         writer.close()
+
+        # 최종 로컬 → PVC 복사
+        if tb_local_dir and tb_pvc_dir:
+            try:
+                if os.path.exists(tb_pvc_dir):
+                    _shutil.rmtree(tb_pvc_dir)
+                _shutil.copytree(tb_local_dir, tb_pvc_dir)
+                # 복사 결과 확인
+                copied_files = os.listdir(tb_pvc_dir)
+                total_size = sum(os.path.getsize(os.path.join(tb_pvc_dir, f)) for f in copied_files)
+                print(f"TensorBoard final sync: {len(copied_files)} files, {total_size} bytes → {tb_pvc_dir}")
+            except Exception as e:
+                print(f"TensorBoard final sync error: {e}")
 
     cleanup()
 
