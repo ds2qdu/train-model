@@ -56,7 +56,8 @@ spec:
                             peft \
                             datasets \
                             Pillow \
-                            ftfy
+                            ftfy \
+                            tqdm
 
                           # Environment setup
                           export HF_HOME=/mnt/storage/huggingface

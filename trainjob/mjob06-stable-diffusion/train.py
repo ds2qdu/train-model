@@ -14,6 +14,9 @@ import json
 from accelerate import Accelerator
 from accelerate.utils import set_seed
 
+# Progress bar
+from tqdm import tqdm
+
 def get_gpu_info():
     """Get GPU utilization info"""
     if not torch.cuda.is_available():
@@ -165,12 +168,30 @@ def train_lora(args, accelerator):
     print_status(accelerator, f"World size: {accelerator.num_processes}, Process: {accelerator.process_index}")
 
     global_step = 0
+    total_steps = len(train_dataloader) * args.epochs
 
-    for epoch in range(args.epochs):
+    # Epoch progress bar (main process only)
+    epoch_pbar = tqdm(
+        range(args.epochs),
+        desc="Epochs",
+        disable=not accelerator.is_main_process,
+        position=0
+    )
+
+    for epoch in epoch_pbar:
         unet.train()
         epoch_loss = 0
 
-        for step, batch in enumerate(train_dataloader):
+        # Step progress bar for each epoch
+        step_pbar = tqdm(
+            train_dataloader,
+            desc=f"Epoch {epoch+1}/{args.epochs}",
+            disable=not accelerator.is_main_process,
+            position=1,
+            leave=False
+        )
+
+        for step, batch in enumerate(step_pbar):
             with accelerator.accumulate(unet):
                 pixel_values = batch["pixel_values"].to(dtype=torch.float16)
                 input_ids = batch["input_ids"]
@@ -207,12 +228,23 @@ def train_lora(args, accelerator):
                 epoch_loss += loss.item()
                 global_step += 1
 
-            if global_step % 10 == 0:
-                print_status(accelerator, f"Epoch {epoch+1}/{args.epochs}, Step {step+1}, Loss: {loss.item():.4f}")
+            # Update progress bar with loss info
+            if accelerator.is_main_process:
+                step_pbar.set_postfix({
+                    'loss': f'{loss.item():.4f}',
+                    'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
+                })
 
         # Average loss across all processes
         avg_loss = epoch_loss / len(train_dataloader)
-        print_status(accelerator, f"Epoch {epoch+1}/{args.epochs} completed, Avg Loss: {avg_loss:.4f}")
+
+        # Update epoch progress bar
+        if accelerator.is_main_process:
+            epoch_pbar.set_postfix({
+                'avg_loss': f'{avg_loss:.4f}',
+                'step': f'{global_step}/{total_steps}'
+            })
+            print(f"\n[Epoch {epoch+1}/{args.epochs}] Avg Loss: {avg_loss:.4f} | {get_gpu_info()}")
 
         # Save checkpoint every 10 epochs (only main process)
         if (epoch + 1) % 10 == 0 and accelerator.is_main_process:
@@ -336,11 +368,31 @@ def train_dreambooth(args, accelerator):
 
     print_status(accelerator, f"Starting distributed DreamBooth training for {args.epochs} epochs...")
 
-    for epoch in range(args.epochs):
+    global_step = 0
+    total_steps = len(train_dataloader) * args.epochs
+
+    # Epoch progress bar
+    epoch_pbar = tqdm(
+        range(args.epochs),
+        desc="Epochs",
+        disable=not accelerator.is_main_process,
+        position=0
+    )
+
+    for epoch in epoch_pbar:
         unet.train()
         epoch_loss = 0
 
-        for step, batch in enumerate(train_dataloader):
+        # Step progress bar
+        step_pbar = tqdm(
+            train_dataloader,
+            desc=f"Epoch {epoch+1}/{args.epochs}",
+            disable=not accelerator.is_main_process,
+            position=1,
+            leave=False
+        )
+
+        for step, batch in enumerate(step_pbar):
             with accelerator.accumulate(unet):
                 pixel_values = batch["pixel_values"].to(dtype=torch.float16)
                 input_ids = batch["input_ids"]
@@ -366,12 +418,24 @@ def train_dreambooth(args, accelerator):
                 optimizer.zero_grad()
 
                 epoch_loss += loss.item()
+                global_step += 1
 
-            if (step + 1) % 10 == 0:
-                print_status(accelerator, f"Epoch {epoch+1}/{args.epochs}, Step {step+1}, Loss: {loss.item():.4f}")
+            # Update progress bar
+            if accelerator.is_main_process:
+                step_pbar.set_postfix({
+                    'loss': f'{loss.item():.4f}',
+                    'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
+                })
 
         avg_loss = epoch_loss / len(train_dataloader)
-        print_status(accelerator, f"Epoch {epoch+1}/{args.epochs} completed, Avg Loss: {avg_loss:.4f}")
+
+        # Update epoch progress bar
+        if accelerator.is_main_process:
+            epoch_pbar.set_postfix({
+                'avg_loss': f'{avg_loss:.4f}',
+                'step': f'{global_step}/{total_steps}'
+            })
+            print(f"\n[Epoch {epoch+1}/{args.epochs}] Avg Loss: {avg_loss:.4f} | {get_gpu_info()}")
 
     # Save model
     accelerator.wait_for_everyone()
