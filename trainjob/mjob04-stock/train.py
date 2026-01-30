@@ -858,14 +858,24 @@ def main():
     # TensorBoard writer (rank 0 only)
     writer = None
     if rank == 0:
-        writer = SummaryWriter(log_dir=args.tensorboard_dir)
+        # 타임스탬프 서브디렉토리 사용 (노트북과 동일 패턴)
+        run_name = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        tb_log_dir = str(Path(args.tensorboard_dir) / run_name)
+        Path(tb_log_dir).mkdir(parents=True, exist_ok=True)
+        writer = SummaryWriter(log_dir=tb_log_dir)
+
+        # 즉시 초기 이벤트 기록 + flush (파일 생성 보장)
+        writer.add_scalar('Status/init', 1.0, 0)
+        writer.flush()
+        print(f"TensorBoard event file created at: {tb_log_dir}")
+
         print("=" * 60)
         print("S&P 500 Stock Prediction - Transformer + News")
         print("=" * 60)
         print(f"World size: {world_size}")
         print(f"Device: {device}")
         print(f"Incremental learning: {args.resume}")
-        print(f"TensorBoard log dir: {args.tensorboard_dir}")
+        print(f"TensorBoard log dir: {tb_log_dir}")
         print(f"Arguments: {args}")
 
     # Prepare data (rank 0 only)
@@ -950,10 +960,17 @@ def main():
             optimizer.step()
             total_loss += loss.item()
 
-            # TensorBoard: batch loss
+            # TensorBoard: batch loss + GPU memory
             if writer is not None:
                 global_step = epoch * len(train_loader) + batch_idx
                 writer.add_scalar('Loss/train_batch', loss.item(), global_step)
+
+                # GPU 메모리 (매 50 배치마다)
+                if batch_idx % 50 == 0 and torch.cuda.is_available():
+                    gpu_mem_used = torch.cuda.memory_allocated(device) / 1024**3
+                    gpu_mem_reserved = torch.cuda.memory_reserved(device) / 1024**3
+                    writer.add_scalar('System/gpu_memory_allocated_GB', gpu_mem_used, global_step)
+                    writer.add_scalar('System/gpu_memory_reserved_GB', gpu_mem_reserved, global_step)
 
             # GPU 상태 출력 (매 50 배치마다)
             if batch_idx % 50 == 0:
@@ -984,10 +1001,46 @@ def main():
                 'test': test_loss,
             }, epoch)
 
+            # TensorBoard: 파라미터 & 그래디언트 히스토그램 (매 5 에폭)
+            if epoch % 5 == 0 or epoch == args.epochs - 1:
+                for name, param in model.module.named_parameters():
+                    writer.add_histogram(f'Parameters/{name}', param, epoch)
+                    if param.grad is not None:
+                        writer.add_histogram(f'Gradients/{name}', param.grad, epoch)
+
+            # TensorBoard: gradient norm
+            total_norm = 0.0
+            for p in model.module.parameters():
+                if p.grad is not None:
+                    total_norm += p.grad.data.norm(2).item() ** 2
+            total_norm = total_norm ** 0.5
+            writer.add_scalar('Training/gradient_norm', total_norm, epoch)
+
+            # TensorBoard: 예측 vs 실제 샘플 비교 (매 5 에폭)
+            if epoch % 5 == 0 or epoch == args.epochs - 1:
+                model.eval()
+                with torch.no_grad():
+                    sample_price, sample_news, sample_target = next(iter(test_loader))
+                    sample_price = sample_price[:4].to(device)
+                    sample_news = sample_news[:4].to(device)
+                    sample_target = sample_target[:4].to(device)
+
+                    sample_output = model.module(sample_price, sample_news)
+
+                    for i in range(min(4, sample_output.size(0))):
+                        for day in range(sample_output.size(1)):
+                            writer.add_scalar(f'Predictions/sample_{i}/pred_day_{day}', sample_output[i][day].item(), epoch)
+                            writer.add_scalar(f'Predictions/sample_{i}/target_day_{day}', sample_target[i][day].item(), epoch)
+                model.train()
+
             is_best = test_loss < best_loss
             if is_best:
                 best_loss = test_loss
                 writer.add_scalar('Loss/best', best_loss, epoch)
+
+            # TensorBoard: flush to disk every epoch
+            writer.flush()
+
             save_checkpoint(model, optimizer, scheduler, epoch, test_loss, best_loss,
                           args.checkpoint_dir, is_best)
 
@@ -1035,8 +1088,20 @@ def main():
         print(f" Model: Transformer + FinBERT News Embeddings")
         print(f" Exported to: {args.export_dir}/stock_predictor/")
 
-    # Close TensorBoard writer
+    # TensorBoard: 최종 요약 텍스트 + close
     if writer is not None:
+        summary_text = (
+            f"# Training Summary\n\n"
+            f"- Best Loss: {best_loss:.6f}\n"
+            f"- Total Epochs: {args.epochs}\n"
+            f"- World Size: {world_size}\n"
+            f"- Model: Transformer + FinBERT News\n"
+            f"- Sequence Length: {args.seq_length}\n"
+            f"- Prediction Length: {args.pred_length}\n"
+            f"- Incremental Learning: {args.resume}\n"
+        )
+        writer.add_text('Summary', summary_text, 0)
+        writer.flush()
         writer.close()
 
     cleanup()
