@@ -277,13 +277,14 @@ def train_lora(args, accelerator):
             })
             print(f"\n[Epoch {epoch+1}/{args.epochs}] Avg Loss: {avg_loss:.4f} | {get_gpu_info()}")
 
-        # Save checkpoint every 10 epochs (only main process)
-        if (epoch + 1) % 10 == 0 and accelerator.is_main_process:
+        # Save checkpoint every 10 epochs
+        if (epoch + 1) % 10 == 0:
             accelerator.wait_for_everyone()
-            unwrapped_unet = accelerator.unwrap_model(unet)
-            checkpoint_path = Path(args.output_dir) / f"lora_epoch_{epoch+1}"
-            unwrapped_unet.save_pretrained(checkpoint_path)
-            print_status(accelerator, f"Checkpoint saved: {checkpoint_path}")
+            if accelerator.is_main_process:
+                unwrapped_unet = accelerator.unwrap_model(unet)
+                checkpoint_path = Path(args.output_dir) / f"lora_epoch_{epoch+1}"
+                unwrapped_unet.save_pretrained(checkpoint_path)
+                print_status(accelerator, f"Checkpoint saved: {checkpoint_path}")
 
     # Save final model
     accelerator.wait_for_everyone()
