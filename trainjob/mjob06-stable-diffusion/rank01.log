@@ -66,14 +66,14 @@ Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.12/dist-
 Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.2->pandas->datasets) (1.16.0)
 Requirement already satisfied: click>=8.0.0 in /usr/local/lib/python3.12/dist-packages (from typer-slim->huggingface-hub<2.0,>=0.34.0->diffusers[torch]) (8.3.1)
 Downloading diffusers-0.36.0-py3-none-any.whl (4.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.6/4.6 MB 32.6 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.6/4.6 MB 22.0 MB/s  0:00:00
 Downloading transformers-5.0.0-py3-none-any.whl (10.1 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.1/10.1 MB 70.4 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.1/10.1 MB 80.8 MB/s  0:00:00
 Downloading huggingface_hub-1.3.5-py3-none-any.whl (536 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.7/536.7 kB 28.2 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.7/536.7 kB 23.8 MB/s  0:00:00
 Downloading accelerate-1.12.0-py3-none-any.whl (380 kB)
 Downloading peft-0.18.1-py3-none-any.whl (556 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 557.0/557.0 kB 31.7 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 557.0/557.0 kB 28.6 MB/s  0:00:00
 Downloading ftfy-6.3.1-py3-none-any.whl (44 kB)
 Installing collected packages: ftfy, huggingface-hub, diffusers, accelerate, transformers, peft
   Attempting uninstall: huggingface-hub
@@ -85,11 +85,11 @@ Successfully installed accelerate-1.12.0 diffusers-0.36.0 ftfy-6.3.1 huggingface
 === Distributed Training Config ===
 WORLD_SIZE: 2
 RANK: 0
-MASTER_ADDR: 10.0.4.15
+MASTER_ADDR: 10.0.4.118
 MASTER_PORT: 29500
-MY_IP: 10.0.4.15
+MY_IP: 10.0.4.118
 === GPU Information ===
-Fri Jan 30 07:12:37 2026       
+Mon Feb  2 01:47:29 2026       
 +-----------------------------------------------------------------------------------------+
 | NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.1     |
 +-----------------------------------------+------------------------+----------------------+
@@ -98,7 +98,7 @@ Fri Jan 30 07:12:37 2026
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
 |   0  NVIDIA GB10                    On  |   0000000F:01:00.0 Off |                  N/A |
-| N/A   38C    P8              4W /  N/A  | Not Supported          |      0%      Default |
+| N/A   36C    P8              4W /  N/A  | Not Supported          |      0%      Default |
 |                                         |                        |                  N/A |
 +-----------------------------------------+------------------------+----------------------+
 
@@ -131,402 +131,402 @@ Fri Jan 30 07:12:37 2026
   Process Index: 0
 ============================================================
 
-[07:12:46] Loading Stable Diffusion model for LoRA training... | GPU0: Mem 0.0/119.7GB
-Loading pipeline components...:   0%|          | 0/6 [00:00<?, ?it/s]Loading pipeline components...:  33%|███▎      | 2/6 [02:56<05:53, 88.46s/it]Loading pipeline components...:  50%|█████     | 3/6 [02:57<02:35, 51.68s/it]Loading pipeline components...:  67%|██████▋   | 4/6 [03:15<01:18, 39.15s/it]
+[01:47:38] Loading Stable Diffusion model for LoRA training... | GPU0: Mem 0.0/119.7GB
+Loading pipeline components...:   0%|          | 0/6 [00:00<?, ?it/s]Loading pipeline components...:  50%|█████     | 3/6 [00:00<00:00, 20.70it/s]Loading pipeline components...:  50%|█████     | 3/6 [00:20<00:00, 20.70it/s]Loading pipeline components...:  67%|██████▋   | 4/6 [02:57<01:54, 57.39s/it]
 Loading weights:   0%|          | 0/196 [00:00<?, ?it/s][A
-Loading weights:   1%|          | 1/196 [00:00<00:00, 22795.13it/s, Materializing param=text_model.embeddings.position_embedding.weight][A
-Loading weights:   1%|          | 1/196 [00:00<00:00, 12264.05it/s, Materializing param=text_model.embeddings.position_embedding.weight][A
-Loading weights:   1%|          | 2/196 [00:00<00:00, 3908.95it/s, Materializing param=text_model.embeddings.token_embedding.weight]    [A
-Loading weights:   1%|          | 2/196 [00:00<00:00, 3658.35it/s, Materializing param=text_model.embeddings.token_embedding.weight][A
-Loading weights:   2%|▏         | 3/196 [00:23<24:51,  7.73s/it, Materializing param=text_model.embeddings.token_embedding.weight]  [A
-Loading weights:   2%|▏         | 3/196 [00:23<24:51,  7.73s/it, Materializing param=text_model.encoder.layers.0.layer_norm1.bias][A
-Loading weights:   2%|▏         | 3/196 [00:23<24:51,  7.73s/it, Materializing param=text_model.encoder.layers.0.layer_norm1.bias][A
-Loading weights:   2%|▏         | 4/196 [00:23<24:43,  7.73s/it, Materializing param=text_model.encoder.layers.0.layer_norm1.weight][A
-Loading weights:   2%|▏         | 4/196 [00:23<24:43,  7.73s/it, Materializing param=text_model.encoder.layers.0.layer_norm1.weight][A
-Loading weights:   3%|▎         | 5/196 [00:23<24:35,  7.73s/it, Materializing param=text_model.encoder.layers.0.layer_norm2.bias]  [A
-Loading weights:   3%|▎         | 5/196 [00:23<24:35,  7.73s/it, Materializing param=text_model.encoder.layers.0.layer_norm2.bias][A
-Loading weights:   3%|▎         | 6/196 [00:23<24:27,  7.73s/it, Materializing param=text_model.encoder.layers.0.layer_norm2.weight][A
-Loading weights:   3%|▎         | 6/196 [00:23<24:27,  7.73s/it, Materializing param=text_model.encoder.layers.0.layer_norm2.weight][A
-Loading weights:   4%|▎         | 7/196 [00:23<24:20,  7.73s/it, Materializing param=text_model.encoder.layers.0.mlp.fc1.bias]      [A
-Loading weights:   4%|▎         | 7/196 [00:23<24:20,  7.73s/it, Materializing param=text_model.encoder.layers.0.mlp.fc1.bias][A
-Loading weights:   4%|▍         | 8/196 [00:23<24:12,  7.73s/it, Materializing param=text_model.encoder.layers.0.mlp.fc1.weight][A
-Loading weights:   4%|▍         | 8/196 [00:23<24:12,  7.73s/it, Materializing param=text_model.encoder.layers.0.mlp.fc1.weight][A
-Loading weights:   5%|▍         | 9/196 [00:23<24:04,  7.73s/it, Materializing param=text_model.encoder.layers.0.mlp.fc2.bias]  [A
-Loading weights:   5%|▍         | 9/196 [00:23<24:04,  7.73s/it, Materializing param=text_model.encoder.layers.0.mlp.fc2.bias][A
-Loading weights:   5%|▌         | 10/196 [00:23<23:57,  7.73s/it, Materializing param=text_model.encoder.layers.0.mlp.fc2.weight][A
-Loading weights:   5%|▌         | 10/196 [00:23<23:57,  7.73s/it, Materializing param=text_model.encoder.layers.0.mlp.fc2.weight][A
-Loading weights:   6%|▌         | 11/196 [00:23<23:49,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.k_proj.bias][A
-Loading weights:   6%|▌         | 11/196 [00:23<23:49,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.k_proj.bias][A
-Loading weights:   6%|▌         | 12/196 [00:23<23:41,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.k_proj.weight][A
-Loading weights:   6%|▌         | 12/196 [00:23<23:41,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.k_proj.weight][A
-Loading weights:   7%|▋         | 13/196 [00:23<23:33,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.out_proj.bias][A
-Loading weights:   7%|▋         | 13/196 [00:23<23:33,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.out_proj.bias][A
-Loading weights:   7%|▋         | 14/196 [00:23<23:26,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.out_proj.weight][A
-Loading weights:   7%|▋         | 14/196 [00:23<23:26,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.out_proj.weight][A
-Loading weights:   8%|▊         | 15/196 [00:23<23:18,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.q_proj.bias]    [A
-Loading weights:   8%|▊         | 15/196 [00:23<23:18,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.q_proj.bias][A
-Loading weights:   8%|▊         | 16/196 [00:23<23:10,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.q_proj.weight][A
-Loading weights:   8%|▊         | 16/196 [00:23<23:10,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.q_proj.weight][A
-Loading weights:   9%|▊         | 17/196 [00:23<23:02,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.v_proj.bias]  [A
-Loading weights:   9%|▊         | 17/196 [00:23<23:02,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.v_proj.bias][A
-Loading weights:   9%|▉         | 18/196 [00:23<22:55,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.v_proj.weight][A
-Loading weights:   9%|▉         | 18/196 [00:23<22:55,  7.73s/it, Materializing param=text_model.encoder.layers.0.self_attn.v_proj.weight][A
-Loading weights:  10%|▉         | 19/196 [00:23<22:47,  7.73s/it, Materializing param=text_model.encoder.layers.1.layer_norm1.bias]       [A
-Loading weights:  10%|▉         | 19/196 [00:23<22:47,  7.73s/it, Materializing param=text_model.encoder.layers.1.layer_norm1.bias][A
-Loading weights:  10%|█         | 20/196 [00:23<22:39,  7.73s/it, Materializing param=text_model.encoder.layers.1.layer_norm1.weight][A
-Loading weights:  10%|█         | 20/196 [00:23<22:39,  7.73s/it, Materializing param=text_model.encoder.layers.1.layer_norm1.weight][A
-Loading weights:  11%|█         | 21/196 [00:23<22:32,  7.73s/it, Materializing param=text_model.encoder.layers.1.layer_norm2.bias]  [A
-Loading weights:  11%|█         | 21/196 [00:23<22:32,  7.73s/it, Materializing param=text_model.encoder.layers.1.layer_norm2.bias][A
-Loading weights:  11%|█         | 22/196 [00:23<22:24,  7.73s/it, Materializing param=text_model.encoder.layers.1.layer_norm2.weight][A
-Loading weights:  11%|█         | 22/196 [00:23<22:24,  7.73s/it, Materializing param=text_model.encoder.layers.1.layer_norm2.weight][A
-Loading weights:  12%|█▏        | 23/196 [00:23<22:16,  7.73s/it, Materializing param=text_model.encoder.layers.1.mlp.fc1.bias]      [A
-Loading weights:  12%|█▏        | 23/196 [00:23<22:16,  7.73s/it, Materializing param=text_model.encoder.layers.1.mlp.fc1.bias][A
-Loading weights:  12%|█▏        | 24/196 [00:23<22:08,  7.73s/it, Materializing param=text_model.encoder.layers.1.mlp.fc1.weight][A
-Loading weights:  12%|█▏        | 24/196 [00:23<22:08,  7.73s/it, Materializing param=text_model.encoder.layers.1.mlp.fc1.weight][A
-Loading weights:  13%|█▎        | 25/196 [00:23<22:01,  7.73s/it, Materializing param=text_model.encoder.layers.1.mlp.fc2.bias]  [A
-Loading weights:  13%|█▎        | 25/196 [00:23<22:01,  7.73s/it, Materializing param=text_model.encoder.layers.1.mlp.fc2.bias][A
-Loading weights:  13%|█▎        | 26/196 [00:23<21:53,  7.73s/it, Materializing param=text_model.encoder.layers.1.mlp.fc2.weight][A
-Loading weights:  13%|█▎        | 26/196 [00:23<21:53,  7.73s/it, Materializing param=text_model.encoder.layers.1.mlp.fc2.weight][A
-Loading weights:  14%|█▍        | 27/196 [00:23<21:45,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.k_proj.bias][A
-Loading weights:  14%|█▍        | 27/196 [00:23<21:45,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.k_proj.bias][A
-Loading weights:  14%|█▍        | 28/196 [00:23<21:37,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.k_proj.weight][A
-Loading weights:  14%|█▍        | 28/196 [00:23<21:37,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.k_proj.weight][A
-Loading weights:  15%|█▍        | 29/196 [00:23<21:30,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.out_proj.bias][A
-Loading weights:  15%|█▍        | 29/196 [00:23<21:30,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.out_proj.bias][A
-Loading weights:  15%|█▌        | 30/196 [00:23<21:22,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.out_proj.weight][A
-Loading weights:  15%|█▌        | 30/196 [00:23<21:22,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.out_proj.weight][A
-Loading weights:  16%|█▌        | 31/196 [00:23<21:14,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.q_proj.bias]    [A
-Loading weights:  16%|█▌        | 31/196 [00:23<21:14,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.q_proj.bias][A
-Loading weights:  16%|█▋        | 32/196 [00:23<21:07,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.q_proj.weight][A
-Loading weights:  16%|█▋        | 32/196 [00:23<21:07,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.q_proj.weight][A
-Loading weights:  17%|█▋        | 33/196 [00:23<20:59,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.v_proj.bias]  [A
-Loading weights:  17%|█▋        | 33/196 [00:23<20:59,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.v_proj.bias][A
-Loading weights:  17%|█▋        | 34/196 [00:23<20:51,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.v_proj.weight][A
-Loading weights:  17%|█▋        | 34/196 [00:23<20:51,  7.73s/it, Materializing param=text_model.encoder.layers.1.self_attn.v_proj.weight][A
-Loading weights:  18%|█▊        | 35/196 [00:23<20:43,  7.73s/it, Materializing param=text_model.encoder.layers.2.layer_norm1.bias]       [A
-Loading weights:  18%|█▊        | 35/196 [00:23<20:43,  7.73s/it, Materializing param=text_model.encoder.layers.2.layer_norm1.bias][A
-Loading weights:  18%|█▊        | 36/196 [00:23<20:36,  7.73s/it, Materializing param=text_model.encoder.layers.2.layer_norm1.weight][A
-Loading weights:  18%|█▊        | 36/196 [00:23<20:36,  7.73s/it, Materializing param=text_model.encoder.layers.2.layer_norm1.weight][A
-Loading weights:  19%|█▉        | 37/196 [00:23<20:28,  7.73s/it, Materializing param=text_model.encoder.layers.2.layer_norm2.bias]  [A
-Loading weights:  19%|█▉        | 37/196 [00:23<20:28,  7.73s/it, Materializing param=text_model.encoder.layers.2.layer_norm2.bias][A
-Loading weights:  19%|█▉        | 38/196 [00:23<20:20,  7.73s/it, Materializing param=text_model.encoder.layers.2.layer_norm2.weight][A
-Loading weights:  19%|█▉        | 38/196 [00:23<20:20,  7.73s/it, Materializing param=text_model.encoder.layers.2.layer_norm2.weight][A
-Loading weights:  20%|█▉        | 39/196 [00:23<20:12,  7.73s/it, Materializing param=text_model.encoder.layers.2.mlp.fc1.bias]      [A
-Loading weights:  20%|█▉        | 39/196 [00:23<20:12,  7.73s/it, Materializing param=text_model.encoder.layers.2.mlp.fc1.bias][A
-Loading weights:  20%|██        | 40/196 [00:23<20:05,  7.73s/it, Materializing param=text_model.encoder.layers.2.mlp.fc1.weight][A
-Loading weights:  20%|██        | 40/196 [00:23<20:05,  7.73s/it, Materializing param=text_model.encoder.layers.2.mlp.fc1.weight][A
-Loading weights:  21%|██        | 41/196 [00:23<19:57,  7.73s/it, Materializing param=text_model.encoder.layers.2.mlp.fc2.bias]  [A
-Loading weights:  21%|██        | 41/196 [00:23<19:57,  7.73s/it, Materializing param=text_model.encoder.layers.2.mlp.fc2.bias][A
-Loading weights:  21%|██▏       | 42/196 [00:23<19:49,  7.73s/it, Materializing param=text_model.encoder.layers.2.mlp.fc2.weight][A
-Loading weights:  21%|██▏       | 42/196 [00:23<19:49,  7.73s/it, Materializing param=text_model.encoder.layers.2.mlp.fc2.weight][A
-Loading weights:  22%|██▏       | 43/196 [00:23<19:42,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.k_proj.bias][A
-Loading weights:  22%|██▏       | 43/196 [00:23<19:42,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.k_proj.bias][A
-Loading weights:  22%|██▏       | 44/196 [00:23<19:34,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.k_proj.weight][A
-Loading weights:  22%|██▏       | 44/196 [00:23<19:34,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.k_proj.weight][A
-Loading weights:  23%|██▎       | 45/196 [00:23<19:26,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.out_proj.bias][A
-Loading weights:  23%|██▎       | 45/196 [00:23<19:26,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.out_proj.bias][A
-Loading weights:  23%|██▎       | 46/196 [00:23<19:18,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.out_proj.weight][A
-Loading weights:  23%|██▎       | 46/196 [00:23<19:18,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.out_proj.weight][A
-Loading weights:  24%|██▍       | 47/196 [00:23<19:11,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.q_proj.bias]    [A
-Loading weights:  24%|██▍       | 47/196 [00:23<19:11,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.q_proj.bias][A
-Loading weights:  24%|██▍       | 48/196 [00:23<19:03,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.q_proj.weight][A
-Loading weights:  24%|██▍       | 48/196 [00:23<19:03,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.q_proj.weight][A
-Loading weights:  25%|██▌       | 49/196 [00:23<18:55,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.v_proj.bias]  [A
-Loading weights:  25%|██▌       | 49/196 [00:23<18:55,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.v_proj.bias][A
-Loading weights:  26%|██▌       | 50/196 [00:23<18:47,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.v_proj.weight][A
-Loading weights:  26%|██▌       | 50/196 [00:23<18:47,  7.73s/it, Materializing param=text_model.encoder.layers.2.self_attn.v_proj.weight][A
-Loading weights:  26%|██▌       | 51/196 [00:23<18:40,  7.73s/it, Materializing param=text_model.encoder.layers.3.layer_norm1.bias]       [A
-Loading weights:  26%|██▌       | 51/196 [00:23<18:40,  7.73s/it, Materializing param=text_model.encoder.layers.3.layer_norm1.bias][A
-Loading weights:  27%|██▋       | 52/196 [00:23<18:32,  7.73s/it, Materializing param=text_model.encoder.layers.3.layer_norm1.weight][A
-Loading weights:  27%|██▋       | 52/196 [00:23<18:32,  7.73s/it, Materializing param=text_model.encoder.layers.3.layer_norm1.weight][A
-Loading weights:  27%|██▋       | 53/196 [00:23<18:24,  7.73s/it, Materializing param=text_model.encoder.layers.3.layer_norm2.bias]  [A
-Loading weights:  27%|██▋       | 53/196 [00:23<18:24,  7.73s/it, Materializing param=text_model.encoder.layers.3.layer_norm2.bias][A
-Loading weights:  28%|██▊       | 54/196 [00:23<18:17,  7.73s/it, Materializing param=text_model.encoder.layers.3.layer_norm2.weight][A
-Loading weights:  28%|██▊       | 54/196 [00:23<18:17,  7.73s/it, Materializing param=text_model.encoder.layers.3.layer_norm2.weight][A
-Loading weights:  28%|██▊       | 55/196 [00:23<18:09,  7.73s/it, Materializing param=text_model.encoder.layers.3.mlp.fc1.bias]      [A
-Loading weights:  28%|██▊       | 55/196 [00:23<18:09,  7.73s/it, Materializing param=text_model.encoder.layers.3.mlp.fc1.bias][A
-Loading weights:  29%|██▊       | 56/196 [00:23<18:01,  7.73s/it, Materializing param=text_model.encoder.layers.3.mlp.fc1.weight][A
-Loading weights:  29%|██▊       | 56/196 [00:23<18:01,  7.73s/it, Materializing param=text_model.encoder.layers.3.mlp.fc1.weight][A
-Loading weights:  29%|██▉       | 57/196 [00:23<17:53,  7.73s/it, Materializing param=text_model.encoder.layers.3.mlp.fc2.bias]  [A
-Loading weights:  29%|██▉       | 57/196 [00:23<17:53,  7.73s/it, Materializing param=text_model.encoder.layers.3.mlp.fc2.bias][A
-Loading weights:  30%|██▉       | 58/196 [00:23<17:46,  7.73s/it, Materializing param=text_model.encoder.layers.3.mlp.fc2.weight][A
-Loading weights:  30%|██▉       | 58/196 [00:23<17:46,  7.73s/it, Materializing param=text_model.encoder.layers.3.mlp.fc2.weight][A
-Loading weights:  30%|███       | 59/196 [00:23<17:38,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.k_proj.bias][A
-Loading weights:  30%|███       | 59/196 [00:23<17:38,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.k_proj.bias][A
-Loading weights:  31%|███       | 60/196 [00:23<17:30,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.k_proj.weight][A
-Loading weights:  31%|███       | 60/196 [00:23<17:30,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.k_proj.weight][A
-Loading weights:  31%|███       | 61/196 [00:23<17:23,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.out_proj.bias][A
-Loading weights:  31%|███       | 61/196 [00:23<17:23,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.out_proj.bias][A
-Loading weights:  32%|███▏      | 62/196 [00:23<17:15,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.out_proj.weight][A
-Loading weights:  32%|███▏      | 62/196 [00:23<17:15,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.out_proj.weight][A
-Loading weights:  32%|███▏      | 63/196 [00:23<17:07,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.q_proj.bias]    [A
-Loading weights:  32%|███▏      | 63/196 [00:23<17:07,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.q_proj.bias][A
-Loading weights:  33%|███▎      | 64/196 [00:23<16:59,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.q_proj.weight][A
-Loading weights:  33%|███▎      | 64/196 [00:23<16:59,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.q_proj.weight][A
-Loading weights:  33%|███▎      | 65/196 [00:23<16:52,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.v_proj.bias]  [A
-Loading weights:  33%|███▎      | 65/196 [00:23<16:52,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.v_proj.bias][A
-Loading weights:  34%|███▎      | 66/196 [00:23<16:44,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.v_proj.weight][A
-Loading weights:  34%|███▎      | 66/196 [00:23<16:44,  7.73s/it, Materializing param=text_model.encoder.layers.3.self_attn.v_proj.weight][A
-Loading weights:  34%|███▍      | 67/196 [00:23<16:36,  7.73s/it, Materializing param=text_model.encoder.layers.4.layer_norm1.bias]       [A
-Loading weights:  34%|███▍      | 67/196 [00:23<16:36,  7.73s/it, Materializing param=text_model.encoder.layers.4.layer_norm1.bias][A
-Loading weights:  35%|███▍      | 68/196 [00:23<16:28,  7.73s/it, Materializing param=text_model.encoder.layers.4.layer_norm1.weight][A
-Loading weights:  35%|███▍      | 68/196 [00:23<16:28,  7.73s/it, Materializing param=text_model.encoder.layers.4.layer_norm1.weight][A
-Loading weights:  35%|███▌      | 69/196 [00:23<16:21,  7.73s/it, Materializing param=text_model.encoder.layers.4.layer_norm2.bias]  [A
-Loading weights:  35%|███▌      | 69/196 [00:23<16:21,  7.73s/it, Materializing param=text_model.encoder.layers.4.layer_norm2.bias][A
-Loading weights:  36%|███▌      | 70/196 [00:23<16:13,  7.73s/it, Materializing param=text_model.encoder.layers.4.layer_norm2.weight][A
-Loading weights:  36%|███▌      | 70/196 [00:23<16:13,  7.73s/it, Materializing param=text_model.encoder.layers.4.layer_norm2.weight][A
-Loading weights:  36%|███▌      | 71/196 [00:23<16:05,  7.73s/it, Materializing param=text_model.encoder.layers.4.mlp.fc1.bias]      [A
-Loading weights:  36%|███▌      | 71/196 [00:23<16:05,  7.73s/it, Materializing param=text_model.encoder.layers.4.mlp.fc1.bias][A
-Loading weights:  37%|███▋      | 72/196 [00:23<15:58,  7.73s/it, Materializing param=text_model.encoder.layers.4.mlp.fc1.weight][A
-Loading weights:  37%|███▋      | 72/196 [00:23<15:58,  7.73s/it, Materializing param=text_model.encoder.layers.4.mlp.fc1.weight][A
-Loading weights:  37%|███▋      | 73/196 [00:23<15:50,  7.73s/it, Materializing param=text_model.encoder.layers.4.mlp.fc2.bias]  [A
-Loading weights:  37%|███▋      | 73/196 [00:23<15:50,  7.73s/it, Materializing param=text_model.encoder.layers.4.mlp.fc2.bias][A
-Loading weights:  38%|███▊      | 74/196 [00:23<15:42,  7.73s/it, Materializing param=text_model.encoder.layers.4.mlp.fc2.weight][A
-Loading weights:  38%|███▊      | 74/196 [00:23<15:42,  7.73s/it, Materializing param=text_model.encoder.layers.4.mlp.fc2.weight][A
-Loading weights:  38%|███▊      | 75/196 [00:23<15:34,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.k_proj.bias][A
-Loading weights:  38%|███▊      | 75/196 [00:23<15:34,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.k_proj.bias][A
-Loading weights:  39%|███▉      | 76/196 [00:23<15:27,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.k_proj.weight][A
-Loading weights:  39%|███▉      | 76/196 [00:23<15:27,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.k_proj.weight][A
-Loading weights:  39%|███▉      | 77/196 [00:23<15:19,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.out_proj.bias][A
-Loading weights:  39%|███▉      | 77/196 [00:23<15:19,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.out_proj.bias][A
-Loading weights:  40%|███▉      | 78/196 [00:23<15:11,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.out_proj.weight][A
-Loading weights:  40%|███▉      | 78/196 [00:23<15:11,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.out_proj.weight][A
-Loading weights:  40%|████      | 79/196 [00:23<15:03,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.q_proj.bias]    [A
-Loading weights:  40%|████      | 79/196 [00:23<15:03,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.q_proj.bias][A
-Loading weights:  41%|████      | 80/196 [00:23<14:56,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.q_proj.weight][A
-Loading weights:  41%|████      | 80/196 [00:23<14:56,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.q_proj.weight][A
-Loading weights:  41%|████▏     | 81/196 [00:23<14:48,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.v_proj.bias]  [A
-Loading weights:  41%|████▏     | 81/196 [00:23<14:48,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.v_proj.bias][A
-Loading weights:  42%|████▏     | 82/196 [00:23<14:40,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.v_proj.weight][A
-Loading weights:  42%|████▏     | 82/196 [00:23<14:40,  7.73s/it, Materializing param=text_model.encoder.layers.4.self_attn.v_proj.weight][A
-Loading weights:  42%|████▏     | 83/196 [00:23<14:33,  7.73s/it, Materializing param=text_model.encoder.layers.5.layer_norm1.bias]       [A
-Loading weights:  42%|████▏     | 83/196 [00:23<14:33,  7.73s/it, Materializing param=text_model.encoder.layers.5.layer_norm1.bias][A
-Loading weights:  43%|████▎     | 84/196 [00:23<14:25,  7.73s/it, Materializing param=text_model.encoder.layers.5.layer_norm1.weight][A
-Loading weights:  43%|████▎     | 84/196 [00:23<14:25,  7.73s/it, Materializing param=text_model.encoder.layers.5.layer_norm1.weight][A
-Loading weights:  43%|████▎     | 85/196 [00:23<14:17,  7.73s/it, Materializing param=text_model.encoder.layers.5.layer_norm2.bias]  [A
-Loading weights:  43%|████▎     | 85/196 [00:23<14:17,  7.73s/it, Materializing param=text_model.encoder.layers.5.layer_norm2.bias][A
-Loading weights:  44%|████▍     | 86/196 [00:23<14:09,  7.73s/it, Materializing param=text_model.encoder.layers.5.layer_norm2.weight][A
-Loading weights:  44%|████▍     | 86/196 [00:23<14:09,  7.73s/it, Materializing param=text_model.encoder.layers.5.layer_norm2.weight][A
-Loading weights:  44%|████▍     | 87/196 [00:23<14:02,  7.73s/it, Materializing param=text_model.encoder.layers.5.mlp.fc1.bias]      [A
-Loading weights:  44%|████▍     | 87/196 [00:23<14:02,  7.73s/it, Materializing param=text_model.encoder.layers.5.mlp.fc1.bias][A
-Loading weights:  45%|████▍     | 88/196 [00:23<13:54,  7.73s/it, Materializing param=text_model.encoder.layers.5.mlp.fc1.weight][A
-Loading weights:  45%|████▍     | 88/196 [00:23<13:54,  7.73s/it, Materializing param=text_model.encoder.layers.5.mlp.fc1.weight][A
-Loading weights:  45%|████▌     | 89/196 [00:23<13:46,  7.73s/it, Materializing param=text_model.encoder.layers.5.mlp.fc2.bias]  [A
-Loading weights:  45%|████▌     | 89/196 [00:23<13:46,  7.73s/it, Materializing param=text_model.encoder.layers.5.mlp.fc2.bias][A
-Loading weights:  46%|████▌     | 90/196 [00:23<13:38,  7.73s/it, Materializing param=text_model.encoder.layers.5.mlp.fc2.weight][A
-Loading weights:  46%|████▌     | 90/196 [00:23<13:38,  7.73s/it, Materializing param=text_model.encoder.layers.5.mlp.fc2.weight][A
-Loading weights:  46%|████▋     | 91/196 [00:23<13:31,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.k_proj.bias][A
-Loading weights:  46%|████▋     | 91/196 [00:23<13:31,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.k_proj.bias][A
-Loading weights:  47%|████▋     | 92/196 [00:23<13:23,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.k_proj.weight][A
-Loading weights:  47%|████▋     | 92/196 [00:23<13:23,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.k_proj.weight][A
-Loading weights:  47%|████▋     | 93/196 [00:23<13:15,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.out_proj.bias][A
-Loading weights:  47%|████▋     | 93/196 [00:23<13:15,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.out_proj.bias][A
-Loading weights:  48%|████▊     | 94/196 [00:23<13:08,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.out_proj.weight][A
-Loading weights:  48%|████▊     | 94/196 [00:23<13:08,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.out_proj.weight][A
-Loading weights:  48%|████▊     | 95/196 [00:23<13:00,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.q_proj.bias]    [A
-Loading weights:  48%|████▊     | 95/196 [00:23<13:00,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.q_proj.bias][A
-Loading weights:  49%|████▉     | 96/196 [00:23<12:52,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.q_proj.weight][A
-Loading weights:  49%|████▉     | 96/196 [00:23<12:52,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.q_proj.weight][A
-Loading weights:  49%|████▉     | 97/196 [00:23<12:44,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.v_proj.bias]  [A
-Loading weights:  49%|████▉     | 97/196 [00:23<12:44,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.v_proj.bias][A
-Loading weights:  50%|█████     | 98/196 [00:23<12:37,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.v_proj.weight][A
-Loading weights:  50%|█████     | 98/196 [00:23<12:37,  7.73s/it, Materializing param=text_model.encoder.layers.5.self_attn.v_proj.weight][A
-Loading weights:  51%|█████     | 99/196 [00:23<12:29,  7.73s/it, Materializing param=text_model.encoder.layers.6.layer_norm1.bias]       [A
-Loading weights:  51%|█████     | 99/196 [00:23<12:29,  7.73s/it, Materializing param=text_model.encoder.layers.6.layer_norm1.bias][A
-Loading weights:  51%|█████     | 100/196 [00:23<12:21,  7.73s/it, Materializing param=text_model.encoder.layers.6.layer_norm1.weight][A
-Loading weights:  51%|█████     | 100/196 [00:23<12:21,  7.73s/it, Materializing param=text_model.encoder.layers.6.layer_norm1.weight][A
-Loading weights:  52%|█████▏    | 101/196 [00:23<12:13,  7.73s/it, Materializing param=text_model.encoder.layers.6.layer_norm2.bias]  [A
-Loading weights:  52%|█████▏    | 101/196 [00:23<12:13,  7.73s/it, Materializing param=text_model.encoder.layers.6.layer_norm2.bias][A
-Loading weights:  52%|█████▏    | 102/196 [00:23<12:06,  7.73s/it, Materializing param=text_model.encoder.layers.6.layer_norm2.weight][A
-Loading weights:  52%|█████▏    | 102/196 [00:23<12:06,  7.73s/it, Materializing param=text_model.encoder.layers.6.layer_norm2.weight][A
-Loading weights:  53%|█████▎    | 103/196 [00:23<11:58,  7.73s/it, Materializing param=text_model.encoder.layers.6.mlp.fc1.bias]      [A
-Loading weights:  53%|█████▎    | 103/196 [00:23<11:58,  7.73s/it, Materializing param=text_model.encoder.layers.6.mlp.fc1.bias][A
-Loading weights:  53%|█████▎    | 104/196 [00:23<11:50,  7.73s/it, Materializing param=text_model.encoder.layers.6.mlp.fc1.weight][A
-Loading weights:  53%|█████▎    | 104/196 [00:23<11:50,  7.73s/it, Materializing param=text_model.encoder.layers.6.mlp.fc1.weight][A
-Loading weights:  54%|█████▎    | 105/196 [00:23<11:43,  7.73s/it, Materializing param=text_model.encoder.layers.6.mlp.fc2.bias]  [A
-Loading weights:  54%|█████▎    | 105/196 [00:23<11:43,  7.73s/it, Materializing param=text_model.encoder.layers.6.mlp.fc2.bias][A
-Loading weights:  54%|█████▍    | 106/196 [00:23<11:35,  7.73s/it, Materializing param=text_model.encoder.layers.6.mlp.fc2.weight][A
-Loading weights:  54%|█████▍    | 106/196 [00:23<11:35,  7.73s/it, Materializing param=text_model.encoder.layers.6.mlp.fc2.weight][A
-Loading weights:  55%|█████▍    | 107/196 [00:23<11:27,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.k_proj.bias][A
-Loading weights:  55%|█████▍    | 107/196 [00:23<11:27,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.k_proj.bias][A
-Loading weights:  55%|█████▌    | 108/196 [00:23<11:19,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.k_proj.weight][A
-Loading weights:  55%|█████▌    | 108/196 [00:23<11:19,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.k_proj.weight][A
-Loading weights:  56%|█████▌    | 109/196 [00:23<11:12,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.out_proj.bias][A
-Loading weights:  56%|█████▌    | 109/196 [00:23<11:12,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.out_proj.bias][A
-Loading weights:  56%|█████▌    | 110/196 [00:23<11:04,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.out_proj.weight][A
-Loading weights:  56%|█████▌    | 110/196 [00:23<11:04,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.out_proj.weight][A
-Loading weights:  57%|█████▋    | 111/196 [00:23<10:56,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.q_proj.bias]    [A
-Loading weights:  57%|█████▋    | 111/196 [00:23<10:56,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.q_proj.bias][A
-Loading weights:  57%|█████▋    | 112/196 [00:23<10:48,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.q_proj.weight][A
-Loading weights:  57%|█████▋    | 112/196 [00:23<10:48,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.q_proj.weight][A
-Loading weights:  58%|█████▊    | 113/196 [00:23<10:41,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.v_proj.bias]  [A
-Loading weights:  58%|█████▊    | 113/196 [00:23<10:41,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.v_proj.bias][A
-Loading weights:  58%|█████▊    | 114/196 [00:23<10:33,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.v_proj.weight][A
-Loading weights:  58%|█████▊    | 114/196 [00:23<10:33,  7.73s/it, Materializing param=text_model.encoder.layers.6.self_attn.v_proj.weight][A
-Loading weights:  59%|█████▊    | 115/196 [00:23<10:25,  7.73s/it, Materializing param=text_model.encoder.layers.7.layer_norm1.bias]       [A
-Loading weights:  59%|█████▊    | 115/196 [00:23<10:25,  7.73s/it, Materializing param=text_model.encoder.layers.7.layer_norm1.bias][A
-Loading weights:  59%|█████▉    | 116/196 [00:23<10:18,  7.73s/it, Materializing param=text_model.encoder.layers.7.layer_norm1.weight][A
-Loading weights:  59%|█████▉    | 116/196 [00:23<10:18,  7.73s/it, Materializing param=text_model.encoder.layers.7.layer_norm1.weight][A
-Loading weights:  60%|█████▉    | 117/196 [00:23<10:10,  7.73s/it, Materializing param=text_model.encoder.layers.7.layer_norm2.bias]  [A
-Loading weights:  60%|█████▉    | 117/196 [00:23<10:10,  7.73s/it, Materializing param=text_model.encoder.layers.7.layer_norm2.bias][A
-Loading weights:  60%|██████    | 118/196 [00:23<10:02,  7.73s/it, Materializing param=text_model.encoder.layers.7.layer_norm2.weight][A
-Loading weights:  60%|██████    | 118/196 [00:23<10:02,  7.73s/it, Materializing param=text_model.encoder.layers.7.layer_norm2.weight][A
-Loading weights:  61%|██████    | 119/196 [00:23<09:54,  7.73s/it, Materializing param=text_model.encoder.layers.7.mlp.fc1.bias]      [A
-Loading weights:  61%|██████    | 119/196 [00:23<09:54,  7.73s/it, Materializing param=text_model.encoder.layers.7.mlp.fc1.bias][A
-Loading weights:  61%|██████    | 120/196 [00:23<09:47,  7.73s/it, Materializing param=text_model.encoder.layers.7.mlp.fc1.weight][A
-Loading weights:  61%|██████    | 120/196 [00:23<09:47,  7.73s/it, Materializing param=text_model.encoder.layers.7.mlp.fc1.weight][A
-Loading weights:  62%|██████▏   | 121/196 [00:23<09:39,  7.73s/it, Materializing param=text_model.encoder.layers.7.mlp.fc2.bias]  [A
-Loading weights:  62%|██████▏   | 121/196 [00:23<09:39,  7.73s/it, Materializing param=text_model.encoder.layers.7.mlp.fc2.bias][A
-Loading weights:  62%|██████▏   | 122/196 [00:23<09:31,  7.73s/it, Materializing param=text_model.encoder.layers.7.mlp.fc2.weight][A
-Loading weights:  62%|██████▏   | 122/196 [00:23<09:31,  7.73s/it, Materializing param=text_model.encoder.layers.7.mlp.fc2.weight][A
-Loading weights:  63%|██████▎   | 123/196 [00:23<09:23,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.k_proj.bias][A
-Loading weights:  63%|██████▎   | 123/196 [00:23<09:23,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.k_proj.bias][A
-Loading weights:  63%|██████▎   | 124/196 [00:23<09:16,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.k_proj.weight][A
-Loading weights:  63%|██████▎   | 124/196 [00:23<09:16,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.k_proj.weight][A
-Loading weights:  64%|██████▍   | 125/196 [00:23<09:08,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.out_proj.bias][A
-Loading weights:  64%|██████▍   | 125/196 [00:23<09:08,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.out_proj.bias][A
-Loading weights:  64%|██████▍   | 126/196 [00:23<09:00,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.out_proj.weight][A
-Loading weights:  64%|██████▍   | 126/196 [00:23<09:00,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.out_proj.weight][A
-Loading weights:  65%|██████▍   | 127/196 [00:23<08:53,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.q_proj.bias]    [A
-Loading weights:  65%|██████▍   | 127/196 [00:23<08:53,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.q_proj.bias][A
-Loading weights:  65%|██████▌   | 128/196 [00:23<08:45,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.q_proj.weight][A
-Loading weights:  65%|██████▌   | 128/196 [00:23<08:45,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.q_proj.weight][A
-Loading weights:  66%|██████▌   | 129/196 [00:23<08:37,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.v_proj.bias]  [A
-Loading weights:  66%|██████▌   | 129/196 [00:23<08:37,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.v_proj.bias][A
-Loading weights:  66%|██████▋   | 130/196 [00:23<08:29,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.v_proj.weight][A
-Loading weights:  66%|██████▋   | 130/196 [00:23<08:29,  7.73s/it, Materializing param=text_model.encoder.layers.7.self_attn.v_proj.weight][A
-Loading weights:  67%|██████▋   | 131/196 [00:23<08:22,  7.73s/it, Materializing param=text_model.encoder.layers.8.layer_norm1.bias]       [A
-Loading weights:  67%|██████▋   | 131/196 [00:23<08:22,  7.73s/it, Materializing param=text_model.encoder.layers.8.layer_norm1.bias][A
-Loading weights:  67%|██████▋   | 132/196 [00:23<08:14,  7.73s/it, Materializing param=text_model.encoder.layers.8.layer_norm1.weight][A
-Loading weights:  67%|██████▋   | 132/196 [00:23<08:14,  7.73s/it, Materializing param=text_model.encoder.layers.8.layer_norm1.weight][A
-Loading weights:  68%|██████▊   | 133/196 [00:23<08:06,  7.73s/it, Materializing param=text_model.encoder.layers.8.layer_norm2.bias]  [A
-Loading weights:  68%|██████▊   | 133/196 [00:23<08:06,  7.73s/it, Materializing param=text_model.encoder.layers.8.layer_norm2.bias][A
-Loading weights:  68%|██████▊   | 134/196 [00:23<07:59,  7.73s/it, Materializing param=text_model.encoder.layers.8.layer_norm2.weight][A
-Loading weights:  68%|██████▊   | 134/196 [00:23<07:59,  7.73s/it, Materializing param=text_model.encoder.layers.8.layer_norm2.weight][A
-Loading weights:  69%|██████▉   | 135/196 [00:23<07:51,  7.73s/it, Materializing param=text_model.encoder.layers.8.mlp.fc1.bias]      [A
-Loading weights:  69%|██████▉   | 135/196 [00:23<07:51,  7.73s/it, Materializing param=text_model.encoder.layers.8.mlp.fc1.bias][A
-Loading weights:  69%|██████▉   | 136/196 [00:23<07:43,  7.73s/it, Materializing param=text_model.encoder.layers.8.mlp.fc1.weight][A
-Loading weights:  69%|██████▉   | 136/196 [00:23<07:43,  7.73s/it, Materializing param=text_model.encoder.layers.8.mlp.fc1.weight][A
-Loading weights:  70%|██████▉   | 137/196 [00:23<07:35,  7.73s/it, Materializing param=text_model.encoder.layers.8.mlp.fc2.bias]  [A
-Loading weights:  70%|██████▉   | 137/196 [00:23<07:35,  7.73s/it, Materializing param=text_model.encoder.layers.8.mlp.fc2.bias][A
-Loading weights:  70%|███████   | 138/196 [00:23<07:28,  7.73s/it, Materializing param=text_model.encoder.layers.8.mlp.fc2.weight][A
-Loading weights:  70%|███████   | 138/196 [00:23<07:28,  7.73s/it, Materializing param=text_model.encoder.layers.8.mlp.fc2.weight][A
-Loading weights:  71%|███████   | 139/196 [00:23<07:20,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.k_proj.bias][A
-Loading weights:  71%|███████   | 139/196 [00:23<07:20,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.k_proj.bias][A
-Loading weights:  71%|███████▏  | 140/196 [00:23<07:12,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.k_proj.weight][A
-Loading weights:  71%|███████▏  | 140/196 [00:23<07:12,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.k_proj.weight][A
-Loading weights:  72%|███████▏  | 141/196 [00:23<07:04,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.out_proj.bias][A
-Loading weights:  72%|███████▏  | 141/196 [00:23<07:04,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.out_proj.bias][A
-Loading weights:  72%|███████▏  | 142/196 [00:23<06:57,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.out_proj.weight][A
-Loading weights:  72%|███████▏  | 142/196 [00:23<06:57,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.out_proj.weight][A
-Loading weights:  73%|███████▎  | 143/196 [00:23<06:49,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.q_proj.bias]    [A
-Loading weights:  73%|███████▎  | 143/196 [00:23<06:49,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.q_proj.bias][A
-Loading weights:  73%|███████▎  | 144/196 [00:23<06:41,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.q_proj.weight][A
-Loading weights:  73%|███████▎  | 144/196 [00:23<06:41,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.q_proj.weight][A
-Loading weights:  74%|███████▍  | 145/196 [00:23<06:34,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.v_proj.bias]  [A
-Loading weights:  74%|███████▍  | 145/196 [00:23<06:34,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.v_proj.bias][A
-Loading weights:  74%|███████▍  | 146/196 [00:23<06:26,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.v_proj.weight][A
-Loading weights:  74%|███████▍  | 146/196 [00:23<06:26,  7.73s/it, Materializing param=text_model.encoder.layers.8.self_attn.v_proj.weight][A
-Loading weights:  75%|███████▌  | 147/196 [00:23<06:18,  7.73s/it, Materializing param=text_model.encoder.layers.9.layer_norm1.bias]       [A
-Loading weights:  75%|███████▌  | 147/196 [00:23<06:18,  7.73s/it, Materializing param=text_model.encoder.layers.9.layer_norm1.bias][A
-Loading weights:  76%|███████▌  | 148/196 [00:23<06:10,  7.73s/it, Materializing param=text_model.encoder.layers.9.layer_norm1.weight][A
-Loading weights:  76%|███████▌  | 148/196 [00:23<06:10,  7.73s/it, Materializing param=text_model.encoder.layers.9.layer_norm1.weight][A
-Loading weights:  76%|███████▌  | 149/196 [00:23<06:03,  7.73s/it, Materializing param=text_model.encoder.layers.9.layer_norm2.bias]  [A
-Loading weights:  76%|███████▌  | 149/196 [00:23<06:03,  7.73s/it, Materializing param=text_model.encoder.layers.9.layer_norm2.bias][A
-Loading weights:  77%|███████▋  | 150/196 [00:23<05:55,  7.73s/it, Materializing param=text_model.encoder.layers.9.layer_norm2.weight][A
-Loading weights:  77%|███████▋  | 150/196 [00:23<05:55,  7.73s/it, Materializing param=text_model.encoder.layers.9.layer_norm2.weight][A
-Loading weights:  77%|███████▋  | 151/196 [00:23<05:47,  7.73s/it, Materializing param=text_model.encoder.layers.9.mlp.fc1.bias]      [A
-Loading weights:  77%|███████▋  | 151/196 [00:23<05:47,  7.73s/it, Materializing param=text_model.encoder.layers.9.mlp.fc1.bias][A
-Loading weights:  78%|███████▊  | 152/196 [00:23<05:39,  7.73s/it, Materializing param=text_model.encoder.layers.9.mlp.fc1.weight][A
-Loading weights:  78%|███████▊  | 152/196 [00:23<05:39,  7.73s/it, Materializing param=text_model.encoder.layers.9.mlp.fc1.weight][A
-Loading weights:  78%|███████▊  | 153/196 [00:23<05:32,  7.73s/it, Materializing param=text_model.encoder.layers.9.mlp.fc2.bias]  [A
-Loading weights:  78%|███████▊  | 153/196 [00:23<05:32,  7.73s/it, Materializing param=text_model.encoder.layers.9.mlp.fc2.bias][A
-Loading weights:  79%|███████▊  | 154/196 [00:23<05:24,  7.73s/it, Materializing param=text_model.encoder.layers.9.mlp.fc2.weight][A
-Loading weights:  79%|███████▊  | 154/196 [00:23<05:24,  7.73s/it, Materializing param=text_model.encoder.layers.9.mlp.fc2.weight][A
-Loading weights:  79%|███████▉  | 155/196 [00:23<05:16,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.k_proj.bias][A
-Loading weights:  79%|███████▉  | 155/196 [00:23<05:16,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.k_proj.bias][A
-Loading weights:  80%|███████▉  | 156/196 [00:23<05:09,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.k_proj.weight][A
-Loading weights:  80%|███████▉  | 156/196 [00:23<05:09,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.k_proj.weight][A
-Loading weights:  80%|████████  | 157/196 [00:23<05:01,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.out_proj.bias][A
-Loading weights:  80%|████████  | 157/196 [00:23<05:01,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.out_proj.bias][A
-Loading weights:  81%|████████  | 158/196 [00:23<04:53,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.out_proj.weight][A
-Loading weights:  81%|████████  | 158/196 [00:23<04:53,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.out_proj.weight][A
-Loading weights:  81%|████████  | 159/196 [00:23<04:45,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.q_proj.bias]    [A
-Loading weights:  81%|████████  | 159/196 [00:23<04:45,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.q_proj.bias][A
-Loading weights:  82%|████████▏ | 160/196 [00:23<04:38,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.q_proj.weight][A
-Loading weights:  82%|████████▏ | 160/196 [00:23<04:38,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.q_proj.weight][A
-Loading weights:  82%|████████▏ | 161/196 [00:23<04:30,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.v_proj.bias]  [A
-Loading weights:  82%|████████▏ | 161/196 [00:23<04:30,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.v_proj.bias][A
-Loading weights:  83%|████████▎ | 162/196 [00:23<04:22,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.v_proj.weight][A
-Loading weights:  83%|████████▎ | 162/196 [00:23<04:22,  7.73s/it, Materializing param=text_model.encoder.layers.9.self_attn.v_proj.weight][A
-Loading weights:  83%|████████▎ | 163/196 [00:23<04:14,  7.73s/it, Materializing param=text_model.encoder.layers.10.layer_norm1.bias]      [A
-Loading weights:  83%|████████▎ | 163/196 [00:23<04:14,  7.73s/it, Materializing param=text_model.encoder.layers.10.layer_norm1.bias][A
-Loading weights:  84%|████████▎ | 164/196 [00:23<04:07,  7.73s/it, Materializing param=text_model.encoder.layers.10.layer_norm1.weight][A
-Loading weights:  84%|████████▎ | 164/196 [00:23<04:07,  7.73s/it, Materializing param=text_model.encoder.layers.10.layer_norm1.weight][A
-Loading weights:  84%|████████▍ | 165/196 [00:23<03:59,  7.73s/it, Materializing param=text_model.encoder.layers.10.layer_norm2.bias]  [A
-Loading weights:  84%|████████▍ | 165/196 [00:23<03:59,  7.73s/it, Materializing param=text_model.encoder.layers.10.layer_norm2.bias][A
-Loading weights:  85%|████████▍ | 166/196 [00:23<03:51,  7.73s/it, Materializing param=text_model.encoder.layers.10.layer_norm2.weight][A
-Loading weights:  85%|████████▍ | 166/196 [00:23<03:51,  7.73s/it, Materializing param=text_model.encoder.layers.10.layer_norm2.weight][A
-Loading weights:  85%|████████▌ | 167/196 [00:23<03:44,  7.73s/it, Materializing param=text_model.encoder.layers.10.mlp.fc1.bias]      [A
-Loading weights:  85%|████████▌ | 167/196 [00:23<03:44,  7.73s/it, Materializing param=text_model.encoder.layers.10.mlp.fc1.bias][A
-Loading weights:  86%|████████▌ | 168/196 [00:23<03:36,  7.73s/it, Materializing param=text_model.encoder.layers.10.mlp.fc1.weight][A
-Loading weights:  86%|████████▌ | 168/196 [00:23<03:36,  7.73s/it, Materializing param=text_model.encoder.layers.10.mlp.fc1.weight][A
-Loading weights:  86%|████████▌ | 169/196 [00:23<03:28,  7.73s/it, Materializing param=text_model.encoder.layers.10.mlp.fc2.bias]  [A
-Loading weights:  86%|████████▌ | 169/196 [00:23<03:28,  7.73s/it, Materializing param=text_model.encoder.layers.10.mlp.fc2.bias][A
-Loading weights:  87%|████████▋ | 170/196 [00:23<03:20,  7.73s/it, Materializing param=text_model.encoder.layers.10.mlp.fc2.weight][A
-Loading weights:  87%|████████▋ | 170/196 [00:23<03:20,  7.73s/it, Materializing param=text_model.encoder.layers.10.mlp.fc2.weight][A
-Loading weights:  87%|████████▋ | 171/196 [00:23<03:13,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.k_proj.bias][A
-Loading weights:  87%|████████▋ | 171/196 [00:23<03:13,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.k_proj.bias][A
-Loading weights:  88%|████████▊ | 172/196 [00:23<03:05,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.k_proj.weight][A
-Loading weights:  88%|████████▊ | 172/196 [00:23<03:05,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.k_proj.weight][A
-Loading weights:  88%|████████▊ | 173/196 [00:23<02:57,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.out_proj.bias][A
-Loading weights:  88%|████████▊ | 173/196 [00:23<02:57,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.out_proj.bias][A
-Loading weights:  89%|████████▉ | 174/196 [00:23<02:49,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.out_proj.weight][A
-Loading weights:  89%|████████▉ | 174/196 [00:23<02:49,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.out_proj.weight][A
-Loading weights:  89%|████████▉ | 175/196 [00:23<02:42,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.q_proj.bias]    [A
-Loading weights:  89%|████████▉ | 175/196 [00:23<02:42,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.q_proj.bias][A
-Loading weights:  90%|████████▉ | 176/196 [00:23<02:34,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.q_proj.weight][A
-Loading weights:  90%|████████▉ | 176/196 [00:23<02:34,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.q_proj.weight][A
-Loading weights:  90%|█████████ | 177/196 [00:23<02:26,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.v_proj.bias]  [A
-Loading weights:  90%|█████████ | 177/196 [00:23<02:26,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.v_proj.bias][A
-Loading weights:  91%|█████████ | 178/196 [00:23<02:19,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.v_proj.weight][A
-Loading weights:  91%|█████████ | 178/196 [00:23<02:19,  7.73s/it, Materializing param=text_model.encoder.layers.10.self_attn.v_proj.weight][A
-Loading weights:  91%|█████████▏| 179/196 [00:23<02:11,  7.73s/it, Materializing param=text_model.encoder.layers.11.layer_norm1.bias]       [A
-Loading weights:  91%|█████████▏| 179/196 [00:23<02:11,  7.73s/it, Materializing param=text_model.encoder.layers.11.layer_norm1.bias][A
-Loading weights:  92%|█████████▏| 180/196 [00:23<02:03,  7.73s/it, Materializing param=text_model.encoder.layers.11.layer_norm1.weight][A
-Loading weights:  92%|█████████▏| 180/196 [00:23<02:03,  7.73s/it, Materializing param=text_model.encoder.layers.11.layer_norm1.weight][A
-Loading weights:  92%|█████████▏| 181/196 [00:23<01:55,  7.73s/it, Materializing param=text_model.encoder.layers.11.layer_norm2.bias]  [A
-Loading weights:  92%|█████████▏| 181/196 [00:23<01:55,  7.73s/it, Materializing param=text_model.encoder.layers.11.layer_norm2.bias][A
-Loading weights:  93%|█████████▎| 182/196 [00:23<01:48,  7.73s/it, Materializing param=text_model.encoder.layers.11.layer_norm2.weight][A
-Loading weights:  93%|█████████▎| 182/196 [00:23<01:48,  7.73s/it, Materializing param=text_model.encoder.layers.11.layer_norm2.weight][A
-Loading weights:  93%|█████████▎| 183/196 [00:23<01:40,  7.73s/it, Materializing param=text_model.encoder.layers.11.mlp.fc1.bias]      [A
-Loading weights:  93%|█████████▎| 183/196 [00:23<01:40,  7.73s/it, Materializing param=text_model.encoder.layers.11.mlp.fc1.bias][A
-Loading weights:  94%|█████████▍| 184/196 [00:23<01:32,  7.73s/it, Materializing param=text_model.encoder.layers.11.mlp.fc1.weight][A
-Loading weights:  94%|█████████▍| 184/196 [00:23<01:32,  7.73s/it, Materializing param=text_model.encoder.layers.11.mlp.fc1.weight][A
-Loading weights:  94%|█████████▍| 185/196 [00:23<01:24,  7.73s/it, Materializing param=text_model.encoder.layers.11.mlp.fc2.bias]  [A
-Loading weights:  94%|█████████▍| 185/196 [00:23<01:24,  7.73s/it, Materializing param=text_model.encoder.layers.11.mlp.fc2.bias][A
-Loading weights:  95%|█████████▍| 186/196 [00:23<01:17,  7.73s/it, Materializing param=text_model.encoder.layers.11.mlp.fc2.weight][A
-Loading weights:  95%|█████████▍| 186/196 [00:23<01:17,  7.73s/it, Materializing param=text_model.encoder.layers.11.mlp.fc2.weight][A
-Loading weights:  95%|█████████▌| 187/196 [00:23<01:09,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.k_proj.bias][A
-Loading weights:  95%|█████████▌| 187/196 [00:23<01:09,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.k_proj.bias][A
-Loading weights:  96%|█████████▌| 188/196 [00:23<01:01,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.k_proj.weight][A
-Loading weights:  96%|█████████▌| 188/196 [00:23<01:01,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.k_proj.weight][A
-Loading weights:  96%|█████████▋| 189/196 [00:23<00:54,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.out_proj.bias][A
-Loading weights:  96%|█████████▋| 189/196 [00:23<00:54,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.out_proj.bias][A
-Loading weights:  97%|█████████▋| 190/196 [00:23<00:46,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.out_proj.weight][A
-Loading weights:  97%|█████████▋| 190/196 [00:23<00:46,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.out_proj.weight][A
-Loading weights:  97%|█████████▋| 191/196 [00:23<00:38,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.q_proj.bias]    [A
-Loading weights:  97%|█████████▋| 191/196 [00:23<00:38,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.q_proj.bias][A
-Loading weights:  98%|█████████▊| 192/196 [00:23<00:30,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.q_proj.weight][A
-Loading weights:  98%|█████████▊| 192/196 [00:23<00:30,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.q_proj.weight][A
-Loading weights:  98%|█████████▊| 193/196 [00:23<00:23,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.v_proj.bias]  [A
-Loading weights:  98%|█████████▊| 193/196 [00:23<00:23,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.v_proj.bias][A
-Loading weights:  99%|█████████▉| 194/196 [00:23<00:15,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.v_proj.weight][A
-Loading weights:  99%|█████████▉| 194/196 [00:23<00:15,  7.73s/it, Materializing param=text_model.encoder.layers.11.self_attn.v_proj.weight][A
-Loading weights:  99%|█████████▉| 195/196 [00:23<00:07,  7.73s/it, Materializing param=text_model.final_layer_norm.bias]                    [A
-Loading weights:  99%|█████████▉| 195/196 [00:23<00:07,  7.73s/it, Materializing param=text_model.final_layer_norm.bias][A
-Loading weights: 100%|██████████| 196/196 [00:23<00:00,  7.73s/it, Materializing param=text_model.final_layer_norm.weight][A
-Loading weights: 100%|██████████| 196/196 [00:23<00:00,  7.73s/it, Materializing param=text_model.final_layer_norm.weight][ALoading weights: 100%|██████████| 196/196 [00:23<00:00,  8.45it/s, Materializing param=text_model.final_layer_norm.weight]
+Loading weights:   1%|          | 1/196 [00:00<00:00, 17050.02it/s, Materializing param=text_model.embeddings.position_embedding.weight][A
+Loading weights:   1%|          | 1/196 [00:00<00:00, 5857.97it/s, Materializing param=text_model.embeddings.position_embedding.weight] [A
+Loading weights:   1%|          | 2/196 [00:00<00:13, 14.05it/s, Materializing param=text_model.embeddings.token_embedding.weight]     [A
+Loading weights:   1%|          | 2/196 [00:00<00:13, 14.03it/s, Materializing param=text_model.embeddings.token_embedding.weight][A
+Loading weights:   2%|▏         | 3/196 [00:25<26:55,  8.37s/it, Materializing param=text_model.embeddings.token_embedding.weight][A
+Loading weights:   2%|▏         | 3/196 [00:25<26:55,  8.37s/it, Materializing param=text_model.encoder.layers.0.layer_norm1.bias][A
+Loading weights:   2%|▏         | 3/196 [00:25<26:55,  8.37s/it, Materializing param=text_model.encoder.layers.0.layer_norm1.bias][A
+Loading weights:   2%|▏         | 4/196 [00:25<26:46,  8.37s/it, Materializing param=text_model.encoder.layers.0.layer_norm1.weight][A
+Loading weights:   2%|▏         | 4/196 [00:25<26:46,  8.37s/it, Materializing param=text_model.encoder.layers.0.layer_norm1.weight][A
+Loading weights:   3%|▎         | 5/196 [00:25<26:38,  8.37s/it, Materializing param=text_model.encoder.layers.0.layer_norm2.bias]  [A
+Loading weights:   3%|▎         | 5/196 [00:25<26:38,  8.37s/it, Materializing param=text_model.encoder.layers.0.layer_norm2.bias][A
+Loading weights:   3%|▎         | 6/196 [00:25<26:30,  8.37s/it, Materializing param=text_model.encoder.layers.0.layer_norm2.weight][A
+Loading weights:   3%|▎         | 6/196 [00:25<26:30,  8.37s/it, Materializing param=text_model.encoder.layers.0.layer_norm2.weight][A
+Loading weights:   4%|▎         | 7/196 [00:25<26:21,  8.37s/it, Materializing param=text_model.encoder.layers.0.mlp.fc1.bias]      [A
+Loading weights:   4%|▎         | 7/196 [00:25<26:21,  8.37s/it, Materializing param=text_model.encoder.layers.0.mlp.fc1.bias][A
+Loading weights:   4%|▍         | 8/196 [00:25<26:13,  8.37s/it, Materializing param=text_model.encoder.layers.0.mlp.fc1.weight][A
+Loading weights:   4%|▍         | 8/196 [00:25<26:13,  8.37s/it, Materializing param=text_model.encoder.layers.0.mlp.fc1.weight][A
+Loading weights:   5%|▍         | 9/196 [00:25<26:05,  8.37s/it, Materializing param=text_model.encoder.layers.0.mlp.fc2.bias]  [A
+Loading weights:   5%|▍         | 9/196 [00:25<26:05,  8.37s/it, Materializing param=text_model.encoder.layers.0.mlp.fc2.bias][A
+Loading weights:   5%|▌         | 10/196 [00:25<25:56,  8.37s/it, Materializing param=text_model.encoder.layers.0.mlp.fc2.weight][A
+Loading weights:   5%|▌         | 10/196 [00:25<25:56,  8.37s/it, Materializing param=text_model.encoder.layers.0.mlp.fc2.weight][A
+Loading weights:   6%|▌         | 11/196 [00:25<25:48,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.k_proj.bias][A
+Loading weights:   6%|▌         | 11/196 [00:25<25:48,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.k_proj.bias][A
+Loading weights:   6%|▌         | 12/196 [00:25<25:40,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.k_proj.weight][A
+Loading weights:   6%|▌         | 12/196 [00:25<25:40,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.k_proj.weight][A
+Loading weights:   7%|▋         | 13/196 [00:25<25:31,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.out_proj.bias][A
+Loading weights:   7%|▋         | 13/196 [00:25<25:31,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.out_proj.bias][A
+Loading weights:   7%|▋         | 14/196 [00:25<25:23,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.out_proj.weight][A
+Loading weights:   7%|▋         | 14/196 [00:25<25:23,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.out_proj.weight][A
+Loading weights:   8%|▊         | 15/196 [00:25<25:14,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.q_proj.bias]    [A
+Loading weights:   8%|▊         | 15/196 [00:25<25:14,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.q_proj.bias][A
+Loading weights:   8%|▊         | 16/196 [00:25<25:06,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.q_proj.weight][A
+Loading weights:   8%|▊         | 16/196 [00:25<25:06,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.q_proj.weight][A
+Loading weights:   9%|▊         | 17/196 [00:25<24:58,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.v_proj.bias]  [A
+Loading weights:   9%|▊         | 17/196 [00:25<24:58,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.v_proj.bias][A
+Loading weights:   9%|▉         | 18/196 [00:25<24:49,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.v_proj.weight][A
+Loading weights:   9%|▉         | 18/196 [00:25<24:49,  8.37s/it, Materializing param=text_model.encoder.layers.0.self_attn.v_proj.weight][A
+Loading weights:  10%|▉         | 19/196 [00:25<24:41,  8.37s/it, Materializing param=text_model.encoder.layers.1.layer_norm1.bias]       [A
+Loading weights:  10%|▉         | 19/196 [00:25<24:41,  8.37s/it, Materializing param=text_model.encoder.layers.1.layer_norm1.bias][A
+Loading weights:  10%|█         | 20/196 [00:25<24:33,  8.37s/it, Materializing param=text_model.encoder.layers.1.layer_norm1.weight][A
+Loading weights:  10%|█         | 20/196 [00:25<24:33,  8.37s/it, Materializing param=text_model.encoder.layers.1.layer_norm1.weight][A
+Loading weights:  11%|█         | 21/196 [00:25<24:24,  8.37s/it, Materializing param=text_model.encoder.layers.1.layer_norm2.bias]  [A
+Loading weights:  11%|█         | 21/196 [00:25<24:24,  8.37s/it, Materializing param=text_model.encoder.layers.1.layer_norm2.bias][A
+Loading weights:  11%|█         | 22/196 [00:25<24:16,  8.37s/it, Materializing param=text_model.encoder.layers.1.layer_norm2.weight][A
+Loading weights:  11%|█         | 22/196 [00:25<24:16,  8.37s/it, Materializing param=text_model.encoder.layers.1.layer_norm2.weight][A
+Loading weights:  12%|█▏        | 23/196 [00:25<24:07,  8.37s/it, Materializing param=text_model.encoder.layers.1.mlp.fc1.bias]      [A
+Loading weights:  12%|█▏        | 23/196 [00:25<24:07,  8.37s/it, Materializing param=text_model.encoder.layers.1.mlp.fc1.bias][A
+Loading weights:  12%|█▏        | 24/196 [00:25<23:59,  8.37s/it, Materializing param=text_model.encoder.layers.1.mlp.fc1.weight][A
+Loading weights:  12%|█▏        | 24/196 [00:25<23:59,  8.37s/it, Materializing param=text_model.encoder.layers.1.mlp.fc1.weight][A
+Loading weights:  13%|█▎        | 25/196 [00:25<23:51,  8.37s/it, Materializing param=text_model.encoder.layers.1.mlp.fc2.bias]  [A
+Loading weights:  13%|█▎        | 25/196 [00:25<23:51,  8.37s/it, Materializing param=text_model.encoder.layers.1.mlp.fc2.bias][A
+Loading weights:  13%|█▎        | 26/196 [00:25<23:42,  8.37s/it, Materializing param=text_model.encoder.layers.1.mlp.fc2.weight][A
+Loading weights:  13%|█▎        | 26/196 [00:25<23:42,  8.37s/it, Materializing param=text_model.encoder.layers.1.mlp.fc2.weight][A
+Loading weights:  14%|█▍        | 27/196 [00:25<23:34,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.k_proj.bias][A
+Loading weights:  14%|█▍        | 27/196 [00:25<23:34,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.k_proj.bias][A
+Loading weights:  14%|█▍        | 28/196 [00:25<23:26,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.k_proj.weight][A
+Loading weights:  14%|█▍        | 28/196 [00:25<23:26,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.k_proj.weight][A
+Loading weights:  15%|█▍        | 29/196 [00:25<23:17,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.out_proj.bias][A
+Loading weights:  15%|█▍        | 29/196 [00:25<23:17,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.out_proj.bias][A
+Loading weights:  15%|█▌        | 30/196 [00:25<23:09,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.out_proj.weight][A
+Loading weights:  15%|█▌        | 30/196 [00:25<23:09,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.out_proj.weight][A
+Loading weights:  16%|█▌        | 31/196 [00:25<23:00,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.q_proj.bias]    [A
+Loading weights:  16%|█▌        | 31/196 [00:25<23:00,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.q_proj.bias][A
+Loading weights:  16%|█▋        | 32/196 [00:25<22:52,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.q_proj.weight][A
+Loading weights:  16%|█▋        | 32/196 [00:25<22:52,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.q_proj.weight][A
+Loading weights:  17%|█▋        | 33/196 [00:25<22:44,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.v_proj.bias]  [A
+Loading weights:  17%|█▋        | 33/196 [00:25<22:44,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.v_proj.bias][A
+Loading weights:  17%|█▋        | 34/196 [00:25<22:35,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.v_proj.weight][A
+Loading weights:  17%|█▋        | 34/196 [00:25<22:35,  8.37s/it, Materializing param=text_model.encoder.layers.1.self_attn.v_proj.weight][A
+Loading weights:  18%|█▊        | 35/196 [00:25<22:27,  8.37s/it, Materializing param=text_model.encoder.layers.2.layer_norm1.bias]       [A
+Loading weights:  18%|█▊        | 35/196 [00:25<22:27,  8.37s/it, Materializing param=text_model.encoder.layers.2.layer_norm1.bias][A
+Loading weights:  18%|█▊        | 36/196 [00:25<22:19,  8.37s/it, Materializing param=text_model.encoder.layers.2.layer_norm1.weight][A
+Loading weights:  18%|█▊        | 36/196 [00:25<22:19,  8.37s/it, Materializing param=text_model.encoder.layers.2.layer_norm1.weight][A
+Loading weights:  19%|█▉        | 37/196 [00:25<22:10,  8.37s/it, Materializing param=text_model.encoder.layers.2.layer_norm2.bias]  [A
+Loading weights:  19%|█▉        | 37/196 [00:25<22:10,  8.37s/it, Materializing param=text_model.encoder.layers.2.layer_norm2.bias][A
+Loading weights:  19%|█▉        | 38/196 [00:25<22:02,  8.37s/it, Materializing param=text_model.encoder.layers.2.layer_norm2.weight][A
+Loading weights:  19%|█▉        | 38/196 [00:25<22:02,  8.37s/it, Materializing param=text_model.encoder.layers.2.layer_norm2.weight][A
+Loading weights:  20%|█▉        | 39/196 [00:25<21:54,  8.37s/it, Materializing param=text_model.encoder.layers.2.mlp.fc1.bias]      [A
+Loading weights:  20%|█▉        | 39/196 [00:25<21:54,  8.37s/it, Materializing param=text_model.encoder.layers.2.mlp.fc1.bias][A
+Loading weights:  20%|██        | 40/196 [00:25<21:45,  8.37s/it, Materializing param=text_model.encoder.layers.2.mlp.fc1.weight][A
+Loading weights:  20%|██        | 40/196 [00:25<21:45,  8.37s/it, Materializing param=text_model.encoder.layers.2.mlp.fc1.weight][A
+Loading weights:  21%|██        | 41/196 [00:25<21:37,  8.37s/it, Materializing param=text_model.encoder.layers.2.mlp.fc2.bias]  [A
+Loading weights:  21%|██        | 41/196 [00:25<21:37,  8.37s/it, Materializing param=text_model.encoder.layers.2.mlp.fc2.bias][A
+Loading weights:  21%|██▏       | 42/196 [00:25<21:28,  8.37s/it, Materializing param=text_model.encoder.layers.2.mlp.fc2.weight][A
+Loading weights:  21%|██▏       | 42/196 [00:25<21:28,  8.37s/it, Materializing param=text_model.encoder.layers.2.mlp.fc2.weight][A
+Loading weights:  22%|██▏       | 43/196 [00:25<21:20,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.k_proj.bias][A
+Loading weights:  22%|██▏       | 43/196 [00:25<21:20,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.k_proj.bias][A
+Loading weights:  22%|██▏       | 44/196 [00:25<21:12,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.k_proj.weight][A
+Loading weights:  22%|██▏       | 44/196 [00:25<21:12,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.k_proj.weight][A
+Loading weights:  23%|██▎       | 45/196 [00:25<21:03,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.out_proj.bias][A
+Loading weights:  23%|██▎       | 45/196 [00:25<21:03,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.out_proj.bias][A
+Loading weights:  23%|██▎       | 46/196 [00:25<20:55,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.out_proj.weight][A
+Loading weights:  23%|██▎       | 46/196 [00:25<20:55,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.out_proj.weight][A
+Loading weights:  24%|██▍       | 47/196 [00:25<20:47,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.q_proj.bias]    [A
+Loading weights:  24%|██▍       | 47/196 [00:25<20:47,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.q_proj.bias][A
+Loading weights:  24%|██▍       | 48/196 [00:25<20:38,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.q_proj.weight][A
+Loading weights:  24%|██▍       | 48/196 [00:25<20:38,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.q_proj.weight][A
+Loading weights:  25%|██▌       | 49/196 [00:25<20:30,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.v_proj.bias]  [A
+Loading weights:  25%|██▌       | 49/196 [00:25<20:30,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.v_proj.bias][A
+Loading weights:  26%|██▌       | 50/196 [00:25<20:21,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.v_proj.weight][A
+Loading weights:  26%|██▌       | 50/196 [00:25<20:21,  8.37s/it, Materializing param=text_model.encoder.layers.2.self_attn.v_proj.weight][A
+Loading weights:  26%|██▌       | 51/196 [00:25<20:13,  8.37s/it, Materializing param=text_model.encoder.layers.3.layer_norm1.bias]       [A
+Loading weights:  26%|██▌       | 51/196 [00:25<20:13,  8.37s/it, Materializing param=text_model.encoder.layers.3.layer_norm1.bias][A
+Loading weights:  27%|██▋       | 52/196 [00:25<20:05,  8.37s/it, Materializing param=text_model.encoder.layers.3.layer_norm1.weight][A
+Loading weights:  27%|██▋       | 52/196 [00:25<20:05,  8.37s/it, Materializing param=text_model.encoder.layers.3.layer_norm1.weight][A
+Loading weights:  27%|██▋       | 53/196 [00:25<19:56,  8.37s/it, Materializing param=text_model.encoder.layers.3.layer_norm2.bias]  [A
+Loading weights:  27%|██▋       | 53/196 [00:25<19:56,  8.37s/it, Materializing param=text_model.encoder.layers.3.layer_norm2.bias][A
+Loading weights:  28%|██▊       | 54/196 [00:25<19:48,  8.37s/it, Materializing param=text_model.encoder.layers.3.layer_norm2.weight][A
+Loading weights:  28%|██▊       | 54/196 [00:25<19:48,  8.37s/it, Materializing param=text_model.encoder.layers.3.layer_norm2.weight][A
+Loading weights:  28%|██▊       | 55/196 [00:25<19:40,  8.37s/it, Materializing param=text_model.encoder.layers.3.mlp.fc1.bias]      [A
+Loading weights:  28%|██▊       | 55/196 [00:25<19:40,  8.37s/it, Materializing param=text_model.encoder.layers.3.mlp.fc1.bias][A
+Loading weights:  29%|██▊       | 56/196 [00:25<19:31,  8.37s/it, Materializing param=text_model.encoder.layers.3.mlp.fc1.weight][A
+Loading weights:  29%|██▊       | 56/196 [00:25<19:31,  8.37s/it, Materializing param=text_model.encoder.layers.3.mlp.fc1.weight][A
+Loading weights:  29%|██▉       | 57/196 [00:25<19:23,  8.37s/it, Materializing param=text_model.encoder.layers.3.mlp.fc2.bias]  [A
+Loading weights:  29%|██▉       | 57/196 [00:25<19:23,  8.37s/it, Materializing param=text_model.encoder.layers.3.mlp.fc2.bias][A
+Loading weights:  30%|██▉       | 58/196 [00:25<19:15,  8.37s/it, Materializing param=text_model.encoder.layers.3.mlp.fc2.weight][A
+Loading weights:  30%|██▉       | 58/196 [00:25<19:15,  8.37s/it, Materializing param=text_model.encoder.layers.3.mlp.fc2.weight][A
+Loading weights:  30%|███       | 59/196 [00:25<19:06,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.k_proj.bias][A
+Loading weights:  30%|███       | 59/196 [00:25<19:06,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.k_proj.bias][A
+Loading weights:  31%|███       | 60/196 [00:25<18:58,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.k_proj.weight][A
+Loading weights:  31%|███       | 60/196 [00:25<18:58,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.k_proj.weight][A
+Loading weights:  31%|███       | 61/196 [00:25<18:49,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.out_proj.bias][A
+Loading weights:  31%|███       | 61/196 [00:25<18:49,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.out_proj.bias][A
+Loading weights:  32%|███▏      | 62/196 [00:25<18:41,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.out_proj.weight][A
+Loading weights:  32%|███▏      | 62/196 [00:25<18:41,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.out_proj.weight][A
+Loading weights:  32%|███▏      | 63/196 [00:25<18:33,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.q_proj.bias]    [A
+Loading weights:  32%|███▏      | 63/196 [00:25<18:33,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.q_proj.bias][A
+Loading weights:  33%|███▎      | 64/196 [00:25<18:24,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.q_proj.weight][A
+Loading weights:  33%|███▎      | 64/196 [00:25<18:24,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.q_proj.weight][A
+Loading weights:  33%|███▎      | 65/196 [00:25<18:16,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.v_proj.bias]  [A
+Loading weights:  33%|███▎      | 65/196 [00:25<18:16,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.v_proj.bias][A
+Loading weights:  34%|███▎      | 66/196 [00:25<18:08,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.v_proj.weight][A
+Loading weights:  34%|███▎      | 66/196 [00:25<18:08,  8.37s/it, Materializing param=text_model.encoder.layers.3.self_attn.v_proj.weight][A
+Loading weights:  34%|███▍      | 67/196 [00:25<17:59,  8.37s/it, Materializing param=text_model.encoder.layers.4.layer_norm1.bias]       [A
+Loading weights:  34%|███▍      | 67/196 [00:25<17:59,  8.37s/it, Materializing param=text_model.encoder.layers.4.layer_norm1.bias][A
+Loading weights:  35%|███▍      | 68/196 [00:25<17:51,  8.37s/it, Materializing param=text_model.encoder.layers.4.layer_norm1.weight][A
+Loading weights:  35%|███▍      | 68/196 [00:25<17:51,  8.37s/it, Materializing param=text_model.encoder.layers.4.layer_norm1.weight][A
+Loading weights:  35%|███▌      | 69/196 [00:25<17:42,  8.37s/it, Materializing param=text_model.encoder.layers.4.layer_norm2.bias]  [A
+Loading weights:  35%|███▌      | 69/196 [00:25<17:42,  8.37s/it, Materializing param=text_model.encoder.layers.4.layer_norm2.bias][A
+Loading weights:  36%|███▌      | 70/196 [00:25<17:34,  8.37s/it, Materializing param=text_model.encoder.layers.4.layer_norm2.weight][A
+Loading weights:  36%|███▌      | 70/196 [00:25<17:34,  8.37s/it, Materializing param=text_model.encoder.layers.4.layer_norm2.weight][A
+Loading weights:  36%|███▌      | 71/196 [00:25<17:26,  8.37s/it, Materializing param=text_model.encoder.layers.4.mlp.fc1.bias]      [A
+Loading weights:  36%|███▌      | 71/196 [00:25<17:26,  8.37s/it, Materializing param=text_model.encoder.layers.4.mlp.fc1.bias][A
+Loading weights:  37%|███▋      | 72/196 [00:25<17:17,  8.37s/it, Materializing param=text_model.encoder.layers.4.mlp.fc1.weight][A
+Loading weights:  37%|███▋      | 72/196 [00:25<17:17,  8.37s/it, Materializing param=text_model.encoder.layers.4.mlp.fc1.weight][A
+Loading weights:  37%|███▋      | 73/196 [00:25<17:09,  8.37s/it, Materializing param=text_model.encoder.layers.4.mlp.fc2.bias]  [A
+Loading weights:  37%|███▋      | 73/196 [00:25<17:09,  8.37s/it, Materializing param=text_model.encoder.layers.4.mlp.fc2.bias][A
+Loading weights:  38%|███▊      | 74/196 [00:25<17:01,  8.37s/it, Materializing param=text_model.encoder.layers.4.mlp.fc2.weight][A
+Loading weights:  38%|███▊      | 74/196 [00:25<17:01,  8.37s/it, Materializing param=text_model.encoder.layers.4.mlp.fc2.weight][A
+Loading weights:  38%|███▊      | 75/196 [00:25<16:52,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.k_proj.bias][A
+Loading weights:  38%|███▊      | 75/196 [00:25<16:52,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.k_proj.bias][A
+Loading weights:  39%|███▉      | 76/196 [00:25<16:44,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.k_proj.weight][A
+Loading weights:  39%|███▉      | 76/196 [00:25<16:44,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.k_proj.weight][A
+Loading weights:  39%|███▉      | 77/196 [00:25<16:35,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.out_proj.bias][A
+Loading weights:  39%|███▉      | 77/196 [00:25<16:35,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.out_proj.bias][A
+Loading weights:  40%|███▉      | 78/196 [00:25<16:27,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.out_proj.weight][A
+Loading weights:  40%|███▉      | 78/196 [00:25<16:27,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.out_proj.weight][A
+Loading weights:  40%|████      | 79/196 [00:25<16:19,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.q_proj.bias]    [A
+Loading weights:  40%|████      | 79/196 [00:25<16:19,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.q_proj.bias][A
+Loading weights:  41%|████      | 80/196 [00:25<16:10,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.q_proj.weight][A
+Loading weights:  41%|████      | 80/196 [00:25<16:10,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.q_proj.weight][A
+Loading weights:  41%|████▏     | 81/196 [00:25<16:02,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.v_proj.bias]  [A
+Loading weights:  41%|████▏     | 81/196 [00:25<16:02,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.v_proj.bias][A
+Loading weights:  42%|████▏     | 82/196 [00:25<15:54,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.v_proj.weight][A
+Loading weights:  42%|████▏     | 82/196 [00:25<15:54,  8.37s/it, Materializing param=text_model.encoder.layers.4.self_attn.v_proj.weight][A
+Loading weights:  42%|████▏     | 83/196 [00:25<15:45,  8.37s/it, Materializing param=text_model.encoder.layers.5.layer_norm1.bias]       [A
+Loading weights:  42%|████▏     | 83/196 [00:25<15:45,  8.37s/it, Materializing param=text_model.encoder.layers.5.layer_norm1.bias][A
+Loading weights:  43%|████▎     | 84/196 [00:25<15:37,  8.37s/it, Materializing param=text_model.encoder.layers.5.layer_norm1.weight][A
+Loading weights:  43%|████▎     | 84/196 [00:25<15:37,  8.37s/it, Materializing param=text_model.encoder.layers.5.layer_norm1.weight][A
+Loading weights:  43%|████▎     | 85/196 [00:25<15:29,  8.37s/it, Materializing param=text_model.encoder.layers.5.layer_norm2.bias]  [A
+Loading weights:  43%|████▎     | 85/196 [00:25<15:29,  8.37s/it, Materializing param=text_model.encoder.layers.5.layer_norm2.bias][A
+Loading weights:  44%|████▍     | 86/196 [00:25<15:20,  8.37s/it, Materializing param=text_model.encoder.layers.5.layer_norm2.weight][A
+Loading weights:  44%|████▍     | 86/196 [00:25<15:20,  8.37s/it, Materializing param=text_model.encoder.layers.5.layer_norm2.weight][A
+Loading weights:  44%|████▍     | 87/196 [00:25<15:12,  8.37s/it, Materializing param=text_model.encoder.layers.5.mlp.fc1.bias]      [A
+Loading weights:  44%|████▍     | 87/196 [00:25<15:12,  8.37s/it, Materializing param=text_model.encoder.layers.5.mlp.fc1.bias][A
+Loading weights:  45%|████▍     | 88/196 [00:25<15:03,  8.37s/it, Materializing param=text_model.encoder.layers.5.mlp.fc1.weight][A
+Loading weights:  45%|████▍     | 88/196 [00:25<15:03,  8.37s/it, Materializing param=text_model.encoder.layers.5.mlp.fc1.weight][A
+Loading weights:  45%|████▌     | 89/196 [00:25<14:55,  8.37s/it, Materializing param=text_model.encoder.layers.5.mlp.fc2.bias]  [A
+Loading weights:  45%|████▌     | 89/196 [00:25<14:55,  8.37s/it, Materializing param=text_model.encoder.layers.5.mlp.fc2.bias][A
+Loading weights:  46%|████▌     | 90/196 [00:25<14:47,  8.37s/it, Materializing param=text_model.encoder.layers.5.mlp.fc2.weight][A
+Loading weights:  46%|████▌     | 90/196 [00:25<14:47,  8.37s/it, Materializing param=text_model.encoder.layers.5.mlp.fc2.weight][A
+Loading weights:  46%|████▋     | 91/196 [00:25<14:38,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.k_proj.bias][A
+Loading weights:  46%|████▋     | 91/196 [00:25<14:38,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.k_proj.bias][A
+Loading weights:  47%|████▋     | 92/196 [00:25<14:30,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.k_proj.weight][A
+Loading weights:  47%|████▋     | 92/196 [00:25<14:30,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.k_proj.weight][A
+Loading weights:  47%|████▋     | 93/196 [00:25<14:22,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.out_proj.bias][A
+Loading weights:  47%|████▋     | 93/196 [00:25<14:22,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.out_proj.bias][A
+Loading weights:  48%|████▊     | 94/196 [00:25<14:13,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.out_proj.weight][A
+Loading weights:  48%|████▊     | 94/196 [00:25<14:13,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.out_proj.weight][A
+Loading weights:  48%|████▊     | 95/196 [00:25<14:05,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.q_proj.bias]    [A
+Loading weights:  48%|████▊     | 95/196 [00:25<14:05,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.q_proj.bias][A
+Loading weights:  49%|████▉     | 96/196 [00:25<13:56,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.q_proj.weight][A
+Loading weights:  49%|████▉     | 96/196 [00:25<13:56,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.q_proj.weight][A
+Loading weights:  49%|████▉     | 97/196 [00:25<13:48,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.v_proj.bias]  [A
+Loading weights:  49%|████▉     | 97/196 [00:25<13:48,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.v_proj.bias][A
+Loading weights:  50%|█████     | 98/196 [00:25<13:40,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.v_proj.weight][A
+Loading weights:  50%|█████     | 98/196 [00:25<13:40,  8.37s/it, Materializing param=text_model.encoder.layers.5.self_attn.v_proj.weight][A
+Loading weights:  51%|█████     | 99/196 [00:25<13:31,  8.37s/it, Materializing param=text_model.encoder.layers.6.layer_norm1.bias]       [A
+Loading weights:  51%|█████     | 99/196 [00:25<13:31,  8.37s/it, Materializing param=text_model.encoder.layers.6.layer_norm1.bias][A
+Loading weights:  51%|█████     | 100/196 [00:25<13:23,  8.37s/it, Materializing param=text_model.encoder.layers.6.layer_norm1.weight][A
+Loading weights:  51%|█████     | 100/196 [00:25<13:23,  8.37s/it, Materializing param=text_model.encoder.layers.6.layer_norm1.weight][A
+Loading weights:  52%|█████▏    | 101/196 [00:25<13:15,  8.37s/it, Materializing param=text_model.encoder.layers.6.layer_norm2.bias]  [A
+Loading weights:  52%|█████▏    | 101/196 [00:25<13:15,  8.37s/it, Materializing param=text_model.encoder.layers.6.layer_norm2.bias][A
+Loading weights:  52%|█████▏    | 102/196 [00:25<13:06,  8.37s/it, Materializing param=text_model.encoder.layers.6.layer_norm2.weight][A
+Loading weights:  52%|█████▏    | 102/196 [00:25<13:06,  8.37s/it, Materializing param=text_model.encoder.layers.6.layer_norm2.weight][A
+Loading weights:  53%|█████▎    | 103/196 [00:25<12:58,  8.37s/it, Materializing param=text_model.encoder.layers.6.mlp.fc1.bias]      [A
+Loading weights:  53%|█████▎    | 103/196 [00:25<12:58,  8.37s/it, Materializing param=text_model.encoder.layers.6.mlp.fc1.bias][A
+Loading weights:  53%|█████▎    | 104/196 [00:25<12:50,  8.37s/it, Materializing param=text_model.encoder.layers.6.mlp.fc1.weight][A
+Loading weights:  53%|█████▎    | 104/196 [00:25<12:50,  8.37s/it, Materializing param=text_model.encoder.layers.6.mlp.fc1.weight][A
+Loading weights:  54%|█████▎    | 105/196 [00:25<12:41,  8.37s/it, Materializing param=text_model.encoder.layers.6.mlp.fc2.bias]  [A
+Loading weights:  54%|█████▎    | 105/196 [00:25<12:41,  8.37s/it, Materializing param=text_model.encoder.layers.6.mlp.fc2.bias][A
+Loading weights:  54%|█████▍    | 106/196 [00:25<12:33,  8.37s/it, Materializing param=text_model.encoder.layers.6.mlp.fc2.weight][A
+Loading weights:  54%|█████▍    | 106/196 [00:25<12:33,  8.37s/it, Materializing param=text_model.encoder.layers.6.mlp.fc2.weight][A
+Loading weights:  55%|█████▍    | 107/196 [00:25<12:24,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.k_proj.bias][A
+Loading weights:  55%|█████▍    | 107/196 [00:25<12:24,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.k_proj.bias][A
+Loading weights:  55%|█████▌    | 108/196 [00:25<12:16,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.k_proj.weight][A
+Loading weights:  55%|█████▌    | 108/196 [00:25<12:16,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.k_proj.weight][A
+Loading weights:  56%|█████▌    | 109/196 [00:25<12:08,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.out_proj.bias][A
+Loading weights:  56%|█████▌    | 109/196 [00:25<12:08,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.out_proj.bias][A
+Loading weights:  56%|█████▌    | 110/196 [00:25<11:59,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.out_proj.weight][A
+Loading weights:  56%|█████▌    | 110/196 [00:25<11:59,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.out_proj.weight][A
+Loading weights:  57%|█████▋    | 111/196 [00:25<11:51,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.q_proj.bias]    [A
+Loading weights:  57%|█████▋    | 111/196 [00:25<11:51,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.q_proj.bias][A
+Loading weights:  57%|█████▋    | 112/196 [00:25<11:43,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.q_proj.weight][A
+Loading weights:  57%|█████▋    | 112/196 [00:25<11:43,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.q_proj.weight][A
+Loading weights:  58%|█████▊    | 113/196 [00:25<11:34,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.v_proj.bias]  [A
+Loading weights:  58%|█████▊    | 113/196 [00:25<11:34,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.v_proj.bias][A
+Loading weights:  58%|█████▊    | 114/196 [00:25<11:26,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.v_proj.weight][A
+Loading weights:  58%|█████▊    | 114/196 [00:25<11:26,  8.37s/it, Materializing param=text_model.encoder.layers.6.self_attn.v_proj.weight][A
+Loading weights:  59%|█████▊    | 115/196 [00:25<11:17,  8.37s/it, Materializing param=text_model.encoder.layers.7.layer_norm1.bias]       [A
+Loading weights:  59%|█████▊    | 115/196 [00:25<11:17,  8.37s/it, Materializing param=text_model.encoder.layers.7.layer_norm1.bias][A
+Loading weights:  59%|█████▉    | 116/196 [00:25<11:09,  8.37s/it, Materializing param=text_model.encoder.layers.7.layer_norm1.weight][A
+Loading weights:  59%|█████▉    | 116/196 [00:25<11:09,  8.37s/it, Materializing param=text_model.encoder.layers.7.layer_norm1.weight][A
+Loading weights:  60%|█████▉    | 117/196 [00:25<11:01,  8.37s/it, Materializing param=text_model.encoder.layers.7.layer_norm2.bias]  [A
+Loading weights:  60%|█████▉    | 117/196 [00:25<11:01,  8.37s/it, Materializing param=text_model.encoder.layers.7.layer_norm2.bias][A
+Loading weights:  60%|██████    | 118/196 [00:25<10:52,  8.37s/it, Materializing param=text_model.encoder.layers.7.layer_norm2.weight][A
+Loading weights:  60%|██████    | 118/196 [00:25<10:52,  8.37s/it, Materializing param=text_model.encoder.layers.7.layer_norm2.weight][A
+Loading weights:  61%|██████    | 119/196 [00:25<10:44,  8.37s/it, Materializing param=text_model.encoder.layers.7.mlp.fc1.bias]      [A
+Loading weights:  61%|██████    | 119/196 [00:25<10:44,  8.37s/it, Materializing param=text_model.encoder.layers.7.mlp.fc1.bias][A
+Loading weights:  61%|██████    | 120/196 [00:25<10:36,  8.37s/it, Materializing param=text_model.encoder.layers.7.mlp.fc1.weight][A
+Loading weights:  61%|██████    | 120/196 [00:25<10:36,  8.37s/it, Materializing param=text_model.encoder.layers.7.mlp.fc1.weight][A
+Loading weights:  62%|██████▏   | 121/196 [00:25<10:27,  8.37s/it, Materializing param=text_model.encoder.layers.7.mlp.fc2.bias]  [A
+Loading weights:  62%|██████▏   | 121/196 [00:25<10:27,  8.37s/it, Materializing param=text_model.encoder.layers.7.mlp.fc2.bias][A
+Loading weights:  62%|██████▏   | 122/196 [00:25<10:19,  8.37s/it, Materializing param=text_model.encoder.layers.7.mlp.fc2.weight][A
+Loading weights:  62%|██████▏   | 122/196 [00:25<10:19,  8.37s/it, Materializing param=text_model.encoder.layers.7.mlp.fc2.weight][A
+Loading weights:  63%|██████▎   | 123/196 [00:25<10:10,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.k_proj.bias][A
+Loading weights:  63%|██████▎   | 123/196 [00:25<10:10,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.k_proj.bias][A
+Loading weights:  63%|██████▎   | 124/196 [00:25<10:02,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.k_proj.weight][A
+Loading weights:  63%|██████▎   | 124/196 [00:25<10:02,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.k_proj.weight][A
+Loading weights:  64%|██████▍   | 125/196 [00:25<09:54,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.out_proj.bias][A
+Loading weights:  64%|██████▍   | 125/196 [00:25<09:54,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.out_proj.bias][A
+Loading weights:  64%|██████▍   | 126/196 [00:25<09:45,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.out_proj.weight][A
+Loading weights:  64%|██████▍   | 126/196 [00:25<09:45,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.out_proj.weight][A
+Loading weights:  65%|██████▍   | 127/196 [00:25<09:37,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.q_proj.bias]    [A
+Loading weights:  65%|██████▍   | 127/196 [00:25<09:37,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.q_proj.bias][A
+Loading weights:  65%|██████▌   | 128/196 [00:25<09:29,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.q_proj.weight][A
+Loading weights:  65%|██████▌   | 128/196 [00:25<09:29,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.q_proj.weight][A
+Loading weights:  66%|██████▌   | 129/196 [00:25<09:20,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.v_proj.bias]  [A
+Loading weights:  66%|██████▌   | 129/196 [00:25<09:20,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.v_proj.bias][A
+Loading weights:  66%|██████▋   | 130/196 [00:25<09:12,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.v_proj.weight][A
+Loading weights:  66%|██████▋   | 130/196 [00:25<09:12,  8.37s/it, Materializing param=text_model.encoder.layers.7.self_attn.v_proj.weight][A
+Loading weights:  67%|██████▋   | 131/196 [00:25<09:04,  8.37s/it, Materializing param=text_model.encoder.layers.8.layer_norm1.bias]       [A
+Loading weights:  67%|██████▋   | 131/196 [00:25<09:04,  8.37s/it, Materializing param=text_model.encoder.layers.8.layer_norm1.bias][A
+Loading weights:  67%|██████▋   | 132/196 [00:25<08:55,  8.37s/it, Materializing param=text_model.encoder.layers.8.layer_norm1.weight][A
+Loading weights:  67%|██████▋   | 132/196 [00:25<08:55,  8.37s/it, Materializing param=text_model.encoder.layers.8.layer_norm1.weight][A
+Loading weights:  68%|██████▊   | 133/196 [00:25<08:47,  8.37s/it, Materializing param=text_model.encoder.layers.8.layer_norm2.bias]  [A
+Loading weights:  68%|██████▊   | 133/196 [00:25<08:47,  8.37s/it, Materializing param=text_model.encoder.layers.8.layer_norm2.bias][A
+Loading weights:  68%|██████▊   | 134/196 [00:25<08:38,  8.37s/it, Materializing param=text_model.encoder.layers.8.layer_norm2.weight][A
+Loading weights:  68%|██████▊   | 134/196 [00:25<08:38,  8.37s/it, Materializing param=text_model.encoder.layers.8.layer_norm2.weight][A
+Loading weights:  69%|██████▉   | 135/196 [00:25<08:30,  8.37s/it, Materializing param=text_model.encoder.layers.8.mlp.fc1.bias]      [A
+Loading weights:  69%|██████▉   | 135/196 [00:25<08:30,  8.37s/it, Materializing param=text_model.encoder.layers.8.mlp.fc1.bias][A
+Loading weights:  69%|██████▉   | 136/196 [00:25<08:22,  8.37s/it, Materializing param=text_model.encoder.layers.8.mlp.fc1.weight][A
+Loading weights:  69%|██████▉   | 136/196 [00:25<08:22,  8.37s/it, Materializing param=text_model.encoder.layers.8.mlp.fc1.weight][A
+Loading weights:  70%|██████▉   | 137/196 [00:25<08:13,  8.37s/it, Materializing param=text_model.encoder.layers.8.mlp.fc2.bias]  [A
+Loading weights:  70%|██████▉   | 137/196 [00:25<08:13,  8.37s/it, Materializing param=text_model.encoder.layers.8.mlp.fc2.bias][A
+Loading weights:  70%|███████   | 138/196 [00:25<08:05,  8.37s/it, Materializing param=text_model.encoder.layers.8.mlp.fc2.weight][A
+Loading weights:  70%|███████   | 138/196 [00:25<08:05,  8.37s/it, Materializing param=text_model.encoder.layers.8.mlp.fc2.weight][A
+Loading weights:  71%|███████   | 139/196 [00:25<07:57,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.k_proj.bias][A
+Loading weights:  71%|███████   | 139/196 [00:25<07:57,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.k_proj.bias][A
+Loading weights:  71%|███████▏  | 140/196 [00:25<07:48,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.k_proj.weight][A
+Loading weights:  71%|███████▏  | 140/196 [00:25<07:48,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.k_proj.weight][A
+Loading weights:  72%|███████▏  | 141/196 [00:25<07:40,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.out_proj.bias][A
+Loading weights:  72%|███████▏  | 141/196 [00:25<07:40,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.out_proj.bias][A
+Loading weights:  72%|███████▏  | 142/196 [00:25<07:31,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.out_proj.weight][A
+Loading weights:  72%|███████▏  | 142/196 [00:25<07:31,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.out_proj.weight][A
+Loading weights:  73%|███████▎  | 143/196 [00:25<07:23,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.q_proj.bias]    [A
+Loading weights:  73%|███████▎  | 143/196 [00:25<07:23,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.q_proj.bias][A
+Loading weights:  73%|███████▎  | 144/196 [00:25<07:15,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.q_proj.weight][A
+Loading weights:  73%|███████▎  | 144/196 [00:25<07:15,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.q_proj.weight][A
+Loading weights:  74%|███████▍  | 145/196 [00:25<07:06,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.v_proj.bias]  [A
+Loading weights:  74%|███████▍  | 145/196 [00:25<07:06,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.v_proj.bias][A
+Loading weights:  74%|███████▍  | 146/196 [00:25<06:58,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.v_proj.weight][A
+Loading weights:  74%|███████▍  | 146/196 [00:25<06:58,  8.37s/it, Materializing param=text_model.encoder.layers.8.self_attn.v_proj.weight][A
+Loading weights:  75%|███████▌  | 147/196 [00:25<06:50,  8.37s/it, Materializing param=text_model.encoder.layers.9.layer_norm1.bias]       [A
+Loading weights:  75%|███████▌  | 147/196 [00:25<06:50,  8.37s/it, Materializing param=text_model.encoder.layers.9.layer_norm1.bias][A
+Loading weights:  76%|███████▌  | 148/196 [00:25<06:41,  8.37s/it, Materializing param=text_model.encoder.layers.9.layer_norm1.weight][A
+Loading weights:  76%|███████▌  | 148/196 [00:25<06:41,  8.37s/it, Materializing param=text_model.encoder.layers.9.layer_norm1.weight][A
+Loading weights:  76%|███████▌  | 149/196 [00:25<06:33,  8.37s/it, Materializing param=text_model.encoder.layers.9.layer_norm2.bias]  [A
+Loading weights:  76%|███████▌  | 149/196 [00:25<06:33,  8.37s/it, Materializing param=text_model.encoder.layers.9.layer_norm2.bias][A
+Loading weights:  77%|███████▋  | 150/196 [00:25<06:25,  8.37s/it, Materializing param=text_model.encoder.layers.9.layer_norm2.weight][A
+Loading weights:  77%|███████▋  | 150/196 [00:25<06:25,  8.37s/it, Materializing param=text_model.encoder.layers.9.layer_norm2.weight][A
+Loading weights:  77%|███████▋  | 151/196 [00:25<06:16,  8.37s/it, Materializing param=text_model.encoder.layers.9.mlp.fc1.bias]      [A
+Loading weights:  77%|███████▋  | 151/196 [00:25<06:16,  8.37s/it, Materializing param=text_model.encoder.layers.9.mlp.fc1.bias][A
+Loading weights:  78%|███████▊  | 152/196 [00:25<06:08,  8.37s/it, Materializing param=text_model.encoder.layers.9.mlp.fc1.weight][A
+Loading weights:  78%|███████▊  | 152/196 [00:25<06:08,  8.37s/it, Materializing param=text_model.encoder.layers.9.mlp.fc1.weight][A
+Loading weights:  78%|███████▊  | 153/196 [00:25<05:59,  8.37s/it, Materializing param=text_model.encoder.layers.9.mlp.fc2.bias]  [A
+Loading weights:  78%|███████▊  | 153/196 [00:25<05:59,  8.37s/it, Materializing param=text_model.encoder.layers.9.mlp.fc2.bias][A
+Loading weights:  79%|███████▊  | 154/196 [00:25<05:51,  8.37s/it, Materializing param=text_model.encoder.layers.9.mlp.fc2.weight][A
+Loading weights:  79%|███████▊  | 154/196 [00:25<05:51,  8.37s/it, Materializing param=text_model.encoder.layers.9.mlp.fc2.weight][A
+Loading weights:  79%|███████▉  | 155/196 [00:25<05:43,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.k_proj.bias][A
+Loading weights:  79%|███████▉  | 155/196 [00:25<05:43,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.k_proj.bias][A
+Loading weights:  80%|███████▉  | 156/196 [00:25<05:34,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.k_proj.weight][A
+Loading weights:  80%|███████▉  | 156/196 [00:25<05:34,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.k_proj.weight][A
+Loading weights:  80%|████████  | 157/196 [00:25<05:26,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.out_proj.bias][A
+Loading weights:  80%|████████  | 157/196 [00:25<05:26,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.out_proj.bias][A
+Loading weights:  81%|████████  | 158/196 [00:25<05:18,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.out_proj.weight][A
+Loading weights:  81%|████████  | 158/196 [00:25<05:18,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.out_proj.weight][A
+Loading weights:  81%|████████  | 159/196 [00:25<05:09,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.q_proj.bias]    [A
+Loading weights:  81%|████████  | 159/196 [00:25<05:09,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.q_proj.bias][A
+Loading weights:  82%|████████▏ | 160/196 [00:25<05:01,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.q_proj.weight][A
+Loading weights:  82%|████████▏ | 160/196 [00:25<05:01,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.q_proj.weight][A
+Loading weights:  82%|████████▏ | 161/196 [00:25<04:52,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.v_proj.bias]  [A
+Loading weights:  82%|████████▏ | 161/196 [00:25<04:52,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.v_proj.bias][A
+Loading weights:  83%|████████▎ | 162/196 [00:25<04:44,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.v_proj.weight][A
+Loading weights:  83%|████████▎ | 162/196 [00:25<04:44,  8.37s/it, Materializing param=text_model.encoder.layers.9.self_attn.v_proj.weight][A
+Loading weights:  83%|████████▎ | 163/196 [00:25<04:36,  8.37s/it, Materializing param=text_model.encoder.layers.10.layer_norm1.bias]      [A
+Loading weights:  83%|████████▎ | 163/196 [00:25<04:36,  8.37s/it, Materializing param=text_model.encoder.layers.10.layer_norm1.bias][A
+Loading weights:  84%|████████▎ | 164/196 [00:25<04:27,  8.37s/it, Materializing param=text_model.encoder.layers.10.layer_norm1.weight][A
+Loading weights:  84%|████████▎ | 164/196 [00:25<04:27,  8.37s/it, Materializing param=text_model.encoder.layers.10.layer_norm1.weight][A
+Loading weights:  84%|████████▍ | 165/196 [00:25<04:19,  8.37s/it, Materializing param=text_model.encoder.layers.10.layer_norm2.bias]  [A
+Loading weights:  84%|████████▍ | 165/196 [00:25<04:19,  8.37s/it, Materializing param=text_model.encoder.layers.10.layer_norm2.bias][A
+Loading weights:  85%|████████▍ | 166/196 [00:25<04:11,  8.37s/it, Materializing param=text_model.encoder.layers.10.layer_norm2.weight][A
+Loading weights:  85%|████████▍ | 166/196 [00:25<04:11,  8.37s/it, Materializing param=text_model.encoder.layers.10.layer_norm2.weight][A
+Loading weights:  85%|████████▌ | 167/196 [00:25<04:02,  8.37s/it, Materializing param=text_model.encoder.layers.10.mlp.fc1.bias]      [A
+Loading weights:  85%|████████▌ | 167/196 [00:25<04:02,  8.37s/it, Materializing param=text_model.encoder.layers.10.mlp.fc1.bias][A
+Loading weights:  86%|████████▌ | 168/196 [00:25<03:54,  8.37s/it, Materializing param=text_model.encoder.layers.10.mlp.fc1.weight][A
+Loading weights:  86%|████████▌ | 168/196 [00:25<03:54,  8.37s/it, Materializing param=text_model.encoder.layers.10.mlp.fc1.weight][A
+Loading weights:  86%|████████▌ | 169/196 [00:25<03:45,  8.37s/it, Materializing param=text_model.encoder.layers.10.mlp.fc2.bias]  [A
+Loading weights:  86%|████████▌ | 169/196 [00:25<03:45,  8.37s/it, Materializing param=text_model.encoder.layers.10.mlp.fc2.bias][A
+Loading weights:  87%|████████▋ | 170/196 [00:25<03:37,  8.37s/it, Materializing param=text_model.encoder.layers.10.mlp.fc2.weight][A
+Loading weights:  87%|████████▋ | 170/196 [00:25<03:37,  8.37s/it, Materializing param=text_model.encoder.layers.10.mlp.fc2.weight][A
+Loading weights:  87%|████████▋ | 171/196 [00:25<03:29,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.k_proj.bias][A
+Loading weights:  87%|████████▋ | 171/196 [00:25<03:29,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.k_proj.bias][A
+Loading weights:  88%|████████▊ | 172/196 [00:25<03:20,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.k_proj.weight][A
+Loading weights:  88%|████████▊ | 172/196 [00:25<03:20,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.k_proj.weight][A
+Loading weights:  88%|████████▊ | 173/196 [00:25<03:12,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.out_proj.bias][A
+Loading weights:  88%|████████▊ | 173/196 [00:25<03:12,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.out_proj.bias][A
+Loading weights:  89%|████████▉ | 174/196 [00:25<03:04,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.out_proj.weight][A
+Loading weights:  89%|████████▉ | 174/196 [00:25<03:04,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.out_proj.weight][A
+Loading weights:  89%|████████▉ | 175/196 [00:25<02:55,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.q_proj.bias]    [A
+Loading weights:  89%|████████▉ | 175/196 [00:25<02:55,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.q_proj.bias][A
+Loading weights:  90%|████████▉ | 176/196 [00:25<02:47,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.q_proj.weight][A
+Loading weights:  90%|████████▉ | 176/196 [00:25<02:47,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.q_proj.weight][A
+Loading weights:  90%|█████████ | 177/196 [00:25<02:39,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.v_proj.bias]  [A
+Loading weights:  90%|█████████ | 177/196 [00:25<02:39,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.v_proj.bias][A
+Loading weights:  91%|█████████ | 178/196 [00:25<02:30,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.v_proj.weight][A
+Loading weights:  91%|█████████ | 178/196 [00:25<02:30,  8.37s/it, Materializing param=text_model.encoder.layers.10.self_attn.v_proj.weight][A
+Loading weights:  91%|█████████▏| 179/196 [00:25<02:22,  8.37s/it, Materializing param=text_model.encoder.layers.11.layer_norm1.bias]       [A
+Loading weights:  91%|█████████▏| 179/196 [00:25<02:22,  8.37s/it, Materializing param=text_model.encoder.layers.11.layer_norm1.bias][A
+Loading weights:  92%|█████████▏| 180/196 [00:25<02:13,  8.37s/it, Materializing param=text_model.encoder.layers.11.layer_norm1.weight][A
+Loading weights:  92%|█████████▏| 180/196 [00:25<02:13,  8.37s/it, Materializing param=text_model.encoder.layers.11.layer_norm1.weight][A
+Loading weights:  92%|█████████▏| 181/196 [00:25<02:05,  8.37s/it, Materializing param=text_model.encoder.layers.11.layer_norm2.bias]  [A
+Loading weights:  92%|█████████▏| 181/196 [00:25<02:05,  8.37s/it, Materializing param=text_model.encoder.layers.11.layer_norm2.bias][A
+Loading weights:  93%|█████████▎| 182/196 [00:25<01:57,  8.37s/it, Materializing param=text_model.encoder.layers.11.layer_norm2.weight][A
+Loading weights:  93%|█████████▎| 182/196 [00:25<01:57,  8.37s/it, Materializing param=text_model.encoder.layers.11.layer_norm2.weight][A
+Loading weights:  93%|█████████▎| 183/196 [00:25<01:48,  8.37s/it, Materializing param=text_model.encoder.layers.11.mlp.fc1.bias]      [A
+Loading weights:  93%|█████████▎| 183/196 [00:25<01:48,  8.37s/it, Materializing param=text_model.encoder.layers.11.mlp.fc1.bias][A
+Loading weights:  94%|█████████▍| 184/196 [00:25<01:40,  8.37s/it, Materializing param=text_model.encoder.layers.11.mlp.fc1.weight][A
+Loading weights:  94%|█████████▍| 184/196 [00:25<01:40,  8.37s/it, Materializing param=text_model.encoder.layers.11.mlp.fc1.weight][A
+Loading weights:  94%|█████████▍| 185/196 [00:25<01:32,  8.37s/it, Materializing param=text_model.encoder.layers.11.mlp.fc2.bias]  [A
+Loading weights:  94%|█████████▍| 185/196 [00:25<01:32,  8.37s/it, Materializing param=text_model.encoder.layers.11.mlp.fc2.bias][A
+Loading weights:  95%|█████████▍| 186/196 [00:25<01:23,  8.37s/it, Materializing param=text_model.encoder.layers.11.mlp.fc2.weight][A
+Loading weights:  95%|█████████▍| 186/196 [00:25<01:23,  8.37s/it, Materializing param=text_model.encoder.layers.11.mlp.fc2.weight][A
+Loading weights:  95%|█████████▌| 187/196 [00:25<01:15,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.k_proj.bias][A
+Loading weights:  95%|█████████▌| 187/196 [00:25<01:15,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.k_proj.bias][A
+Loading weights:  96%|█████████▌| 188/196 [00:25<01:06,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.k_proj.weight][A
+Loading weights:  96%|█████████▌| 188/196 [00:25<01:06,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.k_proj.weight][A
+Loading weights:  96%|█████████▋| 189/196 [00:25<00:58,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.out_proj.bias][A
+Loading weights:  96%|█████████▋| 189/196 [00:25<00:58,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.out_proj.bias][A
+Loading weights:  97%|█████████▋| 190/196 [00:25<00:50,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.out_proj.weight][A
+Loading weights:  97%|█████████▋| 190/196 [00:25<00:50,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.out_proj.weight][A
+Loading weights:  97%|█████████▋| 191/196 [00:25<00:41,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.q_proj.bias]    [A
+Loading weights:  97%|█████████▋| 191/196 [00:25<00:41,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.q_proj.bias][A
+Loading weights:  98%|█████████▊| 192/196 [00:25<00:33,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.q_proj.weight][A
+Loading weights:  98%|█████████▊| 192/196 [00:25<00:33,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.q_proj.weight][A
+Loading weights:  98%|█████████▊| 193/196 [00:25<00:25,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.v_proj.bias]  [A
+Loading weights:  98%|█████████▊| 193/196 [00:25<00:25,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.v_proj.bias][A
+Loading weights:  99%|█████████▉| 194/196 [00:25<00:16,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.v_proj.weight][A
+Loading weights:  99%|█████████▉| 194/196 [00:25<00:16,  8.37s/it, Materializing param=text_model.encoder.layers.11.self_attn.v_proj.weight][A
+Loading weights:  99%|█████████▉| 195/196 [00:25<00:08,  8.37s/it, Materializing param=text_model.final_layer_norm.bias]                    [A
+Loading weights:  99%|█████████▉| 195/196 [00:25<00:08,  8.37s/it, Materializing param=text_model.final_layer_norm.bias][A
+Loading weights: 100%|██████████| 196/196 [00:25<00:00,  8.37s/it, Materializing param=text_model.final_layer_norm.weight][A
+Loading weights: 100%|██████████| 196/196 [00:25<00:00,  8.37s/it, Materializing param=text_model.final_layer_norm.weight][ALoading weights: 100%|██████████| 196/196 [00:25<00:00,  7.80it/s, Materializing param=text_model.final_layer_norm.weight]
 CLIPTextModel LOAD REPORT from: /mnt/storage/huggingface/models--runwayml--stable-diffusion-v1-5/snapshots/451f4fe16113bff5a5d2269ed5ad43b0592e9a14/text_encoder
 Key                                | Status     |  | 
 -----------------------------------+------------+--+-
@@ -534,187 +534,192 @@ text_model.embeddings.position_ids | UNEXPECTED |  |
 
 Notes:
 - UNEXPECTED	:can be ignored when loading from different task/architecture; not ok if you expect identical arch.
-Loading pipeline components...: 100%|██████████| 6/6 [03:38<00:00, 24.95s/it]Loading pipeline components...: 100%|██████████| 6/6 [03:38<00:00, 36.41s/it]
+Loading pipeline components...:  83%|████████▎ | 5/6 [03:23<00:47, 47.26s/it]Loading pipeline components...: 100%|██████████| 6/6 [03:41<00:00, 38.26s/it]Loading pipeline components...: 100%|██████████| 6/6 [03:41<00:00, 36.92s/it]
 You have disabled the safety checker for <class 'diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion.StableDiffusionPipeline'> by passing `safety_checker=None`. Ensure that you abide to the conditions of the Stable Diffusion license and do not expose unfiltered results in services or applications open to the public. Both the diffusers team and Hugging Face strongly recommend to keep the safety filter enabled in all public facing circumstances, disabling it only for use-cases that involve analyzing network behavior or auditing its results. For more information, please have a look at https://github.com/huggingface/diffusers/pull/254 .
 /usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_validators.py:202: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
   warnings.warn(
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Bootstrap: Using eth0:10.0.4.15<0>
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO cudaDriverVersion 13010
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Comm config Blocking set to 1
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO NET/Plugin: Loaded net plugin NCCL RDMA Plugin v11 (v11)
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO NET/Plugin: Loaded collnet plugin SHARP (v11)
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Successfully loaded external network plugin /opt/hpcx/nccl_rdma_sharp_plugin/lib/libnccl-net.so
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.4.15<0>
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Initialized NET plugin Socket
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Assigned NET plugin Socket to comm
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Using network Socket
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO ncclCommInitRankConfig comm 0x1c068f30 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId f01000 commId 0x8b22c48a9a9121a5 - Init START
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO RAS client listening socket at ::1<28028>
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Bootstrap timings total 0.010138 (create 0.000021, send 0.000059, recv 0.000205, ring 0.000296, delay 0.000000)
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is empty, ignoring. (GPU affinity =  ; CPU affinity = 0-19).
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO comm 0x1c068f30 rank 0 nRanks 2 nNodes 2 localRanks 1 localRank 0 MNNVL 0
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Channel 00/02 : 0 1
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Channel 01/02 : 0 1
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] -1/-1/-1->0->1
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO P2P Chunksize set to 131072
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Check P2P Type isAllDirectP2p 1 directMode 0 isAllCudaP2p 1
-stable-diffusion-training-trainer-0-0:133:151 [0] NCCL INFO [Proxy Service] Device 0 CPU core 4
-stable-diffusion-training-trainer-0-0:133:152 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 10
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO 2 coll channels, 2 collnet channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO CC Off, workFifoBytes 1048576
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO ncclCommInitRankConfig comm 0x1c068f30 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId f01000 commId 0x8b22c48a9a9121a5 - Init COMPLETE
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 2 total 0.16 (kernels 0.14, alloc 0.00, bootstrap 0.01, allgathers 0.00, topo 0.00, graphs 0.00, connections 0.00, rest 0.00)
-stable-diffusion-training-trainer-0-0:133:153 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 3
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Channel 00/0 : 1[0] -> 0[0] [receive] via NET/Socket/0
-stable-diffusion-training-trainer-0-0:1trainable params: 797,184 || all params: 860,318,148 || trainable%: 0.0927
-[07:16:26] LoRA configured, preparing dataset... | GPU0: Mem 0.0/119.7GB
+[Rank 0] Model loaded, syncing...
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Bootstrap: Using eth0:10.0.4.118<0>
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO cudaDriverVersion 13010
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Comm config Blocking set to 1
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO NET/Plugin: Loaded net plugin NCCL RDMA Plugin v11 (v11)
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO NET/Plugin: Loaded collnet plugin SHARP (v11)
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Successfully loaded external network plugin /opt/hpcx/nccl_rdma_sharp_plugin/lib/libnccl-net.so
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.4.118<0>
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Initialized NET plugin Socket
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Assigned NET plugin Socket to comm
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Using network Socket
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO ncclCommInitRankConfig comm 0x43b9a870 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId f01000 commId 0x86fdd91b8fa50893 - Init START
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO RAS client listening socket at ::1<28028>
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Bootstrap timings total 0.125876 (create 0.000023, send 0.000076, recv 0.103222, ring 0.000130, delay 0.000000)
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is empty, ignoring. (GPU affinity =  ; CPU affinity = 0-19).
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO comm 0x43b9a870 rank 0 nRanks 2 nNodes 2 localRanks 1 localRank 0 MNNVL 0
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Channel 00/02 : 0 1
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Channel 01/02 : 0 1
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] -1/-1/-1->0->1
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO P2P Chunksize set to 131072
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Check P2P Type isAllDirectP2p 1 directMode 0 isAllCudaP2p 1
+stable-diffusion-training-trainer-0-0:132:150 [0] NCCL INFO [Proxy Service] Device 0 CPU core 4
+stable-diffusion-training-trainer-0-0:132:151 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 12
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO 2 coll channels, 2 collnet channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO CC Off, workFifoBytes 1048576
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO ncclCommInitRankConfig comm 0x43b9a870 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId f01000 commId 0x86fdd91b8fa50893 - Init COMPLETE
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 2 total 0.26 (kernels 0.13, alloc 0.00, bootstrap 0.13, allgathers 0.00, topo 0.00, graphs 0.00, connections 0.00, rest 0.00)
+stable-diffusion-training-trainer-0-0:132:152 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 13
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Channel 00/0 : 1[0] -> 0[0] [receive] via NET/Socket/0
+stable-diffusion-training-trainer-0-trainable params: 797,184 || all params: 860,318,148 || trainable%: 0.0927
+[01:51:21] LoRA configured, preparing dataset... | GPU0: Mem 0.0/119.7GB
+[Rank 0] Preparing dataset...
 Dataset: 5 images loaded from /mnt/storage/data/train
-[07:16:41] Starting distributed LoRA training for 100 epochs... | GPU0: Mem 2.0/119.7GB
-[07:16:41] World size: 2, Process: 0 | GPU0: Mem 2.0/119.7GB
+[Rank 0] Dataset ready, syncing...
+[Rank 0] Waiting for all processes...
+[Rank 0] All processes ready!
+[01:51:37] Starting distributed LoRA training for 100 epochs... | GPU0: Mem 2.0/119.7GB
+[01:51:37] World size: 2, Process: 0 | GPU0: Mem 2.0/119.7GB
 Epochs:   0%|          | 0/100 [00:00<?, ?it/s]
 Epoch 1/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 1/100:   0%|          | 0/3 [00:01<?, ?it/s, loss=0.0718, gpu_mem=2.0GB][A
-Epoch 1/100:  33%|███▎      | 1/3 [00:01<00:03,  1.51s/it, loss=0.0718, gpu_mem=2.0GB][A
-Epoch 1/100:  33%|███▎      | 1/3 [00:01<00:03,  1.51s/it, loss=0.0045, gpu_mem=2.0GB][A
-Epoch 1/100:  67%|██████▋   | 2/3 [00:01<00:00,  1.23it/s, loss=0.0045, gpu_mem=2.0GB][A
-Epoch 1/100:  67%|██████▋   | 2/3 [00:02<00:00,  1.23it/s, loss=0.0059, gpu_mem=2.0GB][A
-Epoch 1/100: 100%|██████████| 3/3 [00:02<00:00,  1.88it/s, loss=0.0059, gpu_mem=2.0GB][A
+Epoch 1/100:  33%|███▎      | 1/3 [00:01<00:02,  1.38s/it, loss=0.0718, gpu_mem=2.0GB][A
+Epoch 1/100:  33%|███▎      | 1/3 [00:01<00:02,  1.38s/it, loss=0.0045, gpu_mem=2.0GB][A
+Epoch 1/100:  67%|██████▋   | 2/3 [00:01<00:00,  1.32it/s, loss=0.0045, gpu_mem=2.0GB][A
+Epoch 1/100:  67%|██████▋   | 2/3 [00:01<00:00,  1.32it/s, loss=0.0059, gpu_mem=2.0GB][A
+Epoch 1/100: 100%|██████████| 3/3 [00:01<00:00,  2.00it/s, loss=0.0059, gpu_mem=2.0GB][A
 
 [Epoch 1/100] Avg Loss: 0.0274 | GPU0: Mem 2.0/119.7GB
-                                                                                      [AEpochs:   0%|          | 0/100 [00:02<?, ?it/s, avg_loss=0.0274, step=3/300]Epochs:   1%|          | 1/100 [00:02<03:21,  2.04s/it, avg_loss=0.0274, step=3/300]
+                                                                                      [AEpochs:   0%|          | 0/100 [00:01<?, ?it/s, avg_loss=0.0274, step=3/300]Epochs:   1%|          | 1/100 [00:01<03:07,  1.90s/it, avg_loss=0.0274, step=3/300]
 Epoch 2/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 2/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0049, gpu_mem=2.0GB][A
 Epoch 2/100:  33%|███▎      | 1/3 [00:00<00:00,  2.38it/s, loss=0.0049, gpu_mem=2.0GB][A
 Epoch 2/100:  33%|███▎      | 1/3 [00:00<00:00,  2.38it/s, loss=0.0182, gpu_mem=2.0GB][A
-Epoch 2/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.82it/s, loss=0.0182, gpu_mem=2.0GB][A
-Epoch 2/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.82it/s, loss=0.0089, gpu_mem=2.0GB][A
-Epoch 2/100: 100%|██████████| 3/3 [00:00<00:00,  3.55it/s, loss=0.0089, gpu_mem=2.0GB][A
-                                                                                      [AEpochs:   1%|          | 1/100 [00:02<03:21,  2.04s/it, avg_loss=0.0106, step=6/300]Epochs:   2%|▏         | 2/100 [00:02<02:15,  1.39s/it, avg_loss=0.0106, step=6/300]
+Epoch 2/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.83it/s, loss=0.0182, gpu_mem=2.0GB][A
+Epoch 2/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.83it/s, loss=0.0089, gpu_mem=2.0GB][A
+Epoch 2/100: 100%|██████████| 3/3 [00:00<00:00,  3.57it/s, loss=0.0089, gpu_mem=2.0GB][A
+                                                                                      [AEpochs:   1%|          | 1/100 [00:02<03:07,  1.90s/it, avg_loss=0.0106, step=6/300]Epochs:   2%|▏         | 2/100 [00:02<02:09,  1.32s/it, avg_loss=0.0106, step=6/300]
 
 [Epoch 2/100] Avg Loss: 0.0106 | GPU0: Mem 2.0/119.7GB
 Epoch 3/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 3/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0090, gpu_mem=2.0GB][A
-Epoch 3/100:  33%|███▎      | 1/3 [00:00<00:00,  2.40it/s, loss=0.0090, gpu_mem=2.0GB][A
-Epoch 3/100:  33%|███▎      | 1/3 [00:00<00:00,  2.40it/s, loss=0.0044, gpu_mem=2.0GB][A
+Epoch 3/100:  33%|███▎      | 1/3 [00:00<00:00,  2.38it/s, loss=0.0090, gpu_mem=2.0GB][A
+Epoch 3/100:  33%|███▎      | 1/3 [00:00<00:00,  2.38it/s, loss=0.0044, gpu_mem=2.0GB][A
 Epoch 3/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.85it/s, loss=0.0044, gpu_mem=2.0GB][A
 Epoch 3/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.85it/s, loss=0.0035, gpu_mem=2.0GB][A
-Epoch 3/100: 100%|██████████| 3/3 [00:00<00:00,  3.60it/s, loss=0.0035, gpu_mem=2.0GB][A
+Epoch 3/100: 100%|██████████| 3/3 [00:00<00:00,  3.58it/s, loss=0.0035, gpu_mem=2.0GB][A
 
 [Epoch 3/100] Avg Loss: 0.0056 | GPU0: Mem 2.0/119.7GB
-                                                                                      [AEpochs:   2%|▏         | 2/100 [00:03<02:15,  1.39s/it, avg_loss=0.0056, step=9/300]Epochs:   3%|▎         | 3/100 [00:03<01:53,  1.17s/it, avg_loss=0.0056, step=9/300]
+                                                                                      [AEpochs:   2%|▏         | 2/100 [00:03<02:09,  1.32s/it, avg_loss=0.0056, step=9/300]Epochs:   3%|▎         | 3/100 [00:03<01:50,  1.14s/it, avg_loss=0.0056, step=9/300]
 Epoch 4/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 4/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0117, gpu_mem=2.0GB][A
-Epoch 4/100:  33%|███▎      | 1/3 [00:00<00:00,  2.38it/s, loss=0.0117, gpu_mem=2.0GB][A
-Epoch 4/100:  33%|███▎      | 1/3 [00:00<00:00,  2.38it/s, loss=0.0099, gpu_mem=2.0GB][A
-Epoch 4/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.82it/s, loss=0.0099, gpu_mem=2.0GB][A
-Epoch 4/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.82it/s, loss=0.0082, gpu_mem=2.0GB][A
-Epoch 4/100: 100%|██████████| 3/3 [00:00<00:00,  3.56it/s, loss=0.0082, gpu_mem=2.0GB][A
-                                                                                      [AEpochs:   3%|▎         | 3/100 [00:04<01:53,  1.17s/it, avg_loss=0.0099, step=12/300]Epochs:   4%|▍         | 4/100 [00:04<01:43,  1.07s/it, avg_loss=0.0099, step=12/300]
+Epoch 4/100:  33%|███▎      | 1/3 [00:00<00:00,  2.39it/s, loss=0.0117, gpu_mem=2.0GB][A
+Epoch 4/100:  33%|███▎      | 1/3 [00:00<00:00,  2.39it/s, loss=0.0099, gpu_mem=2.0GB][A
+Epoch 4/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.85it/s, loss=0.0099, gpu_mem=2.0GB][A
+Epoch 4/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.85it/s, loss=0.0082, gpu_mem=2.0GB][A
+Epoch 4/100: 100%|██████████| 3/3 [00:00<00:00,  3.58it/s, loss=0.0082, gpu_mem=2.0GB][A
 
 [Epoch 4/100] Avg Loss: 0.0099 | GPU0: Mem 2.0/119.7GB
+                                                                                      [AEpochs:   3%|▎         | 3/100 [00:04<01:50,  1.14s/it, avg_loss=0.0099, step=12/300]Epochs:   4%|▍         | 4/100 [00:04<01:41,  1.05s/it, avg_loss=0.0099, step=12/300]
 Epoch 5/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 5/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0042, gpu_mem=2.0GB][A
 Epoch 5/100:  33%|███▎      | 1/3 [00:00<00:00,  2.40it/s, loss=0.0042, gpu_mem=2.0GB][A
 Epoch 5/100:  33%|███▎      | 1/3 [00:00<00:00,  2.40it/s, loss=0.0153, gpu_mem=2.0GB][A
 Epoch 5/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0153, gpu_mem=2.0GB][A
 Epoch 5/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0016, gpu_mem=2.0GB][A
-Epoch 5/100: 100%|██████████| 3/3 [00:00<00:00,  3.58it/s, loss=0.0016, gpu_mem=2.0GB][A
+Epoch 5/100: 100%|██████████| 3/3 [00:00<00:00,  3.60it/s, loss=0.0016, gpu_mem=2.0GB][A
 
 [Epoch 5/100] Avg Loss: 0.0070 | GPU0: Mem 2.0/119.7GB
-                                                                                      [AEpochs:   4%|▍         | 4/100 [00:05<01:43,  1.07s/it, avg_loss=0.0070, step=15/300]Epochs:   5%|▌         | 5/100 [00:05<01:36,  1.02s/it, avg_loss=0.0070, step=15/300]
+                                                                                      [AEpochs:   4%|▍         | 4/100 [00:05<01:41,  1.05s/it, avg_loss=0.0070, step=15/300]Epochs:   5%|▌         | 5/100 [00:05<01:35,  1.00s/it, avg_loss=0.0070, step=15/300]
 Epoch 6/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 6/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0074, gpu_mem=2.0GB][A
-Epoch 6/100:  33%|███▎      | 1/3 [00:00<00:00,  2.40it/s, loss=0.0074, gpu_mem=2.0GB][A
-Epoch 6/100:  33%|███▎      | 1/3 [00:00<00:00,  2.40it/s, loss=0.0045, gpu_mem=2.0GB][A
-Epoch 6/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0045, gpu_mem=2.0GB][A
-Epoch 6/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0434, gpu_mem=2.0GB][A
-Epoch 6/100: 100%|██████████| 3/3 [00:00<00:00,  3.59it/s, loss=0.0434, gpu_mem=2.0GB][A
+Epoch 6/100:  33%|███▎      | 1/3 [00:00<00:00,  2.42it/s, loss=0.0074, gpu_mem=2.0GB][A
+Epoch 6/100:  33%|███▎      | 1/3 [00:00<00:00,  2.42it/s, loss=0.0045, gpu_mem=2.0GB][A
+Epoch 6/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.87it/s, loss=0.0045, gpu_mem=2.0GB][A
+Epoch 6/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.87it/s, loss=0.0434, gpu_mem=2.0GB][A
+Epoch 6/100: 100%|██████████| 3/3 [00:00<00:00,  3.61it/s, loss=0.0434, gpu_mem=2.0GB][A
 
 [Epoch 6/100] Avg Loss: 0.0184 | GPU0: Mem 2.0/119.7GB
-                                                                                      [AEpochs:   5%|▌         | 5/100 [00:06<01:36,  1.02s/it, avg_loss=0.0184, step=18/300]Epochs:   6%|▌         | 6/100 [00:06<01:32,  1.02it/s, avg_loss=0.0184, step=18/300]
+                                                                                      [AEpochs:   5%|▌         | 5/100 [00:06<01:35,  1.00s/it, avg_loss=0.0184, step=18/300]Epochs:   6%|▌         | 6/100 [00:06<01:31,  1.03it/s, avg_loss=0.0184, step=18/300]
 Epoch 7/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 7/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0053, gpu_mem=2.0GB][A
-Epoch 7/100:  33%|███▎      | 1/3 [00:00<00:00,  2.42it/s, loss=0.0053, gpu_mem=2.0GB][A
-Epoch 7/100:  33%|███▎      | 1/3 [00:00<00:00,  2.42it/s, loss=0.0050, gpu_mem=2.0GB][A
-Epoch 7/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0050, gpu_mem=2.0GB][A
-Epoch 7/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0063, gpu_mem=2.0GB][A
+Epoch 7/100:  33%|███▎      | 1/3 [00:00<00:00,  2.40it/s, loss=0.0053, gpu_mem=2.0GB][A
+Epoch 7/100:  33%|███▎      | 1/3 [00:00<00:00,  2.40it/s, loss=0.0050, gpu_mem=2.0GB][A
+Epoch 7/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.88it/s, loss=0.0050, gpu_mem=2.0GB][A
+Epoch 7/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.88it/s, loss=0.0063, gpu_mem=2.0GB][A
 Epoch 7/100: 100%|██████████| 3/3 [00:00<00:00,  3.59it/s, loss=0.0063, gpu_mem=2.0GB][A
-                                                                                      [AEpochs:   6%|▌         | 6/100 [00:07<01:32,  1.02it/s, avg_loss=0.0055, step=21/300]Epochs:   7%|▋         | 7/100 [00:07<01:29,  1.04it/s, avg_loss=0.0055, step=21/300]
 
 [Epoch 7/100] Avg Loss: 0.0055 | GPU0: Mem 2.0/119.7GB
+                                                                                      [AEpochs:   6%|▌         | 6/100 [00:07<01:31,  1.03it/s, avg_loss=0.0055, step=21/300]Epochs:   7%|▋         | 7/100 [00:07<01:28,  1.05it/s, avg_loss=0.0055, step=21/300]
 Epoch 8/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 8/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0042, gpu_mem=2.0GB][A
-Epoch 8/100:  33%|███▎      | 1/3 [00:00<00:00,  2.41it/s, loss=0.0042, gpu_mem=2.0GB][A
-Epoch 8/100:  33%|███▎      | 1/3 [00:00<00:00,  2.41it/s, loss=0.0063, gpu_mem=2.0GB][A
+Epoch 8/100:  33%|███▎      | 1/3 [00:00<00:00,  2.42it/s, loss=0.0042, gpu_mem=2.0GB][A
+Epoch 8/100:  33%|███▎      | 1/3 [00:00<00:00,  2.42it/s, loss=0.0063, gpu_mem=2.0GB][A
 Epoch 8/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0063, gpu_mem=2.0GB][A
 Epoch 8/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0059, gpu_mem=2.0GB][A
-Epoch 8/100: 100%|██████████| 3/3 [00:00<00:00,  3.62it/s, loss=0.0059, gpu_mem=2.0GB][A
+Epoch 8/100: 100%|██████████| 3/3 [00:00<00:00,  3.61it/s, loss=0.0059, gpu_mem=2.0GB][A
 
 [Epoch 8/100] Avg Loss: 0.0055 | GPU0: Mem 2.0/119.7GB
-                                                                                      [AEpochs:   7%|▋         | 7/100 [00:08<01:29,  1.04it/s, avg_loss=0.0055, step=24/300]Epochs:   8%|▊         | 8/100 [00:08<01:26,  1.06it/s, avg_loss=0.0055, step=24/300]
+                                                                                      [AEpochs:   7%|▋         | 7/100 [00:08<01:28,  1.05it/s, avg_loss=0.0055, step=24/300]Epochs:   8%|▊         | 8/100 [00:08<01:26,  1.06it/s, avg_loss=0.0055, step=24/300]
 Epoch 9/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 9/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0283, gpu_mem=2.0GB][A
 Epoch 9/100:  33%|███▎      | 1/3 [00:00<00:00,  2.41it/s, loss=0.0283, gpu_mem=2.0GB][A
 Epoch 9/100:  33%|███▎      | 1/3 [00:00<00:00,  2.41it/s, loss=0.0013, gpu_mem=2.0GB][A
-Epoch 9/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0013, gpu_mem=2.0GB][A
-Epoch 9/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.86it/s, loss=0.0010, gpu_mem=2.0GB][A
-Epoch 9/100: 100%|██████████| 3/3 [00:00<00:00,  3.60it/s, loss=0.0010, gpu_mem=2.0GB][A
+Epoch 9/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.88it/s, loss=0.0013, gpu_mem=2.0GB][A
+Epoch 9/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.88it/s, loss=0.0010, gpu_mem=2.0GB][A
+Epoch 9/100: 100%|██████████| 3/3 [00:00<00:00,  3.61it/s, loss=0.0010, gpu_mem=2.0GB][A
+                                                                                      [AEpochs:   8%|▊         | 8/100 [00:09<01:26,  1.06it/s, avg_loss=0.0102, step=27/300]Epochs:   9%|▉         | 9/100 [00:09<01:24,  1.07it/s, avg_loss=0.0102, step=27/300]
 
 [Epoch 9/100] Avg Loss: 0.0102 | GPU0: Mem 2.0/119.7GB
-                                                                                      [AEpochs:   8%|▊         | 8/100 [00:09<01:26,  1.06it/s, avg_loss=0.0102, step=27/300]Epochs:   9%|▉         | 9/100 [00:09<01:25,  1.07it/s, avg_loss=0.0102, step=27/300]
 Epoch 10/100:   0%|          | 0/3 [00:00<?, ?it/s][A
 Epoch 10/100:   0%|          | 0/3 [00:00<?, ?it/s, loss=0.0140, gpu_mem=2.0GB][A
-Epoch 10/100:  33%|███▎      | 1/3 [00:00<00:00,  2.41it/s, loss=0.0140, gpu_mem=2.0GB][A
-Epoch 10/100:  33%|███▎      | 1/3 [00:00<00:00,  2.41it/s, loss=0.0029, gpu_mem=2.0GB][A
-Epoch 10/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.87it/s, loss=0.0029, gpu_mem=2.0GB][A
-Epoch 10/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.87it/s, loss=0.0115, gpu_mem=2.0GB][A
-Epoch 10/100: 100%|██████████| 3/3 [00:00<00:00,  3.58it/s, loss=0.0115, gpu_mem=2.0GB][A
-33:133 [0] NCCL INFO Channel 01/0 : 1[0] -> 0[0] [receive] via NET/Socket/0
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[0] [send] via NET/Socket/0
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[0] [send] via NET/Socket/0
-stable-diffusion-training-trainer-0-0:133:133 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 0
-                                                                                       [AEpochs:   9%|▉         | 9/100 [00:10<01:25,  1.07it/s, avg_loss=0.0094, step=30/300][rank0]:[E130 07:26:52.853633385 ProcessGroupNCCL.cpp:698] [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=82, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600044 milliseconds before timing out.
-[rank0]:[E130 07:26:52.853714424 ProcessGroupNCCL.cpp:2288] [PG ID 0 PG GUID 0(default_pg) Rank 0]  failure detected by watchdog at work sequence id: 82 PG status: last enqueued work: 82, last completed work: 81
-[rank0]:[E130 07:26:52.853719320 ProcessGroupNCCL.cpp:745] Stack trace of the failed collective not found, potentially because FlightRecorder is disabled. You can enable it by setting TORCH_NCCL_TRACE_BUFFER_SIZE to a non-zero value.
-[rank0]:[E130 07:26:52.853756584 ProcessGroupNCCL.cpp:2620] [PG ID 0 PG GUID 0(default_pg) Rank 0] First PG on this rank to signal dumping.
-[rank0]:[E130 07:26:52.243252662 ProcessGroupNCCL.cpp:1901] [PG ID 0 PG GUID 0(default_pg) Rank 0] Received a dump signal due to a collective timeout from this local rank and we will try our best to dump the debug info. Last enqueued NCCL work: 82, last completed NCCL work: 81.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. 
-[rank0]:[E130 07:26:52.243699199 ProcessGroupNCCL.cpp:1617] [PG ID 0 PG GUID 0(default_pg) Rank 0] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0
-[rank0]:[E130 07:27:52.854077520 ProcessGroupNCCL.cpp:759] [Rank 0] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.
-[rank0]:[E130 07:27:52.854145727 ProcessGroupNCCL.cpp:773] [Rank 0] To avoid data inconsistency, we are taking the entire process down.
-[rank0]:[E130 07:27:52.854572217 ProcessGroupNCCL.cpp:2104] [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=82, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600044 milliseconds before timing out.
+Epoch 10/100:  33%|███▎      | 1/3 [00:00<00:00,  2.42it/s, loss=0.0140, gpu_mem=2.0GB][A
+Epoch 10/100:  33%|███▎      | 1/3 [00:00<00:00,  2.42it/s, loss=0.0029, gpu_mem=2.0GB][A
+Epoch 10/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.85it/s, loss=0.0029, gpu_mem=2.0GB][A
+Epoch 10/100:  67%|██████▋   | 2/3 [00:00<00:00,  2.85it/s, loss=0.0115, gpu_mem=2.0GB][A
+Epoch 10/100: 100%|██████████| 3/3 [00:00<00:00,  3.61it/s, loss=0.0115, gpu_mem=2.0GB][A
+0:132:132 [0] NCCL INFO Channel 01/0 : 1[0] -> 0[0] [receive] via NET/Socket/0
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[0] [send] via NET/Socket/0
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[0] [send] via NET/Socket/0
+stable-diffusion-training-trainer-0-0:132:132 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 0
+                                                                                       [AEpochs:   9%|▉         | 9/100 [00:10<01:24,  1.07it/s, avg_loss=0.0094, step=30/300][rank0]:[E202 02:01:47.256903724 ProcessGroupNCCL.cpp:698] [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=85, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600037 milliseconds before timing out.
+[rank0]:[E202 02:01:47.257016251 ProcessGroupNCCL.cpp:2288] [PG ID 0 PG GUID 0(default_pg) Rank 0]  failure detected by watchdog at work sequence id: 85 PG status: last enqueued work: 85, last completed work: 84
+[rank0]:[E202 02:01:47.257025403 ProcessGroupNCCL.cpp:745] Stack trace of the failed collective not found, potentially because FlightRecorder is disabled. You can enable it by setting TORCH_NCCL_TRACE_BUFFER_SIZE to a non-zero value.
+[rank0]:[E202 02:01:47.257077546 ProcessGroupNCCL.cpp:2620] [PG ID 0 PG GUID 0(default_pg) Rank 0] First PG on this rank to signal dumping.
+[rank0]:[E202 02:01:47.495098246 ProcessGroupNCCL.cpp:1901] [PG ID 0 PG GUID 0(default_pg) Rank 0] Received a dump signal due to a collective timeout from this local rank and we will try our best to dump the debug info. Last enqueued NCCL work: 85, last completed NCCL work: 84.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. 
+[rank0]:[E202 02:01:47.495657138 ProcessGroupNCCL.cpp:1617] [PG ID 0 PG GUID 0(default_pg) Rank 0] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0
+[rank0]:[E202 02:02:47.257621397 ProcessGroupNCCL.cpp:759] [Rank 0] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.
+[rank0]:[E202 02:02:47.257676229 ProcessGroupNCCL.cpp:773] [Rank 0] To avoid data inconsistency, we are taking the entire process down.
+[rank0]:[E202 02:02:47.258278448 ProcessGroupNCCL.cpp:2104] [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=85, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600037 milliseconds before timing out.
 Exception raised from checkTimeout at /opt/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:701 (most recent call first):
-frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0xd4 (0xf11f04af12b4 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
-frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x278 (0xf11f05aecfb8 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
-frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x1154 (0xf11f05af3594 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
-frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0xe0 (0xf11f05af4c40 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
-frame #4: <unknown function> + 0xe1ae0 (0xf11f04551ae0 in /lib/aarch64-linux-gnu/libstdc++.so.6)
-frame #5: <unknown function> + 0x8595c (0xf11f2f67595c in /lib/aarch64-linux-gnu/libc.so.6)
-frame #6: <unknown function> + 0xebb0c (0xf11f2f6dbb0c in /lib/aarch64-linux-gnu/libc.so.6)
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0xd4 (0xe54843c212b4 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x278 (0xe54844c1cfb8 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x1154 (0xe54844c23594 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0xe0 (0xe54844c24c40 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xe1ae0 (0xe54843681ae0 in /lib/aarch64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x8595c (0xe5486e7a595c in /lib/aarch64-linux-gnu/libc.so.6)
+frame #6: <unknown function> + 0xebb0c (0xe5486e80bb0c in /lib/aarch64-linux-gnu/libc.so.6)
 
 terminate called after throwing an instance of 'c10::DistBackendError'
-  what():  [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=82, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600044 milliseconds before timing out.
+  what():  [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=85, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600037 milliseconds before timing out.
 Exception raised from checkTimeout at /opt/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:701 (most recent call first):
-frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0xd4 (0xf11f04af12b4 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
-frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x278 (0xf11f05aecfb8 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
-frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x1154 (0xf11f05af3594 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
-frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0xe0 (0xf11f05af4c40 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
-frame #4: <unknown function> + 0xe1ae0 (0xf11f04551ae0 in /lib/aarch64-linux-gnu/libstdc++.so.6)
-frame #5: <unknown function> + 0x8595c (0xf11f2f67595c in /lib/aarch64-linux-gnu/libc.so.6)
-frame #6: <unknown function> + 0xebb0c (0xf11f2f6dbb0c in /lib/aarch64-linux-gnu/libc.so.6)
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0xd4 (0xe54843c212b4 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x278 (0xe54844c1cfb8 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x1154 (0xe54844c23594 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0xe0 (0xe54844c24c40 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xe1ae0 (0xe54843681ae0 in /lib/aarch64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x8595c (0xe5486e7a595c in /lib/aarch64-linux-gnu/libc.so.6)
+frame #6: <unknown function> + 0xebb0c (0xe5486e80bb0c in /lib/aarch64-linux-gnu/libc.so.6)
 
 Exception raised from run at /opt/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2110 (most recent call first):
-frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0xd4 (0xf11f04af12b4 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
-frame #1: c10d::ProcessGroupNCCL::Watchdog::run() + 0x608 (0xf11f05af5168 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
-frame #2: <unknown function> + 0xe1ae0 (0xf11f04551ae0 in /lib/aarch64-linux-gnu/libstdc++.so.6)
-frame #3: <unknown function> + 0x8595c (0xf11f2f67595c in /lib/aarch64-linux-gnu/libc.so.6)
-frame #4: <unknown function> + 0xebb0c (0xf11f2f6dbb0c in /lib/aarch64-linux-gnu/libc.so.6)
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0xd4 (0xe54843c212b4 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::Watchdog::run() + 0x608 (0xe54844c25168 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0xe1ae0 (0xe54843681ae0 in /lib/aarch64-linux-gnu/libstdc++.so.6)
+frame #3: <unknown function> + 0x8595c (0xe5486e7a595c in /lib/aarch64-linux-gnu/libc.so.6)
+frame #4: <unknown function> + 0xebb0c (0xe5486e80bb0c in /lib/aarch64-linux-gnu/libc.so.6)
 
 Traceback (most recent call last):
   File "/usr/local/bin/accelerate", line 7, in <module>

@@ -266,6 +266,9 @@ def train_lora(args, accelerator):
                     'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
                 })
 
+        # Sync all processes at end of epoch
+        accelerator.wait_for_everyone()
+
         # Average loss across all processes
         avg_loss = epoch_loss / len(train_dataloader)
 
@@ -277,13 +280,14 @@ def train_lora(args, accelerator):
             })
             print(f"\n[Epoch {epoch+1}/{args.epochs}] Avg Loss: {avg_loss:.4f} | {get_gpu_info()}")
 
-        # Save checkpoint every 10 epochs (only main process)
-        if (epoch + 1) % 10 == 0 and accelerator.is_main_process:
-            accelerator.wait_for_everyone()
-            unwrapped_unet = accelerator.unwrap_model(unet)
-            checkpoint_path = Path(args.output_dir) / f"lora_epoch_{epoch+1}"
-            unwrapped_unet.save_pretrained(checkpoint_path)
-            print_status(accelerator, f"Checkpoint saved: {checkpoint_path}")
+        # Save checkpoint every 10 epochs
+        if (epoch + 1) % 10 == 0:
+            accelerator.wait_for_everyone()  # ALL processes must sync here
+            if accelerator.is_main_process:
+                unwrapped_unet = accelerator.unwrap_model(unet)
+                checkpoint_path = Path(args.output_dir) / f"lora_epoch_{epoch+1}"
+                unwrapped_unet.save_pretrained(checkpoint_path)
+                print_status(accelerator, f"Checkpoint saved: {checkpoint_path}")
 
     # Save final model
     accelerator.wait_for_everyone()
@@ -470,6 +474,9 @@ def train_dreambooth(args, accelerator):
                     'loss': f'{loss.item():.4f}',
                     'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
                 })
+
+        # Sync all processes at end of epoch
+        accelerator.wait_for_everyone()
 
         avg_loss = epoch_loss / len(train_dataloader)
 
