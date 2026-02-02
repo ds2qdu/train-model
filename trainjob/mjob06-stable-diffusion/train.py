@@ -27,6 +27,26 @@ def get_gpu_info():
     mem_total = torch.cuda.get_device_properties(device).total_memory / 1024**3
     return f"GPU{device}: Mem {mem_used:.1f}/{mem_total:.1f}GB"
 
+
+def get_gpu_utilization():
+    """Get detailed GPU utilization using nvidia-smi"""
+    try:
+        import subprocess
+        result = subprocess.run(
+            ['nvidia-smi', '--query-gpu=utilization.gpu,memory.used,memory.total', '--format=csv,noheader,nounits'],
+            capture_output=True, text=True, timeout=5
+        )
+        if result.returncode == 0:
+            parts = result.stdout.strip().split(', ')
+            if len(parts) >= 3:
+                gpu_util = parts[0].strip()
+                mem_used = parts[1].strip()
+                mem_total = parts[2].strip()
+                return f"GPU Util: {gpu_util}%, VRAM: {mem_used}/{mem_total}MB"
+    except Exception:
+        pass
+    return get_gpu_info()
+
 def print_status(accelerator, message):
     """Print status with timestamp (only on main process)"""
     if accelerator.is_main_process:
@@ -194,9 +214,9 @@ def train_lora(args, accelerator):
     accelerator.wait_for_everyone()
     print(f"[Rank {accelerator.process_index}] All processes ready!", flush=True)
 
-    # Training loop
-    print_status(accelerator, f"Starting distributed LoRA training for {args.epochs} epochs...")
-    print_status(accelerator, f"World size: {accelerator.num_processes}, Process: {accelerator.process_index}")
+    # Training loop - print from all ranks
+    print(f"[Rank {accelerator.process_index}] Starting distributed LoRA training for {args.epochs} epochs...", flush=True)
+    print(f"[Rank {accelerator.process_index}] World size: {accelerator.num_processes} | {get_gpu_utilization()}", flush=True)
 
     global_step = 0
     total_steps = len(train_dataloader) * args.epochs
@@ -266,13 +286,18 @@ def train_lora(args, accelerator):
                     'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
                 })
 
+        # Average loss for this rank
+        avg_loss = epoch_loss / len(train_dataloader)
+
+        # Log from ALL ranks every 10 epochs or at the end
+        if (epoch + 1) % 10 == 0 or epoch == 0 or (epoch + 1) == args.epochs:
+            print(f"[Rank {accelerator.process_index}] Epoch {epoch+1}/{args.epochs} | "
+                  f"Loss: {avg_loss:.4f} | {get_gpu_utilization()}", flush=True)
+
         # Sync all processes at end of epoch
         accelerator.wait_for_everyone()
 
-        # Average loss across all processes
-        avg_loss = epoch_loss / len(train_dataloader)
-
-        # Update epoch progress bar
+        # Update epoch progress bar (main process only)
         if accelerator.is_main_process:
             epoch_pbar.set_postfix({
                 'avg_loss': f'{avg_loss:.4f}',
@@ -290,10 +315,10 @@ def train_lora(args, accelerator):
                 print_status(accelerator, f"Checkpoint saved: {checkpoint_path}")
 
     # Save final model
+    final_path = Path(args.output_dir) / "lora_final"
     accelerator.wait_for_everyone()
     if accelerator.is_main_process:
         unwrapped_unet = accelerator.unwrap_model(unet)
-        final_path = Path(args.output_dir) / "lora_final"
         final_path.mkdir(parents=True, exist_ok=True)
         unwrapped_unet.save_pretrained(final_path)
 
@@ -414,7 +439,9 @@ def train_dreambooth(args, accelerator):
     accelerator.wait_for_everyone()
     print(f"[Rank {accelerator.process_index}] All processes ready!", flush=True)
 
-    print_status(accelerator, f"Starting distributed DreamBooth training for {args.epochs} epochs...")
+    # Training loop - print from all ranks
+    print(f"[Rank {accelerator.process_index}] Starting distributed DreamBooth training for {args.epochs} epochs...", flush=True)
+    print(f"[Rank {accelerator.process_index}] World size: {accelerator.num_processes} | {get_gpu_utilization()}", flush=True)
 
     global_step = 0
     total_steps = len(train_dataloader) * args.epochs
@@ -475,12 +502,18 @@ def train_dreambooth(args, accelerator):
                     'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
                 })
 
+        # Average loss for this rank
+        avg_loss = epoch_loss / len(train_dataloader)
+
+        # Log from ALL ranks every 10 epochs or at the end
+        if (epoch + 1) % 10 == 0 or epoch == 0 or (epoch + 1) == args.epochs:
+            print(f"[Rank {accelerator.process_index}] Epoch {epoch+1}/{args.epochs} | "
+                  f"Loss: {avg_loss:.4f} | {get_gpu_utilization()}", flush=True)
+
         # Sync all processes at end of epoch
         accelerator.wait_for_everyone()
 
-        avg_loss = epoch_loss / len(train_dataloader)
-
-        # Update epoch progress bar
+        # Update epoch progress bar (main process only)
         if accelerator.is_main_process:
             epoch_pbar.set_postfix({
                 'avg_loss': f'{avg_loss:.4f}',
@@ -489,9 +522,9 @@ def train_dreambooth(args, accelerator):
             print(f"\n[Epoch {epoch+1}/{args.epochs}] Avg Loss: {avg_loss:.4f} | {get_gpu_info()}")
 
     # Save model
+    final_path = Path(args.output_dir) / "dreambooth_final"
     accelerator.wait_for_everyone()
     if accelerator.is_main_process:
-        final_path = Path(args.output_dir) / "dreambooth_final"
         final_path.mkdir(parents=True, exist_ok=True)
 
         unwrapped_unet = accelerator.unwrap_model(unet)
