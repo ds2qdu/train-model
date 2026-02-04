@@ -251,9 +251,24 @@ def download_single_dataset(data_path, dataset_name, max_images, prefix=""):
                 print(f"Anime: {i + 1}/{min(max_images, len(ds))} images...", flush=True)
 
     elif dataset_name == "art":
-        # Art/painting dataset
+        # Art/painting dataset - use streaming to avoid downloading 35GB+
+        from datasets import load_dataset_builder
+
+        # Get label mappings from dataset info (without downloading data)
+        print("  Loading WikiArt label mappings...", flush=True)
+        builder = load_dataset_builder("huggan/wikiart")
+        features = builder.info.features
+
+        artist_names = features['artist'].names if hasattr(features['artist'], 'names') else None
+        style_names = features['style'].names if hasattr(features['style'], 'names') else None
+        genre_names = features['genre'].names if hasattr(features['genre'], 'names') else None
+
+        print(f"  Artists: {len(artist_names) if artist_names else 'N/A'}", flush=True)
+        print(f"  Styles: {len(style_names) if style_names else 'N/A'}", flush=True)
+
+        # Now stream the actual data
         ds = load_dataset("huggan/wikiart", split="train", streaming=True)
-        print(f"WikiArt dataset (streaming)...", flush=True)
+        print(f"WikiArt dataset (streaming mode)...", flush=True)
 
         idx = 0
         for item in ds:
@@ -261,20 +276,33 @@ def download_single_dataset(data_path, dataset_name, max_images, prefix=""):
                 break
             try:
                 img = item['image']
-                artist = item.get('artist', 'unknown')
-                style = item.get('style', 'painting')
+
+                # Get actual text labels from indices
+                artist_idx = item.get('artist', 0)
+                style_idx = item.get('style', 0)
+                genre_idx = item.get('genre', 0)
+
+                artist = artist_names[artist_idx] if artist_names and artist_idx < len(artist_names) else "unknown artist"
+                style = style_names[style_idx] if style_names and style_idx < len(style_names) else "painting"
+                genre = genre_names[genre_idx] if genre_names and genre_idx < len(genre_names) else "artwork"
+
+                # Clean up names (replace underscores)
+                artist = artist.replace('_', ' ')
+                style = style.replace('_', ' ')
+                genre = genre.replace('_', ' ')
 
                 img_path = data_path / f"{prefix}art_{idx:04d}.png"
                 img.save(img_path)
 
-                caption = f"a {style} painting by {artist}"
+                # Create descriptive caption
+                caption = f"a {style} {genre} painting by {artist}"
                 caption_path = data_path / f"{prefix}art_{idx:04d}.txt"
                 with open(caption_path, 'w', encoding='utf-8') as f:
                     f.write(caption)
 
                 idx += 1
                 count += 1
-                if idx % 10 == 0:
+                if idx % 50 == 0:
                     print(f"Art: {idx}/{max_images} images...", flush=True)
             except:
                 continue
