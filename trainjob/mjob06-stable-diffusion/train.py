@@ -173,8 +173,182 @@ def print_status(accelerator, message):
         gpu_info = get_gpu_info()
         print(f"[{timestamp}] {message} | {gpu_info}")
 
-def prepare_dataset(data_dir, resolution):
-    """Prepare training dataset"""
+def download_single_dataset(data_path, dataset_name, max_images, prefix=""):
+    """Download a single dataset from Hugging Face"""
+    from PIL import Image
+    from datasets import load_dataset
+
+    count = 0
+
+    if dataset_name == "pokemon":
+        # Pokemon dataset - good for LoRA training
+        ds = load_dataset("lambdalabs/pokemon-blip-captions", split="train")
+        print(f"Pokemon dataset loaded: {len(ds)} images available", flush=True)
+
+        for i, item in enumerate(ds):
+            if i >= max_images:
+                break
+
+            img = item['image']
+            caption = item['text']
+
+            # Save image
+            img_path = data_path / f"{prefix}pokemon_{i:04d}.png"
+            img.save(img_path)
+
+            # Save caption
+            caption_path = data_path / f"{prefix}pokemon_{i:04d}.txt"
+            with open(caption_path, 'w', encoding='utf-8') as f:
+                f.write(caption)
+            count += 1
+
+            if (i + 1) % 10 == 0:
+                print(f"Pokemon: {i + 1}/{min(max_images, len(ds))} images...", flush=True)
+
+    elif dataset_name == "cat":
+        # Cat toy dataset - good for DreamBooth
+        ds = load_dataset("diffusers/cat_toy_example", split="train")
+        print(f"Cat toy dataset loaded: {len(ds)} images available", flush=True)
+
+        for i, item in enumerate(ds):
+            if i >= max_images:
+                break
+
+            img = item['image']
+
+            # Save image
+            img_path = data_path / f"{prefix}cat_{i:04d}.png"
+            img.save(img_path)
+
+            # Create caption
+            caption = "a photo of sks cat toy"
+            caption_path = data_path / f"{prefix}cat_{i:04d}.txt"
+            with open(caption_path, 'w', encoding='utf-8') as f:
+                f.write(caption)
+            count += 1
+
+    elif dataset_name == "anime":
+        # Anime faces from a smaller dataset
+        ds = load_dataset("Norod78/cartoon-blip-captions", split="train")
+        print(f"Cartoon/Anime dataset loaded: {len(ds)} images available", flush=True)
+
+        for i, item in enumerate(ds):
+            if i >= max_images:
+                break
+
+            img = item['image']
+            caption = item.get('text', 'an anime style illustration')
+
+            img_path = data_path / f"{prefix}anime_{i:04d}.png"
+            img.save(img_path)
+
+            caption_path = data_path / f"{prefix}anime_{i:04d}.txt"
+            with open(caption_path, 'w', encoding='utf-8') as f:
+                f.write(caption)
+            count += 1
+
+            if (i + 1) % 10 == 0:
+                print(f"Anime: {i + 1}/{min(max_images, len(ds))} images...", flush=True)
+
+    elif dataset_name == "art":
+        # Art/painting dataset
+        ds = load_dataset("huggan/wikiart", split="train", streaming=True)
+        print(f"WikiArt dataset (streaming)...", flush=True)
+
+        idx = 0
+        for item in ds:
+            if idx >= max_images:
+                break
+            try:
+                img = item['image']
+                artist = item.get('artist', 'unknown')
+                style = item.get('style', 'painting')
+
+                img_path = data_path / f"{prefix}art_{idx:04d}.png"
+                img.save(img_path)
+
+                caption = f"a {style} painting by {artist}"
+                caption_path = data_path / f"{prefix}art_{idx:04d}.txt"
+                with open(caption_path, 'w', encoding='utf-8') as f:
+                    f.write(caption)
+
+                idx += 1
+                count += 1
+                if idx % 10 == 0:
+                    print(f"Art: {idx}/{max_images} images...", flush=True)
+            except:
+                continue
+
+    return count
+
+
+def download_sample_dataset(data_dir, dataset_name="pokemon", max_images=50):
+    """
+    Download sample dataset from Hugging Face for training.
+
+    Available datasets:
+    - pokemon: Pokemon images with captions (lambdalabs/pokemon-blip-captions)
+    - cat: Cat toy images for DreamBooth (diffusers/cat_toy_example)
+    - anime: Anime faces
+    - art: WikiArt paintings
+    - all: Download all datasets
+    """
+    from PIL import Image
+
+    data_path = Path(data_dir)
+    data_path.mkdir(parents=True, exist_ok=True)
+
+    print(f"Downloading '{dataset_name}' dataset to {data_dir}...", flush=True)
+
+    try:
+        from datasets import load_dataset
+
+        # Download all datasets
+        if dataset_name == "all":
+            all_datasets = ["pokemon", "cat", "anime", "art"]
+            total_count = 0
+
+            print(f"\n{'='*50}", flush=True)
+            print(f"  Downloading ALL datasets ({len(all_datasets)} types)", flush=True)
+            print(f"  Max {max_images} images per dataset", flush=True)
+            print(f"{'='*50}\n", flush=True)
+
+            for ds_name in all_datasets:
+                print(f"\n--- Downloading {ds_name} dataset ---", flush=True)
+                try:
+                    count = download_single_dataset(data_path, ds_name, max_images)
+                    total_count += count
+                    print(f"✓ {ds_name}: {count} images downloaded", flush=True)
+                except Exception as e:
+                    print(f"✗ {ds_name} failed: {e}", flush=True)
+
+            print(f"\n{'='*50}", flush=True)
+            print(f"  Total: {total_count} images downloaded", flush=True)
+            print(f"{'='*50}\n", flush=True)
+            return True
+
+        else:
+            # Download single dataset
+            count = download_single_dataset(data_path, dataset_name, max_images)
+            if count == 0:
+                print(f"Unknown dataset: {dataset_name}. Using pokemon.", flush=True)
+                return download_sample_dataset(data_dir, "pokemon", max_images)
+            print(f"Dataset download complete! {count} images saved.", flush=True)
+            return True
+
+    except ImportError:
+        print("'datasets' library not installed. Installing...", flush=True)
+        import subprocess
+        subprocess.run(['pip', 'install', 'datasets'], check=True)
+        return download_sample_dataset(data_dir, dataset_name, max_images)
+
+    except Exception as e:
+        print(f"Dataset download failed: {e}", flush=True)
+        return False
+
+
+def prepare_dataset(data_dir, resolution, dataset_name="pokemon", max_images=50):
+    """Prepare training dataset - downloads sample data if none exists"""
     from PIL import Image
 
     data_path = Path(data_dir)
@@ -185,10 +359,10 @@ def prepare_dataset(data_dir, resolution):
     # 디렉토리가 없으면 생성
     if not data_path.exists():
         print(f"Data directory not found: {data_dir}", flush=True)
-        print("Creating directory and sample dataset...", flush=True)
         data_path.mkdir(parents=True, exist_ok=True)
-    else:
-        # 기존 이미지 로드
+
+    # 기존 이미지 로드
+    if data_path.exists():
         for img_file in data_path.iterdir():
             if img_file.suffix.lower() in image_extensions:
                 images.append(str(img_file))
@@ -199,30 +373,51 @@ def prepare_dataset(data_dir, resolution):
                 else:
                     captions.append(img_file.stem.replace('_', ' '))
 
-    # 이미지가 없으면 샘플 데이터 생성
+    # 이미지가 없으면 샘플 데이터셋 다운로드
     if not images:
-        print("No images found. Creating sample dataset...", flush=True)
-        sample_colors = [
-            ('red', (255, 0, 0)),
-            ('green', (0, 255, 0)),
-            ('blue', (0, 0, 255)),
-            ('yellow', (255, 255, 0)),
-            ('purple', (128, 0, 128)),
-        ]
-        for color_name, rgb in sample_colors:
-            img = Image.new('RGB', (resolution, resolution), rgb)
-            img_path = data_path / f"sample_{color_name}.png"
-            img.save(img_path)
-            images.append(str(img_path))
-            caption = f"a solid {color_name} colored image"
-            captions.append(caption)
-            # 캡션 파일도 생성
-            caption_file = data_path / f"sample_{color_name}.txt"
-            with open(caption_file, 'w', encoding='utf-8') as f:
-                f.write(caption)
-        print(f"Created {len(images)} sample images with captions", flush=True)
+        print(f"No images found. Downloading '{dataset_name}' dataset...", flush=True)
+
+        if download_sample_dataset(data_dir, dataset_name, max_images):
+            # 다운로드 후 다시 로드
+            for img_file in data_path.iterdir():
+                if img_file.suffix.lower() in image_extensions:
+                    images.append(str(img_file))
+                    caption_file = img_file.with_suffix('.txt')
+                    if caption_file.exists():
+                        with open(caption_file, 'r', encoding='utf-8') as f:
+                            captions.append(f.read().strip())
+                    else:
+                        captions.append(img_file.stem.replace('_', ' '))
+
+        # 그래도 없으면 기본 컬러 이미지 생성
+        if not images:
+            print("Download failed. Creating basic sample images...", flush=True)
+            sample_colors = [
+                ('red', (255, 0, 0)),
+                ('green', (0, 255, 0)),
+                ('blue', (0, 0, 255)),
+                ('yellow', (255, 255, 0)),
+                ('purple', (128, 0, 128)),
+            ]
+            for color_name, rgb in sample_colors:
+                img = Image.new('RGB', (resolution, resolution), rgb)
+                img_path = data_path / f"sample_{color_name}.png"
+                img.save(img_path)
+                images.append(str(img_path))
+                caption = f"a solid {color_name} colored image"
+                captions.append(caption)
+                caption_file = data_path / f"sample_{color_name}.txt"
+                with open(caption_file, 'w', encoding='utf-8') as f:
+                    f.write(caption)
 
     print(f"Dataset: {len(images)} images loaded from {data_dir}", flush=True)
+
+    # 샘플 캡션 출력
+    if images and captions:
+        print(f"Sample captions:", flush=True)
+        for i, cap in enumerate(captions[:3]):
+            print(f"  {i+1}. {cap[:80]}{'...' if len(cap) > 80 else ''}", flush=True)
+
     return {"image_path": images, "caption": captions}
 
 def train_lora(args, accelerator):
@@ -268,9 +463,14 @@ def train_lora(args, accelerator):
 
     print_status(accelerator, "LoRA configured, preparing dataset...")
 
-    # Prepare dataset
+    # Prepare dataset (only rank 0 downloads)
     print(f"[Rank {accelerator.process_index}] Preparing dataset...", flush=True)
-    dataset_dict = prepare_dataset(args.train_data_dir, args.resolution)
+    if accelerator.is_main_process:
+        dataset_dict = prepare_dataset(args.train_data_dir, args.resolution, args.dataset, args.max_images)
+    accelerator.wait_for_everyone()
+    # All ranks load the prepared dataset
+    if not accelerator.is_main_process:
+        dataset_dict = prepare_dataset(args.train_data_dir, args.resolution, args.dataset, args.max_images)
     print(f"[Rank {accelerator.process_index}] Dataset ready, syncing...", flush=True)
     accelerator.wait_for_everyone()
 
@@ -569,9 +769,14 @@ def train_dreambooth(args, accelerator):
     print(f"[Rank {accelerator.process_index}] Model loaded, syncing...", flush=True)
     accelerator.wait_for_everyone()
 
-    # Prepare dataset
+    # Prepare dataset (only rank 0 downloads)
     print(f"[Rank {accelerator.process_index}] Preparing dataset...", flush=True)
-    dataset_dict = prepare_dataset(args.train_data_dir, args.resolution)
+    if accelerator.is_main_process:
+        dataset_dict = prepare_dataset(args.train_data_dir, args.resolution, args.dataset, args.max_images)
+    accelerator.wait_for_everyone()
+    # All ranks load the prepared dataset
+    if not accelerator.is_main_process:
+        dataset_dict = prepare_dataset(args.train_data_dir, args.resolution, args.dataset, args.max_images)
     print(f"[Rank {accelerator.process_index}] Dataset ready, syncing...", flush=True)
     accelerator.wait_for_everyone()
 
@@ -760,6 +965,11 @@ def main():
                         help='Output directory for trained model')
     parser.add_argument('--resolution', type=int, default=512,
                         help='Image resolution for training')
+    parser.add_argument('--dataset', type=str, default='all',
+                        choices=['pokemon', 'cat', 'anime', 'art', 'all'],
+                        help='Sample dataset to download if no images exist (all = download all 4 datasets)')
+    parser.add_argument('--max_images', type=int, default=50,
+                        help='Maximum number of images to download')
 
     # Training settings
     parser.add_argument('--epochs', type=int, default=100,
