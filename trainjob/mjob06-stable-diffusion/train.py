@@ -17,6 +17,125 @@ from accelerate.utils import set_seed
 # Progress bar
 from tqdm import tqdm
 
+# ============================================
+# Training Metrics Tracker
+# ============================================
+class TrainingMetrics:
+    """Track and analyze training metrics"""
+    def __init__(self):
+        self.loss_history = []
+        self.best_loss = float('inf')
+        self.best_epoch = 0
+        self.initial_loss = None
+        self.gradient_norms = []
+        self.nan_count = 0
+        self.no_improvement_count = 0
+
+    def update(self, epoch, loss, grad_norm=None):
+        """Update metrics with new epoch data"""
+        self.loss_history.append(loss)
+
+        if self.initial_loss is None:
+            self.initial_loss = loss
+
+        if loss < self.best_loss:
+            self.best_loss = loss
+            self.best_epoch = epoch
+            self.no_improvement_count = 0
+        else:
+            self.no_improvement_count += 1
+
+        if grad_norm is not None:
+            self.gradient_norms.append(grad_norm)
+
+        # Check for NaN
+        if torch.isnan(torch.tensor(loss)):
+            self.nan_count += 1
+
+    def get_improvement(self):
+        """Get improvement percentage from initial loss"""
+        if self.initial_loss is None or self.initial_loss == 0:
+            return 0
+        return ((self.initial_loss - self.best_loss) / self.initial_loss) * 100
+
+    def is_training_healthy(self):
+        """Check if training is progressing normally"""
+        warnings = []
+
+        if self.nan_count > 0:
+            warnings.append(f"⚠️ NaN loss detected {self.nan_count} times")
+
+        if self.no_improvement_count > 20:
+            warnings.append(f"⚠️ No improvement for {self.no_improvement_count} epochs")
+
+        if len(self.loss_history) > 10:
+            recent_avg = sum(self.loss_history[-10:]) / 10
+            early_avg = sum(self.loss_history[:10]) / min(10, len(self.loss_history))
+            if recent_avg > early_avg * 1.5:
+                warnings.append("⚠️ Loss is increasing - possible divergence")
+
+        if len(self.gradient_norms) > 0:
+            avg_grad = sum(self.gradient_norms[-10:]) / min(10, len(self.gradient_norms))
+            if avg_grad > 10:
+                warnings.append(f"⚠️ High gradient norm: {avg_grad:.2f}")
+            if avg_grad < 1e-7:
+                warnings.append(f"⚠️ Vanishing gradients: {avg_grad:.2e}")
+
+        return warnings
+
+    def get_summary(self):
+        """Get training summary"""
+        summary = {
+            "initial_loss": self.initial_loss,
+            "final_loss": self.loss_history[-1] if self.loss_history else None,
+            "best_loss": self.best_loss,
+            "best_epoch": self.best_epoch + 1,
+            "improvement_percent": self.get_improvement(),
+            "total_epochs": len(self.loss_history),
+            "nan_count": self.nan_count,
+            "avg_gradient_norm": sum(self.gradient_norms) / len(self.gradient_norms) if self.gradient_norms else None
+        }
+        return summary
+
+
+def compute_gradient_norm(model):
+    """Compute the total gradient norm of model parameters"""
+    total_norm = 0.0
+    for p in model.parameters():
+        if p.grad is not None:
+            total_norm += p.grad.data.norm(2).item() ** 2
+    return total_norm ** 0.5
+
+
+def generate_sample_images(pipe, prompts, output_dir, epoch, device):
+    """Generate sample images to verify training quality"""
+    from PIL import Image
+
+    output_path = Path(output_dir) / "samples"
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    pipe.to(device)
+    pipe.safety_checker = None
+
+    images = []
+    for i, prompt in enumerate(prompts[:4]):  # Max 4 samples
+        try:
+            with torch.no_grad():
+                image = pipe(
+                    prompt,
+                    num_inference_steps=20,
+                    guidance_scale=7.5
+                ).images[0]
+
+            image_path = output_path / f"epoch_{epoch+1}_sample_{i+1}.png"
+            image.save(image_path)
+            images.append(image_path)
+        except Exception as e:
+            print(f"Sample generation failed: {e}", flush=True)
+
+    return images
+
+
 def get_gpu_info():
     """Get GPU utilization info"""
     if not torch.cuda.is_available():
@@ -221,6 +340,9 @@ def train_lora(args, accelerator):
     global_step = 0
     total_steps = len(train_dataloader) * args.epochs
 
+    # Initialize metrics tracker
+    metrics = TrainingMetrics()
+
     # Epoch progress bar (main process only)
     epoch_pbar = tqdm(
         range(args.epochs),
@@ -273,6 +395,10 @@ def train_lora(args, accelerator):
 
                 # Backward
                 accelerator.backward(loss)
+
+                # Compute gradient norm before optimizer step
+                grad_norm = compute_gradient_norm(unet)
+
                 optimizer.step()
                 optimizer.zero_grad()
 
@@ -283,11 +409,21 @@ def train_lora(args, accelerator):
             if accelerator.is_main_process:
                 step_pbar.set_postfix({
                     'loss': f'{loss.item():.4f}',
+                    'grad': f'{grad_norm:.2f}',
                     'gpu_mem': f'{torch.cuda.memory_allocated() / 1024**3:.1f}GB'
                 })
 
         # Average loss for this rank
         avg_loss = epoch_loss / len(train_dataloader)
+
+        # Update metrics (main process)
+        if accelerator.is_main_process:
+            metrics.update(epoch, avg_loss, grad_norm)
+
+            # Check training health
+            warnings = metrics.is_training_healthy()
+            for warning in warnings:
+                print(warning, flush=True)
 
         # Log from ALL ranks every 10 epochs or at the end
         if (epoch + 1) % 10 == 0 or epoch == 0 or (epoch + 1) == args.epochs:
@@ -299,13 +435,17 @@ def train_lora(args, accelerator):
 
         # Update epoch progress bar (main process only)
         if accelerator.is_main_process:
+            improvement = metrics.get_improvement()
             epoch_pbar.set_postfix({
                 'avg_loss': f'{avg_loss:.4f}',
-                'step': f'{global_step}/{total_steps}'
+                'best': f'{metrics.best_loss:.4f}',
+                'improve': f'{improvement:.1f}%'
             })
-            print(f"\n[Epoch {epoch+1}/{args.epochs}] Avg Loss: {avg_loss:.4f} | {get_gpu_info()}")
+            print(f"\n[Epoch {epoch+1}/{args.epochs}] Loss: {avg_loss:.4f} | "
+                  f"Best: {metrics.best_loss:.4f} (ep{metrics.best_epoch+1}) | "
+                  f"Improve: {improvement:.1f}% | {get_gpu_info()}")
 
-        # Save checkpoint every 10 epochs
+        # Save checkpoint and generate samples every 10 epochs
         if (epoch + 1) % 10 == 0:
             accelerator.wait_for_everyone()  # ALL processes must sync here
             if accelerator.is_main_process:
@@ -313,6 +453,28 @@ def train_lora(args, accelerator):
                 checkpoint_path = Path(args.output_dir) / f"lora_epoch_{epoch+1}"
                 unwrapped_unet.save_pretrained(checkpoint_path)
                 print_status(accelerator, f"Checkpoint saved: {checkpoint_path}")
+
+                # Generate sample images to verify training
+                print_status(accelerator, "Generating sample images...")
+                try:
+                    # Create a temporary pipeline for inference
+                    from diffusers import StableDiffusionPipeline
+                    sample_pipe = StableDiffusionPipeline.from_pretrained(
+                        args.model_name,
+                        torch_dtype=torch.float16,
+                        safety_checker=None
+                    )
+                    sample_pipe.unet = unwrapped_unet
+                    sample_prompts = dataset_dict["caption"][:2]  # Use training captions
+                    sample_images = generate_sample_images(
+                        sample_pipe, sample_prompts, args.output_dir, epoch, accelerator.device
+                    )
+                    if sample_images:
+                        print_status(accelerator, f"Sample images saved: {len(sample_images)} images")
+                    del sample_pipe
+                    torch.cuda.empty_cache()
+                except Exception as e:
+                    print(f"Sample generation skipped: {e}", flush=True)
 
     # Save final model
     final_path = Path(args.output_dir) / "lora_final"
@@ -322,7 +484,10 @@ def train_lora(args, accelerator):
         final_path.mkdir(parents=True, exist_ok=True)
         unwrapped_unet.save_pretrained(final_path)
 
-        # Save training config
+        # Get training summary
+        summary = metrics.get_summary()
+
+        # Save training config with metrics
         config = {
             "model_name": args.model_name,
             "train_method": "lora",
@@ -333,11 +498,38 @@ def train_lora(args, accelerator):
             "resolution": args.resolution,
             "distributed": True,
             "num_processes": accelerator.num_processes,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "training_metrics": summary
         }
 
         with open(final_path / "training_config.json", "w") as f:
             json.dump(config, f, indent=2)
+
+        # Print comprehensive training summary
+        print("\n" + "="*60)
+        print("  TRAINING SUMMARY")
+        print("="*60)
+        print(f"  Initial Loss:     {summary['initial_loss']:.4f}")
+        print(f"  Final Loss:       {summary['final_loss']:.4f}")
+        print(f"  Best Loss:        {summary['best_loss']:.4f} (Epoch {summary['best_epoch']})")
+        print(f"  Improvement:      {summary['improvement_percent']:.1f}%")
+        print(f"  Total Epochs:     {summary['total_epochs']}")
+        if summary['avg_gradient_norm']:
+            print(f"  Avg Grad Norm:    {summary['avg_gradient_norm']:.4f}")
+        if summary['nan_count'] > 0:
+            print(f"  ⚠️ NaN Count:     {summary['nan_count']}")
+        print("="*60)
+
+        # Training quality assessment
+        if summary['improvement_percent'] > 50:
+            print("  ✅ Training Quality: EXCELLENT - Significant loss reduction")
+        elif summary['improvement_percent'] > 20:
+            print("  ✅ Training Quality: GOOD - Moderate improvement")
+        elif summary['improvement_percent'] > 5:
+            print("  ⚠️ Training Quality: FAIR - Minor improvement")
+        else:
+            print("  ❌ Training Quality: POOR - Consider adjusting hyperparameters")
+        print("="*60 + "\n")
 
         print_status(accelerator, f"LoRA training complete! Model saved to: {final_path}")
 
