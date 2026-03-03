@@ -54,6 +54,9 @@ spec:
 
                           export WORLD_SIZE=1 RANK=0 LOCAL_RANK=0 MASTER_ADDR=localhost MASTER_PORT=29500
 
+                          RUN_ID=${HOSTNAME}
+                          mkdir -p /mnt/storage/chromadb/${RUN_ID}
+
                           torchrun \
                             --nnodes=1 --nproc_per_node=1 --node_rank=0 \
                             --master_addr=$MASTER_ADDR --master_port=$MASTER_PORT \
@@ -69,7 +72,7 @@ spec:
                             --data-dir=/mnt/storage/data \
                             --checkpoint-dir=/mnt/storage/checkpoints \
                             --export-dir=/mnt/storage/models \
-                            --chromadb-dir=/mnt/storage/chromadb \
+                            --chromadb-dir=/mnt/storage/chromadb/${RUN_ID} \
                             --tensorboard-dir=/mnt/tensorboard
                       env:
                         - name: NCCL_DEBUG
@@ -195,7 +198,7 @@ spec:
                             --data-dir=/mnt/storage/data \
                             --checkpoint-dir=/mnt/storage/checkpoints \
                             --export-dir=/mnt/storage/models \
-                            --chromadb-dir=/mnt/storage/chromadb \
+                            --chromadb-dir=/mnt/storage/chromadb/${RUN_ID} \
                             --tensorboard-dir=/mnt/tensorboard
                       env:
                         - name: NCCL_DEBUG
