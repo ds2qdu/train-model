@@ -1,0 +1,12 @@
+apiVersion: trainer.kubeflow.org/v1alpha1
+kind: TrainJob
+metadata:
+  name: stock-preempt-high
+  namespace: mlteam
+  annotations:
+    kai.scheduler/queue: "mlteam-queue"
+spec:
+  runtimeRef:
+    name: stock-runtime-preempt-high
+    kind: TrainingRuntime
+    apiGroup: trainer.kubeflow.org
