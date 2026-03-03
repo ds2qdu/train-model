@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: mlteam
+  name: mlteam2
 ---
 apiVersion: v1
 kind: Service
