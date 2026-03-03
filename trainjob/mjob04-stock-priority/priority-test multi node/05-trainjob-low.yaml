@@ -2,7 +2,7 @@ apiVersion: trainer.kubeflow.org/v1alpha1
 kind: TrainJob
 metadata:
   name: stock-preempt-low
-  namespace: mlteam
+  namespace: mlteam2
   annotations:
     kai.scheduler/queue: "mlteam-queue"
 spec:

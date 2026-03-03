@@ -9,6 +9,7 @@ log/*.log
 
 # Secret
 trainjob/mjob04-stock/03-secret.yaml
+trainjob/mjob04-stock-priority/priority-test multi node/03-secret.yaml
 
 # Environment variables (NEVER commit secrets!)
 .env
