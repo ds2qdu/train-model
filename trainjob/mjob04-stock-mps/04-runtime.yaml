@@ -1,7 +1,7 @@
 apiVersion: trainer.kubeflow.org/v1alpha1
 kind: TrainingRuntime
 metadata:
-  name: stock-runtime-preempt-low
+  name: stock-runtime
   namespace: mlteam2
 spec:
   mlPolicy:
