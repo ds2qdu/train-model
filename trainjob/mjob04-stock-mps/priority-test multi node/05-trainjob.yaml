@@ -1,0 +1,12 @@
+apiVersion: trainer.kubeflow.org/v1alpha1
+kind: TrainJob
+metadata:
+  name: stock-runtime
+  namespace: mlteam2
+  annotations:
+    kai.scheduler/queue: "mlteam-queue"
+spec:
+  runtimeRef:
+    name: stock-runtime
+    kind: TrainingRuntime
+    apiGroup: trainer.kubeflow.org
