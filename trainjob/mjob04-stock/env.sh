@@ -43,7 +43,7 @@ echo ""
 # Start TensorBoard on Rank 0 only (background, port 6006)
 if [ "$RANK" == "0" ]; then
     echo "=== Starting TensorBoard on port 6006 ==="
-    tensorboard --logdir=/mnt/tensorboard --host=0.0.0.0 --port=6006 &
+    tensorboard --logdir=/mnt/tensorboard --bind_all --port=6006 &
     TB_PID=$!
     echo "TensorBoard PID: $TB_PID"
 fi
