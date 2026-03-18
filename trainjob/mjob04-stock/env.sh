@@ -40,6 +40,14 @@ echo "MASTER_PORT=$MASTER_PORT"
 echo "MY_IP=$MY_IP"
 echo ""
 
+# Start TensorBoard on Rank 0 only (background, port 6006)
+if [ "$RANK" == "0" ]; then
+    echo "=== Starting TensorBoard on port 6006 ==="
+    tensorboard --logdir=/mnt/tensorboard --host=0.0.0.0 --port=6006 &
+    TB_PID=$!
+    echo "TensorBoard PID: $TB_PID"
+fi
+
 # Worker waits for master port
 if [ "$RANK" != "0" ]; then
     echo "Waiting for master port..."
