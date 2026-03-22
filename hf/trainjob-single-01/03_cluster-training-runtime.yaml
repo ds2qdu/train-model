@@ -1,0 +1,40 @@
+# ============================================================
+# ClusterTrainingRuntime: PyTorch 단일/분산 학습용
+# TrainJob의 runtimeRef.name: torch-distributed 로 참조
+# ============================================================
+apiVersion: trainer.kubeflow.org/v1alpha1
+kind: ClusterTrainingRuntime
+metadata:
+  name: torch-distributed
+spec:
+  template:
+    spec:
+      replicatedJobs:
+        - name: trainer
+          template:
+            spec:
+              template:
+                spec:
+                  restartPolicy: OnFailure
+                  containers:
+                    - name: trainer
+                      # image, command, args 는 TrainJob에서 오버라이드
+                      image: "placeholder"
+                      env:
+                        # NCCL 관련 환경변수 (분산 학습 시 필요)
+                        - name: NCCL_DEBUG
+                          value: "INFO"
+                        - name: NCCL_SOCKET_IFNAME
+                          value: "eth0"
+                        # HF 오프라인 모드 (캐시된 모델 사용 시)
+                        # - name: HF_HUB_OFFLINE
+                        #   value: "1"
+                        # PyTorch 분산 학습 환경변수 (Kubeflow가 자동 주입)
+                        # MASTER_ADDR, MASTER_PORT, WORLD_SIZE, RANK
+                      resources:
+                        requests:
+                          cpu: "4"
+                          memory: "8Gi"
+                        limits:
+                          cpu: "8"
+                          memory: "16Gi"
