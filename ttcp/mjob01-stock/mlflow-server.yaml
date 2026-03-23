@@ -1,0 +1,95 @@
+# ============================================================
+# MLflow Tracking Server
+#
+# - Backend   : SQLite  → PVC /mnt/storage/mlflow/mlflow.db
+# - Artifacts : NFS PVC → /mnt/storage/mlruns  (train job과 공유)
+# - Web UI    : NodePort 30500  →  http://<NODE_IP>:30500
+# - 클러스터 내: http://mlflow-server:5000
+#
+# 배포:  kubectl apply -f mlflow-server.yaml
+# 삭제:  kubectl delete -f mlflow-server.yaml
+# ============================================================
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-server
+  namespace: mlteam-llm-bench
+  labels:
+    app: mlflow-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow-server
+  template:
+    metadata:
+      labels:
+        app: mlflow-server
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""   # worker-cpu01 / worker-cpu02 에만 배치
+      initContainers:
+        - name: init-dirs
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /mnt/storage/mlflow /mnt/storage/mlruns"]
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+      containers:
+        - name: mlflow
+          image: ghcr.io/mlflow/mlflow:v2.19.0
+          command:
+            - mlflow
+            - server
+            - --host=0.0.0.0
+            - --port=5000
+            - --backend-store-uri=sqlite:////mnt/storage/mlflow/mlflow.db
+            - --default-artifact-root=/mnt/storage/mlruns
+          ports:
+            - containerPort: 5000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          volumeMounts:
+            - name: storage
+              mountPath: /mnt/storage
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: llm-bench-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-server
+  namespace: mlteam-llm-bench
+  labels:
+    app: mlflow-server
+spec:
+  selector:
+    app: mlflow-server
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+      nodePort: 30500
+  type: NodePort
