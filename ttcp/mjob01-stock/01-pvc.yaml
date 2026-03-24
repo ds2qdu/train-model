@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: stock-pipeline-storage
-  namespace: mlteam-gather
+  namespace: mlteam
 spec:
   accessModes:
     - ReadWriteMany
@@ -15,7 +15,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: stock-tensorboard-storage
-  namespace: mlteam-gather
+  namespace: mlteam
 spec:
   accessModes:
     - ReadWriteMany

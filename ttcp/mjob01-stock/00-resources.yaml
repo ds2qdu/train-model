@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: mlteam-gather
+  name: mlteam
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: stock-training
-  namespace: mlteam-gather
+  namespace: mlteam
 spec:
   clusterIP: None
   selector:
@@ -22,7 +22,7 @@ spec:
 apiVersion: scheduling.run.ai/v2
 kind: Queue
 metadata:
-  name: mlteam-gather-queue
+  name: mlteam-queue
 spec:
   resources:
     gpu:

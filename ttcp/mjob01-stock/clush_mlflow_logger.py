@@ -122,17 +122,52 @@ class ClushMLflowLogger:
         k8s_metric_id : K8s 플랫폼 metric ID (kub_work_list.id).
                         k8s_metric_resolver.resolve_metric_id() 로 자동 조회 가능.
                         None 이면 tag 저장 생략.
+
+        동일한 k8s_metric_id 를 보유한 기존 run 이 있으면
+        해당 run 에서 tag 만 제거한 뒤 새 run 에 단독으로 부착합니다.
+        (run 데이터/metrics/params 는 MLflow 서버에 보존됩니다)
         """
         self._run        = mlflow.start_run(run_name=self._run_name)
         self._start_time = time.time()
         mlflow.log_param("time/start", time.strftime("%Y-%m-%d %H:%M:%S"))
         if k8s_metric_id is not None:
+            # 동일 k8s_metric_id tag 를 보유한 기존 run 의 tag 만 제거
+            # → 관리자가 k8s_metric_id 로 조회 시 항상 최신 run 1개만 반환
+            self._migrate_k8s_metric_tag(k8s_metric_id)
             mlflow.set_tag("k8s_metric_id", k8s_metric_id)
             self._params["k8s_metric_id"] = k8s_metric_id
             print(f"[MLflow] k8s_metric_id : {k8s_metric_id}", flush=True)
         print(f"[MLflow] run_id  : {self._run.info.run_id}", flush=True)
         print(f"[MLflow] run_url : {mlflow.get_tracking_uri()}/#/experiments/"
               f"{self._run.info.experiment_id}/runs/{self._run.info.run_id}", flush=True)
+
+    def _migrate_k8s_metric_tag(self, k8s_metric_id: str) -> None:
+        """동일 k8s_metric_id tag 를 보유한 기존 run 에서 tag 만 제거합니다.
+
+        run 자체(metrics, params, artifacts)는 MLflow 서버에 그대로 보존됩니다.
+        """
+        client      = MlflowClient()
+        experiment  = mlflow.get_experiment_by_name(
+            mlflow.active_run().info.experiment_id
+            if mlflow.active_run() else None
+        )
+        # experiment_id 는 active run 으로부터 직접 가져옴
+        exp_id = self._run.info.experiment_id
+        old_runs = client.search_runs(
+            experiment_ids=[exp_id],
+            filter_string=f"tags.k8s_metric_id = '{k8s_metric_id}'",
+        )
+        for old_run in old_runs:
+            if old_run.info.run_id == self._run.info.run_id:
+                continue   # 방금 생성된 현재 run 은 건드리지 않음
+            try:
+                client.delete_tag(old_run.info.run_id, "k8s_metric_id")
+                print(
+                    f"[MLflow] 이전 run tag 제거 → run_id={old_run.info.run_id}",
+                    flush=True,
+                )
+            except Exception as e:
+                print(f"[MLflow] tag 제거 실패 (run_id={old_run.info.run_id}): {e}", flush=True)
 
     def end(self) -> None:
         """Run 종료
