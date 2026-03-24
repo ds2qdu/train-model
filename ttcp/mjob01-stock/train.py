@@ -975,7 +975,12 @@ def main():
             run_name=_run_name,
             tracking_uri=args.mlflow_tracking_uri or None,
         )
-        mlflow_logger.start()
+        try:
+            from k8s_metric_resolver import resolve_metric_id as _resolve_metric_id
+            _k8s_metric_id = _resolve_metric_id()
+        except Exception:
+            _k8s_metric_id = None
+        mlflow_logger.start(k8s_metric_id=_k8s_metric_id)
         mlflow_logger.log_params({
             "world_size":  world_size,
             "resume":      args.resume,
