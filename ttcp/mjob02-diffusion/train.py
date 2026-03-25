@@ -511,6 +511,9 @@ def train_lora(args, accelerator, mlflow_logger=None):
 
         avg_loss = epoch_loss / len(train_dataloader)
 
+        # ── 모든 rank 동기화 (MLflow/logging 전에 배리어) ────
+        accelerator.wait_for_everyone()
+
         if accelerator.is_main_process:
             metrics.update(epoch, avg_loss, grad_norm)
             for warning in metrics.is_training_healthy():
@@ -529,8 +532,6 @@ def train_lora(args, accelerator, mlflow_logger=None):
         if (epoch + 1) % 10 == 0 or epoch == 0 or (epoch + 1) == args.epochs:
             print(f"[Rank {accelerator.process_index}] Epoch {epoch+1}/{args.epochs} | "
                   f"Loss: {avg_loss:.4f} | {get_gpu_utilization()}", flush=True)
-
-        accelerator.wait_for_everyone()
 
         if accelerator.is_main_process:
             improvement = metrics.get_improvement()
@@ -617,13 +618,17 @@ def train_lora(args, accelerator, mlflow_logger=None):
             print(f"  Avg Grad Norm:    {summary['avg_gradient_norm']:.4f}")
         print("="*60)
 
-        # ── MLflow: sweep CSV + run 종료 ───────────────────
+        # ── MLflow: sweep CSV + TTP ingest + run 종료 ───────────
         if mlflow_logger is not None:
             mlflow_logger.log_sweep_csv(
                 csv_path=str(Path(args.output_dir) / "sweep_results.csv"),
                 status="success",
                 training_time_sec=training_time_sec,
                 best_loss=summary['best_loss'],
+            )
+            mlflow_logger.report_to_ttp(
+                status="success",
+                training_time_sec=training_time_sec,
             )
             mlflow_logger.end()
 
@@ -827,6 +832,10 @@ def train_dreambooth(args, accelerator, mlflow_logger=None):
                 training_time_sec=training_time_sec,
                 best_loss=summary['best_loss'],
             )
+            mlflow_logger.report_to_ttp(
+                status="success",
+                training_time_sec=training_time_sec,
+            )
             mlflow_logger.end()
 
         print_status(accelerator, f"DreamBooth training complete! Model saved to: {final_path}")
@@ -880,6 +889,13 @@ def main():
 
     args = parser.parse_args()
 
+    # NCCL 타임아웃을 2시간으로 확장 (기본 30분 → epoch당 ~22분 학습 시 부족)
+    if "NCCL_TIMEOUT" not in os.environ:
+        os.environ["NCCL_TIMEOUT"] = "7200"
+    # MLflow HTTP 요청 타임아웃 (기본값 없음 → 서버 무응답 시 rank 0 무한 블로킹 방지)
+    if "MLFLOW_HTTP_REQUEST_TIMEOUT" not in os.environ:
+        os.environ["MLFLOW_HTTP_REQUEST_TIMEOUT"] = "30"
+
     # Initialize accelerator
     accelerator = Accelerator(mixed_precision="fp16", gradient_accumulation_steps=1)
     set_seed(args.seed)
@@ -923,8 +939,14 @@ def main():
         else:
             train_dreambooth(args, accelerator, mlflow_logger)
     except Exception:
-        # 실패 시 MLflow run 정상 종료
+        # 실패 시 TTP ingest(실패) + MLflow run 정상 종료
         if mlflow_logger is not None:
+            import time as _t
+            try:
+                elapsed = _t.time() - (mlflow_logger._start_time or _t.time())
+                mlflow_logger.report_to_ttp(status="failed", training_time_sec=elapsed)
+            except Exception:
+                pass
             try:
                 mlflow_logger.end()
             except Exception:
