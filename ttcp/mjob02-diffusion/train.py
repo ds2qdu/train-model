@@ -442,10 +442,9 @@ def train_lora(args, accelerator, mlflow_logger=None):
     train_dataset = SDDataset(dataset_dict["image_path"], dataset_dict["caption"], tokenizer, args.resolution)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=0)
 
-    # ── MLflow: 데이터셋 + GPU 정보 ────────────────────────
+    # ── MLflow: 데이터셋 정보 ───────────────────────────────
     if mlflow_logger is not None:
         mlflow_logger.log_dataset_info(train_dataset, train_dataset)   # val 별도 없음 → train 재사용
-        mlflow_logger.log_gpu_info(num_gpu_nodes=accelerator.num_processes)
 
     optimizer = torch.optim.AdamW(unet.parameters(), lr=args.learning_rate)
     unet, optimizer, train_dataloader = accelerator.prepare(unet, optimizer, train_dataloader)
@@ -710,10 +709,9 @@ def train_dreambooth(args, accelerator, mlflow_logger=None):
     )
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
 
-    # ── MLflow: 데이터셋 + GPU 정보 ────────────────────────
+    # ── MLflow: 데이터셋 정보 ───────────────────────────────
     if mlflow_logger is not None:
         mlflow_logger.log_dataset_info(train_dataset, train_dataset)
-        mlflow_logger.log_gpu_info(num_gpu_nodes=accelerator.num_processes)
 
     unet.requires_grad_(True)
     optimizer = torch.optim.AdamW(unet.parameters(), lr=args.learning_rate)
@@ -931,6 +929,7 @@ def main():
 
         # 하이퍼파라미터 기록
         mlflow_logger.log_hyperparams(epochs=args.epochs, batch_size=args.batch_size)
+        mlflow_logger.log_gpu_info(num_gpu_nodes=accelerator.num_processes)
 
     # ── 학습 실행 ───────────────────────────────────────────
     try:
