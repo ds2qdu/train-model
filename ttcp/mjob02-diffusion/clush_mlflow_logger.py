@@ -189,7 +189,15 @@ class ClushMLflowLogger:
     def __exit__(self, *args):
         self.end()
 
-    # ── [1] 모델 정보 ────────────────────────────────────────
+    # ── [1a] 사전 확정 정보 (모델 로드 전) ──────────────────────
+
+    def log_early_params(self, model_name: str, dataset_name: str) -> None:
+        """모델/데이터셋 로드 전에 확정된 이름 정보를 먼저 기록합니다."""
+        _p = {"model/name": model_name, "data/dataset": dataset_name}
+        mlflow.log_params(_p)
+        self._params.update(_p)
+
+    # ── [1b] 모델 상세 정보 (모델 로드 후) ──────────────────────
 
     def log_model_info(self, model_name: str, model) -> None:
         """
@@ -207,7 +215,6 @@ class ClushMLflowLogger:
         total_mb     = total_bytes / 1024 ** 2
 
         _p = {
-            "model/name"        : model_name,
             "model/total_params": total_params,
             "model/size_mb"     : round(total_mb, 2),
         }

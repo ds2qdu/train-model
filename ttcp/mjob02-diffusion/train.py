@@ -930,6 +930,7 @@ def main():
         # 하이퍼파라미터 기록
         mlflow_logger.log_hyperparams(epochs=args.epochs, batch_size=args.batch_size)
         mlflow_logger.log_gpu_info(num_gpu_nodes=accelerator.num_processes)
+        mlflow_logger.log_early_params(model_name=args.model_name, dataset_name=args.dataset)
 
     # ── 학습 실행 ───────────────────────────────────────────
     try:
