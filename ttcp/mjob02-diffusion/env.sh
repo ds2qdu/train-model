@@ -109,12 +109,12 @@ accelerate launch \
   --output_dir /mnt/storage/models \
   --tensorboard_dir /mnt/tensorboard \
   --train_method lora \
-  --epochs 2 \
+  --epochs 10 \
   --batch_size 1 \
   --learning_rate 1e-4 \
   --resolution 512 \
   --dataset all \
-  --max_images 100 \
+  --max_images 3000 \
   --mlflow_tracking_uri "${MLFLOW_TRACKING_URI:-http://192.168.0.123:30500}" \
   --mlflow_experiment "stable-diffusion-finetune"
 
