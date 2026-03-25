@@ -913,21 +913,8 @@ def main():
         k8s_metric_id = resolve_metric_id() if _K8S_RESOLVER_AVAILABLE else None
         mlflow_logger.start(k8s_metric_id=k8s_metric_id)
 
-        # 하이퍼파라미터 + 추가 파라미터 기록
+        # 하이퍼파라미터 기록
         mlflow_logger.log_hyperparams(epochs=args.epochs, batch_size=args.batch_size)
-        mlflow_logger.log_params({
-            "learning_rate":  args.learning_rate,
-            "resolution":     args.resolution,
-            "dataset":        args.dataset,
-            "max_images":     args.max_images,
-            "train_method":   args.train_method,
-            "lora_rank":      args.lora_rank if args.train_method == "lora" else None,
-            "lora_alpha":     args.lora_alpha if args.train_method == "lora" else None,
-            "instance_token": args.instance_token if args.train_method == "dreambooth" else None,
-            "class_token":    args.class_token if args.train_method == "dreambooth" else None,
-            "seed":           args.seed,
-            "num_processes":  accelerator.num_processes,
-        })
 
     # ── 학습 실행 ───────────────────────────────────────────
     try:
