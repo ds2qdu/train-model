@@ -985,6 +985,9 @@ def main():
             "world_size":  world_size,
             "resume":      args.resume,
         })
+        mlflow_logger.log_hyperparams(args.epochs, args.batch_size)
+        mlflow_logger.log_gpu_info(num_gpu_nodes=world_size)
+        mlflow_logger.log_early_params(model_name="StockNewsTransformer", dataset_name="S&P 500 (^GSPC, yfinance)")
     # ────────────────────────────────────────────────────────────────
 
     # Prepare data (rank 0 only)
@@ -1064,9 +1067,7 @@ def main():
         print(f"[Meta] Total params: {total_params:,}  Model size: {model_size_mb} MB")
         # ── MLflow: GPU + 모델 + 하이퍼파라미터 로깅 ─────────────────
         if mlflow_logger is not None:
-            mlflow_logger.log_gpu_info(num_gpu_nodes=world_size)
             mlflow_logger.log_model_info("StockNewsTransformer", model)  # DDP 래핑 전 순수 모델 전달
-            mlflow_logger.log_hyperparams(args.epochs, args.batch_size)
         # ─────────────────────────────────────────────────────────────
     # ─────────────────────────────────────────────────────────────
 
@@ -1270,6 +1271,11 @@ def main():
                 status="success",
                 training_time_sec=training_time_sec,
                 best_loss=round(best_loss, 6),
+            )
+        if mlflow_logger is not None:
+            mlflow_logger.report_to_ttp(
+                status="success",
+                training_time_sec=training_time_sec,
             )
         # ──────────────────────────────────────────────────────────
 

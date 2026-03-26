@@ -185,7 +185,15 @@ class ClushMLflowLogger:
     def __exit__(self, *args):
         self.end()
 
-    # ── [1] 모델 정보 ────────────────────────────────────────
+    # ── [1a] 사전 확정 정보 (모델 로드 전) ────────────────────────
+
+    def log_early_params(self, model_name: str, dataset_name: str) -> None:
+        """모델/데이터셋 로드 전에 확정된 이름 정보를 먼저 기록합니다."""
+        _p = {"model/name": model_name, "data/dataset": dataset_name}
+        mlflow.log_params(_p)
+        self._params.update(_p)
+
+    # ── [1b] 모델 상세 정보 (모델 로드 후) ──────────────────────────
 
     def log_model_info(self, model_name: str, model) -> None:
         """
@@ -203,7 +211,6 @@ class ClushMLflowLogger:
         total_mb     = total_bytes / 1024 ** 2
 
         _p = {
-            "model/name"        : model_name,
             "model/total_params": total_params,
             "model/size_mb"     : round(total_mb, 2),
         }
@@ -423,6 +430,68 @@ class ClushMLflowLogger:
                 "sweep/best_loss":         round(float(best_loss), 6),
             })
             mlflow.log_params({"sweep/status": status})
+
+    # ── [7] TTP 이력 적재 ────────────────────────────────────────
+
+    def report_to_ttp(
+        self,
+        status: str,
+        training_time_sec: float,
+    ) -> None:
+        """훈련 완료 후 TTP 서비스에 이력을 적재합니다.
+
+        이전에 log_model_info / log_hyperparams / log_gpu_info /
+        log_dataset_info 를 통해 누적된 self._params 에서
+        필요한 필드를 자동으로 읽어 TTP POST /api/v2/ingest 를 호출합니다.
+
+        실패해도 훈련 결과에 영향 없음 (non-critical).
+
+        환경변수
+        --------
+        TTP_URL : TTP 서비스 주소 (예: http://192.168.0.16:8080)
+                  미설정 시 http://192.168.0.16:8080 으로 전송합니다.
+
+        Parameters
+        ----------
+        status            : "success" | "failed"
+        training_time_sec : 전체 학습 소요 시간 (초)
+        """
+        import requests
+
+        ttp_url = os.getenv("TTP_URL", "http://192.168.0.16:8080")
+
+        p = self._params
+        _tb = max(int(p.get("data/train_bytes", 0) or 0), 0)
+        _vb = max(int(p.get("data/val_bytes", 0) or 0), 0)
+        _ds_mb = round((_tb + _vb) / 1024 ** 2, 2) if (_tb + _vb) > 0 else 0.0
+
+        run_id = self._run.info.run_id if self._run else time.strftime("%Y%m%d_%H%M%S")
+
+        payload = {
+            "run_id":             run_id,
+            "status":             status,
+            "training_time_sec":  round(float(training_time_sec), 3),
+            "model_name":         str(p.get("model/name", "") or ""),
+            "total_params":       int(p.get("model/total_params", 1) or 1),
+            "model_size_mb":      float(p.get("model/size_mb", 0.0) or 0.0),
+            "epochs":             int(p.get("hparam/epochs", 1) or 1),
+            "batch_size":         int(p.get("hparam/batch_size", 1) or 1),
+            "train_count":        int(p.get("data/train_count", 1) or 1),
+            "val_count":          int(p.get("data/val_count", 0) or 0),
+            "dataset_size_mb":    _ds_mb,
+            "gpu_name":           str(p.get("gpu/name", "") or ""),
+            "gpu_num_nodes":      int(p.get("gpu/num_nodes", 1) or 1),
+        }
+        try:
+            resp = requests.post(
+                f"{ttp_url}/api/v2/ingest",
+                json=payload,
+                timeout=10,
+            )
+            resp.raise_for_status()
+            print(f"[TTP] ingest success: run_id={run_id}", flush=True)
+        except Exception as e:
+            print(f"[TTP] ingest failed (non-critical): {e}", flush=True)
 
     # ── 범용 기록 메서드 ─────────────────────────────────────
 
