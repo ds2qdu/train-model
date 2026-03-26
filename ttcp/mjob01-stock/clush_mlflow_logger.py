@@ -54,13 +54,17 @@ for epoch in range(epochs):
         if mlflow_logger is not None:
             mlflow_logger.log_checkpoint_end(step=epoch)
 
-# [3] 학습 종료 — Sweep CSV 기록 + Run 종료
+# [3] 학습 종료 — Sweep CSV 기록 + TTP ingest + Run 종료
 if mlflow_logger is not None and args.sweep_csv:
     mlflow_logger.log_sweep_csv(            # 내부적으로 self._params 사용
         csv_path=args.sweep_csv,
         status="success",
         training_time_sec=training_time_sec,
         best_loss=best_loss,
+    )
+    mlflow_logger.report_to_ttp(            # TTP 이력 적재 (TTP_URL 환경변수 필요)
+        status="success",
+        training_time_sec=training_time_sec,
     )
     mlflow_logger.end()                         # ← 반드시 마지막에 호출
 
@@ -185,7 +189,7 @@ class ClushMLflowLogger:
     def __exit__(self, *args):
         self.end()
 
-    # ── [1a] 사전 확정 정보 (모델 로드 전) ────────────────────────
+    # ── [1a] 사전 확정 정보 (모델 로드 전) ──────────────────────
 
     def log_early_params(self, model_name: str, dataset_name: str) -> None:
         """모델/데이터셋 로드 전에 확정된 이름 정보를 먼저 기록합니다."""
@@ -193,7 +197,7 @@ class ClushMLflowLogger:
         mlflow.log_params(_p)
         self._params.update(_p)
 
-    # ── [1b] 모델 상세 정보 (모델 로드 후) ──────────────────────────
+    # ── [1b] 모델 상세 정보 (모델 로드 후) ──────────────────────
 
     def log_model_info(self, model_name: str, model) -> None:
         """
@@ -430,7 +434,6 @@ class ClushMLflowLogger:
                 "sweep/best_loss":         round(float(best_loss), 6),
             })
             mlflow.log_params({"sweep/status": status})
-
     # ── [7] TTP 이력 적재 ────────────────────────────────────────
 
     def report_to_ttp(
@@ -442,7 +445,7 @@ class ClushMLflowLogger:
 
         이전에 log_model_info / log_hyperparams / log_gpu_info /
         log_dataset_info 를 통해 누적된 self._params 에서
-        필요한 필드를 자동으로 읽어 TTP POST /api/v2/ingest 를 호출합니다.
+        필요한 필드를 자동으로 읽어 TTP POST /api/v3/ingest 를 호출합니다.
 
         실패해도 훈련 결과에 영향 없음 (non-critical).
 
@@ -472,6 +475,7 @@ class ClushMLflowLogger:
             "status":             status,
             "training_time_sec":  round(float(training_time_sec), 3),
             "model_name":         str(p.get("model/name", "") or ""),
+            "dataset":            str(p.get("data/dataset", "") or ""),
             "total_params":       int(p.get("model/total_params", 1) or 1),
             "model_size_mb":      float(p.get("model/size_mb", 0.0) or 0.0),
             "epochs":             int(p.get("hparam/epochs", 1) or 1),
@@ -484,7 +488,7 @@ class ClushMLflowLogger:
         }
         try:
             resp = requests.post(
-                f"{ttp_url}/api/v2/ingest",
+                f"{ttp_url}/api/v3/ingest",
                 json=payload,
                 timeout=10,
             )
@@ -492,7 +496,6 @@ class ClushMLflowLogger:
             print(f"[TTP] ingest success: run_id={run_id}", flush=True)
         except Exception as e:
             print(f"[TTP] ingest failed (non-critical): {e}", flush=True)
-
     # ── 범용 기록 메서드 ─────────────────────────────────────
 
     def log_params(self, params: dict) -> None:

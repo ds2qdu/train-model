@@ -445,7 +445,7 @@ class ClushMLflowLogger:
 
         이전에 log_model_info / log_hyperparams / log_gpu_info /
         log_dataset_info 를 통해 누적된 self._params 에서
-        필요한 필드를 자동으로 읽어 TTP POST /api/v2/ingest 를 호출합니다.
+        필요한 필드를 자동으로 읽어 TTP POST /api/v3/ingest 를 호출합니다.
 
         실패해도 훈련 결과에 영향 없음 (non-critical).
 
@@ -475,6 +475,7 @@ class ClushMLflowLogger:
             "status":             status,
             "training_time_sec":  round(float(training_time_sec), 3),
             "model_name":         str(p.get("model/name", "") or ""),
+            "dataset":            str(p.get("data/dataset", "") or ""),
             "total_params":       int(p.get("model/total_params", 1) or 1),
             "model_size_mb":      float(p.get("model/size_mb", 0.0) or 0.0),
             "epochs":             int(p.get("hparam/epochs", 1) or 1),
@@ -487,7 +488,7 @@ class ClushMLflowLogger:
         }
         try:
             resp = requests.post(
-                f"{ttp_url}/api/v2/ingest",
+                f"{ttp_url}/api/v3/ingest",
                 json=payload,
                 timeout=10,
             )
