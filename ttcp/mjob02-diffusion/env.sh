@@ -109,7 +109,7 @@ accelerate launch \
   --output_dir /mnt/storage/models \
   --tensorboard_dir /mnt/tensorboard \
   --train_method lora \
-  --epochs 10 \
+  --epochs 5 \
   --batch_size 1 \
   --learning_rate 1e-4 \
   --resolution 512 \
