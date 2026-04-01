@@ -1,0 +1,195 @@
+# =============================================================
+#  스케일링 참조: 2~5 GPU (= 2~5 노드) TrainJob
+#  Step 1 성공 후, 아래에서 원하는 GPU 수 선택하여 apply
+# =============================================================
+
+# ----- 2 GPU (2 노드) -----
+apiVersion: kubeflow.org/v2alpha1
+kind: TrainJob
+metadata:
+  name: vit-cifar100-2gpu
+  namespace: clush-mlops
+  labels:
+    app: vit-cifar100
+    stage: scale-test
+    gpu-count: "2"
+spec:
+  runtimeRef:
+    name: torch-distributed
+  trainer:
+    image: registry.clush.io/mlops/vit-cifar100:gb10
+    command: ["torchrun"]
+    args:
+      - --nnodes=2                       # ← 변경
+      - --nproc_per_node=1
+      - --rdzv_backend=c10d
+      - --rdzv_endpoint=$(MASTER_ADDR):$(MASTER_PORT)
+      - /workspace/train.py
+      - --model-name=google/vit-base-patch16-224
+      - --dataset-name=uoft-cs/cifar100
+      - --output-dir=/workspace/output
+      - --num-epochs=5
+      - --per-device-batch-size=64
+      - --learning-rate=5e-5
+      - --bf16
+      - --logging-steps=50
+      - --dataloader-num-workers=8
+    numNodes: 2                          # ← 변경
+    resourcesPerNode:
+      requests:
+        cpu: "8"
+        memory: "32Gi"
+        nvidia.com/gpu: "1"
+      limits:
+        cpu: "16"
+        memory: "64Gi"
+        nvidia.com/gpu: "1"
+    env:
+      - name: HF_HOME
+        value: /workspace/.cache/huggingface
+      - name: NCCL_DEBUG
+        value: INFO
+      - name: NCCL_SOCKET_IFNAME
+        value: eth0
+      - name: NCCL_IB_DISABLE
+        value: "0"
+      - name: NCCL_P2P_DISABLE
+        value: "1"
+      - name: MASTER_PORT
+        value: "29500"
+    volumeMounts:
+      - name: output-volume
+        mountPath: /workspace/output
+      - name: hf-cache
+        mountPath: /workspace/.cache/huggingface
+  schedulerPlugins:
+    kaiScheduler:
+      queueName: default
+
+---
+# ----- 3 GPU (3 노드) -----
+apiVersion: kubeflow.org/v2alpha1
+kind: TrainJob
+metadata:
+  name: vit-cifar100-3gpu
+  namespace: clush-mlops
+  labels:
+    app: vit-cifar100
+    stage: scale-test
+    gpu-count: "3"
+spec:
+  runtimeRef:
+    name: torch-distributed
+  trainer:
+    image: registry.clush.io/mlops/vit-cifar100:gb10
+    command: ["torchrun"]
+    args:
+      - --nnodes=3
+      - --nproc_per_node=1
+      - --rdzv_backend=c10d
+      - --rdzv_endpoint=$(MASTER_ADDR):$(MASTER_PORT)
+      - /workspace/train.py
+      - --model-name=google/vit-base-patch16-224
+      - --dataset-name=uoft-cs/cifar100
+      - --output-dir=/workspace/output
+      - --num-epochs=5
+      - --per-device-batch-size=64
+      - --learning-rate=5e-5
+      - --bf16
+      - --logging-steps=50
+      - --dataloader-num-workers=8
+    numNodes: 3
+    resourcesPerNode:
+      requests:
+        cpu: "8"
+        memory: "32Gi"
+        nvidia.com/gpu: "1"
+      limits:
+        cpu: "16"
+        memory: "64Gi"
+        nvidia.com/gpu: "1"
+    env:
+      - name: HF_HOME
+        value: /workspace/.cache/huggingface
+      - name: NCCL_DEBUG
+        value: INFO
+      - name: NCCL_SOCKET_IFNAME
+        value: eth0
+      - name: NCCL_IB_DISABLE
+        value: "0"
+      - name: NCCL_P2P_DISABLE
+        value: "1"
+      - name: MASTER_PORT
+        value: "29500"
+    volumeMounts:
+      - name: output-volume
+        mountPath: /workspace/output
+      - name: hf-cache
+        mountPath: /workspace/.cache/huggingface
+  schedulerPlugins:
+    kaiScheduler:
+      queueName: default
+
+---
+# ----- 5 GPU (5 노드) -----
+apiVersion: kubeflow.org/v2alpha1
+kind: TrainJob
+metadata:
+  name: vit-cifar100-5gpu
+  namespace: clush-mlops
+  labels:
+    app: vit-cifar100
+    stage: scale-test
+    gpu-count: "5"
+spec:
+  runtimeRef:
+    name: torch-distributed
+  trainer:
+    image: registry.clush.io/mlops/vit-cifar100:gb10
+    command: ["torchrun"]
+    args:
+      - --nnodes=5
+      - --nproc_per_node=1
+      - --rdzv_backend=c10d
+      - --rdzv_endpoint=$(MASTER_ADDR):$(MASTER_PORT)
+      - /workspace/train.py
+      - --model-name=google/vit-base-patch16-224
+      - --dataset-name=uoft-cs/cifar100
+      - --output-dir=/workspace/output
+      - --num-epochs=5
+      - --per-device-batch-size=64
+      - --learning-rate=7e-5             # GPU 늘리면 LR도 약간 올림
+      - --bf16
+      - --logging-steps=50
+      - --dataloader-num-workers=8
+    numNodes: 5
+    resourcesPerNode:
+      requests:
+        cpu: "8"
+        memory: "32Gi"
+        nvidia.com/gpu: "1"
+      limits:
+        cpu: "16"
+        memory: "64Gi"
+        nvidia.com/gpu: "1"
+    env:
+      - name: HF_HOME
+        value: /workspace/.cache/huggingface
+      - name: NCCL_DEBUG
+        value: INFO
+      - name: NCCL_SOCKET_IFNAME
+        value: eth0
+      - name: NCCL_IB_DISABLE
+        value: "0"
+      - name: NCCL_P2P_DISABLE
+        value: "1"
+      - name: MASTER_PORT
+        value: "29500"
+    volumeMounts:
+      - name: output-volume
+        mountPath: /workspace/output
+      - name: hf-cache
+        mountPath: /workspace/.cache/huggingface
+  schedulerPlugins:
+    kaiScheduler:
+      queueName: default
