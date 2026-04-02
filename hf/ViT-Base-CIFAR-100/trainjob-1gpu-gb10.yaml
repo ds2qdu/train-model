@@ -1,0 +1,110 @@
+# =============================================================
+#  Step 1: ViT-Base + CIFAR-100  |  GB10 DGX Spark
+#  1 노드 (1 GPU) → 성공 후 numNodes만 늘리면 스케일링
+#  KAI Scheduler 호환
+# =============================================================
+apiVersion: kubeflow.org/v2alpha1
+kind: TrainJob
+metadata:
+  name: vit-cifar100-1gpu
+  namespace: clush-mlops          # 환경에 맞게 변경
+  labels:
+    app: vit-cifar100
+    stage: step1
+    gpu-count: "1"
+spec:
+  runtimeRef:
+    name: torch-distributed
+
+  trainer:
+    image: registry.clush.io/mlops/vit-cifar100:gb10   # ARM 이미지
+
+    command:
+      - torchrun
+    args:
+      # --- 멀티노드 DDP 설정 ---
+      # GB10: 노드당 GPU 1개이므로 nproc_per_node=1 고정
+      # 스케일링 시 nnodes와 numNodes만 변경
+      - --nnodes=1
+      - --nproc_per_node=1
+      - --rdzv_backend=c10d
+      - --rdzv_endpoint=$(MASTER_ADDR):$(MASTER_PORT)
+      # --- 학습 파라미터 ---
+      - /workspace/train.py
+      - --model-name=google/vit-base-patch16-224
+      - --dataset-name=uoft-cs/cifar100
+      - --output-dir=/workspace/output
+      - --num-epochs=5
+      - --per-device-batch-size=64       # 128GB 메모리 → 배치 크게 가능
+      - --learning-rate=5e-5
+      - --bf16                           # GB10 Blackwell: bf16 지원
+      - --logging-steps=50
+      - --dataloader-num-workers=8       # ARM 20코어 활용
+
+    numNodes: 1                          # Step 1: 1노드, Step 2: 2~5로 변경
+
+    resourcesPerNode:
+      requests:
+        cpu: "8"
+        memory: "32Gi"
+        nvidia.com/gpu: "1"              # GB10: 노드당 항상 1
+      limits:
+        cpu: "16"
+        memory: "64Gi"
+        nvidia.com/gpu: "1"
+
+    env:
+      # HuggingFace
+      - name: HF_HOME
+        value: /workspace/.cache/huggingface
+      # NCCL 설정 (멀티노드 통신)
+      - name: NCCL_DEBUG
+        value: INFO
+      - name: NCCL_SOCKET_IFNAME
+        value: eth0                      # ConnectX-7 인터페이스명 확인 필요
+      - name: NCCL_IB_DISABLE
+        value: "0"                       # InfiniBand/RoCE 활성화 (ConnectX-7)
+      - name: NCCL_P2P_DISABLE
+        value: "1"                       # 노드간 P2P 불가 → 비활성화
+      # master 주소 (TrainJob이 자동 주입하지만 명시적으로도 설정)
+      - name: MASTER_PORT
+        value: "29500"
+
+    volumeMounts:
+      - name: output-volume
+        mountPath: /workspace/output
+      - name: hf-cache
+        mountPath: /workspace/.cache/huggingface
+
+  # --- KAI Scheduler ---
+  schedulerPlugins:
+    kaiScheduler:
+      queueName: default
+
+---
+# PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vit-cifar100-output
+  namespace: clush-mlops
+spec:
+  accessModes:
+    - ReadWriteMany                      # 멀티노드 → RWX 필요
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: nfs-client           # NFS 등 RWX 지원 스토리지
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hf-model-cache
+  namespace: clush-mlops
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: nfs-client
