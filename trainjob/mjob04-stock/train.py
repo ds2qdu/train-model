@@ -4,6 +4,7 @@
 # ============================================
 
 import os
+import time
 import argparse
 import numpy as np
 import pandas as pd
@@ -524,16 +525,62 @@ def prepare_data(data_dir, seq_length=30, pred_length=5, rank=0, chromadb_dir="/
         else:
             news_start = start_date
 
-        for symbol in ['SPY', 'AAPL', 'MSFT', 'GOOGL']:
+        for symbol in [
+            # Index ETFs
+            'SPY', 'QQQ', 'DIA', 'IWM',
+            # Mega Cap Tech
+            'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA',
+            # Semiconductors
+            'AMD', 'INTC', 'AVGO', 'QCOM', 'MU',
+            # Finance
+            'JPM', 'BAC', 'GS', 'V', 'MA',
+            # Healthcare
+            'JNJ', 'UNH', 'PFE', 'ABBV', 'MRK',
+            # Energy
+            'XOM', 'CVX', 'COP', 'SLB',
+            # Consumer
+            'WMT', 'COST', 'HD', 'NKE', 'SBUX',
+            # Communication
+            'DIS', 'NFLX', 'CMCSA',
+            # Industrial
+            'BA', 'CAT', 'GE', 'HON',
+            # Cloud / Software
+            'CRM', 'ORCL', 'ADBE', 'NOW', 'SNOW',
+            # Cybersecurity / IT
+            'PANW', 'CRWD', 'ZS', 'FTNT',
+            # EV / Auto
+            'F', 'GM', 'RIVN', 'LCID',
+            # Fintech / Payments
+            'PYPL', 'SQ', 'COIN', 'SOFI',
+            # Biotech
+            'MRNA', 'GILD', 'REGN', 'BIIB', 'VRTX',
+            # Retail / E-commerce
+            'TGT', 'ETSY', 'EBAY', 'LULU',
+            # Telecom
+            'T', 'VZ', 'TMUS',
+            # Real Estate / REIT
+            'AMT', 'PLD', 'CCI',
+            # Utilities
+            'NEE', 'DUK', 'SO',
+            # Materials / Mining
+            'LIN', 'FCX', 'NEM',
+            # Aerospace / Defense
+            'LMT', 'RTX', 'NOC',
+            # Food / Beverage
+            'KO', 'PEP', 'MCD', 'MDLZ',
+        ]:
             news = news_collector.get_news(
                 symbol=symbol,
                 from_date=news_start.strftime('%Y-%m-%d'),
                 to_date=end_date.strftime('%Y-%m-%d')
             )
             all_news.extend(news)
+            time.sleep(1)  # Finnhub free tier: 60 calls/min
 
-        market_news = news_collector.get_market_news()
-        all_news.extend(market_news)
+        for category in ['general', 'forex', 'crypto', 'merger']:
+            market_news = news_collector.get_market_news(category=category)
+            all_news.extend(market_news)
+            time.sleep(1)
 
         print(f"[Rank {rank}] Collected {len(all_news)} new news articles")
 
