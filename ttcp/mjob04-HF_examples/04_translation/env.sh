@@ -8,7 +8,7 @@ set -e
 
 # Install HuggingFace dependencies
 echo "=== Installing HuggingFace dependencies ==="
-pip install --root-user-action=ignore transformers datasets accelerate evaluate sacrebleu scikit-learn
+pip install --root-user-action=ignore --upgrade transformers datasets accelerate evaluate sacrebleu sentencepiece scikit-learn
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
