@@ -65,7 +65,7 @@ torchrun \
   --master_port=$MASTER_PORT \
   /workspace/train.py \
   --model_name_or_path distilbert-base-uncased \
-  --dataset_name conll2003 \
+  --dataset_name eriktks/conll2003 \
   --do_train \
   --do_eval \
   --per_device_train_batch_size 16 \
