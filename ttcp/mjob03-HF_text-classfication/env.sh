@@ -66,7 +66,7 @@ torchrun \
   --max_seq_length 128 \
   --per_device_train_batch_size 16 \
   --learning_rate 2e-5 \
-  --num_train_epochs 2 \
+  --num_train_epochs 50 \
   --max_train_samples 500 \
   --max_eval_samples 500 \
   --output_dir /mnt/storage/hf-output \
