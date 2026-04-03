@@ -73,5 +73,5 @@ torchrun \
   --max_seq_length 128 \
   --max_train_samples 500 \
   --max_eval_samples 500 \
-  --output_dir /mnt/storage/hf-output \
+  --output_dir /mnt/storage/hf-output/06_multiple-choice \
   --report_to none

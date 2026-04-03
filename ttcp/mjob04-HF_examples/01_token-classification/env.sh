@@ -73,5 +73,5 @@ torchrun \
   --num_train_epochs 3 \
   --max_train_samples 500 \
   --max_eval_samples 500 \
-  --output_dir /mnt/storage/hf-output \
+  --output_dir /mnt/storage/hf-output/01_token-classification \
   --report_to none

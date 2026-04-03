@@ -74,5 +74,5 @@ torchrun \
   --max_train_samples 500 \
   --max_eval_samples 500 \
   --remove_unused_columns False \
-  --output_dir /mnt/storage/hf-output \
+  --output_dir /mnt/storage/hf-output/07_image-classification \
   --report_to none

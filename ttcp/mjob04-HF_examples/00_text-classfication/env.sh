@@ -69,5 +69,5 @@ torchrun \
   --num_train_epochs 100 \
   --max_train_samples 500 \
   --max_eval_samples 500 \
-  --output_dir /mnt/storage/hf-output \
+  --output_dir /mnt/storage/hf-output/00_text-classification \
   --report_to none

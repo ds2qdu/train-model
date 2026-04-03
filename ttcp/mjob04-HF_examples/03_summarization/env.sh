@@ -76,5 +76,5 @@ torchrun \
   --max_train_samples 200 \
   --max_eval_samples 200 \
   --predict_with_generate \
-  --output_dir /mnt/storage/hf-output \
+  --output_dir /mnt/storage/hf-output/03_summarization \
   --report_to none
