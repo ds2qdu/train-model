@@ -7,7 +7,7 @@ pip install --root-user-action=ignore yfinance scikit-learn transformers chromad
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
-export WORLD_SIZE=2
+#export WORLD_SIZE=2
 export RANK=${JOB_COMPLETION_INDEX:-0}
 export MASTER_PORT=29500
 export LOCAL_RANK=0
@@ -33,7 +33,7 @@ else
 fi
 
 echo "=== Environment ==="
-echo "WORLD_SIZE=$WORLD_SIZE"
+#echo "WORLD_SIZE=$WORLD_SIZE"
 echo "RANK=$RANK"
 echo "MASTER_ADDR=$MASTER_ADDR"
 echo "MASTER_PORT=$MASTER_PORT"
@@ -61,8 +61,8 @@ if [ "$RANK" != "0" ]; then
 fi
 
 torchrun \
-  --nnodes=$WORLD_SIZE \
-  --nproc_per_node=1 \
+  #--nnodes=$WORLD_SIZE \
+  #--nproc_per_node=1 \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \
