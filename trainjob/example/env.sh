@@ -67,7 +67,7 @@ torchrun \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \
   /workspace/train.py \
-  --epochs=100 \
+  --epochs=$EPOCH_COUNT \
   --batch-size=32 \
   --lr=0.0001 \
   --seq-length=30 \
