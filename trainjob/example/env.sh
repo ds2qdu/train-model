@@ -61,8 +61,6 @@ if [ "$RANK" != "0" ]; then
 fi
 
 torchrun \
-  #--nnodes=$WORLD_SIZE \
-  #--nproc_per_node=1 \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \
@@ -80,4 +78,3 @@ torchrun \
   --export-dir=/mnt/storage/models \
   --chromadb-dir=/mnt/storage/chromadb \
   --tensorboard-dir=/mnt/tensorboard
-  # --resume
