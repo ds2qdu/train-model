@@ -40,19 +40,25 @@ if echo "$MY_HOSTNAME" | grep -qE -- "-trainer-0-0$"; then
 else
     echo "Waiting for master pod (rank-0)..."
     echo "My hostname: $MY_HOSTNAME, My IP: $MY_IP"
+    echo "[DEBUG] SVC_DNS=$SVC_DNS"
     for i in $(seq 1 60); do
-        # DNS returns all pod IPs; reverse-resolve each to find -trainer-0-0-
-        for ip in $(getent ahostsv4 "$SVC_DNS" 2>/dev/null | awk '{print $1}' | sort -u); do
-            peer=$(getent hosts "$ip" 2>/dev/null | awk '{print $2}')
+        # DNS returns all pod IPs; reverse-resolve each to find -trainer-0-0
+        ALL_IPS=$(getent ahostsv4 "$SVC_DNS" 2>/dev/null | awk '{print $1}' | sort -u)
+        echo "[DEBUG] DNS lookup for $SVC_DNS returned IPs: $(echo $ALL_IPS | tr '\n' ' ')"
+        for ip in $ALL_IPS; do
+            peer_full=$(getent hosts "$ip" 2>/dev/null)
+            peer=$(echo "$peer_full" | awk '{print $2}')
+            echo "[DEBUG] reverse lookup ip=$ip => raw='$peer_full' => hostname='$peer'"
             if echo "$peer" | grep -qE -- "-trainer-0-0$"; then
                 MASTER_ADDR="$ip"
+                echo "[DEBUG] MATCHED master! ip=$ip hostname=$peer"
                 break 2
             fi
         done
         echo "Waiting... ($i/60)"
         sleep 1
     done
-    echo "Found master (rank-0): $MASTER_ADDR"
+    echo "Found master (rank-0): MASTER_ADDR='$MASTER_ADDR'"
     export MASTER_ADDR
 fi
 
