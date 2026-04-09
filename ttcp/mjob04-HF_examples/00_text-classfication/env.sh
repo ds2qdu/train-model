@@ -21,13 +21,13 @@ else
     echo "Waiting for master pod..."
     echo "My IP: $MY_IP"
     for i in $(seq 1 60); do
-        MASTER_ADDR=$(getent ahostsv4 ${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local 2>/dev/null | awk '{print $1}' | grep -v "^${MY_IP}$" | head -1)
+        MASTER_ADDR=$(getent ahostsv4 ${KUBE_TRAINJOB_NAME}-trainer-0-0.${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local 2>/dev/null | awk '{print $1}' | head -1)
         if [ -n "$MASTER_ADDR" ]; then
             echo "Found master: $MASTER_ADDR"
             break
         fi
         echo "Waiting... ($i/60)"
-        sleep 1
+        sleep 2
     done
     export MASTER_ADDR
 fi
@@ -66,7 +66,7 @@ torchrun \
   --max_seq_length 128 \
   --per_device_train_batch_size 16 \
   --learning_rate 2e-5 \
-  --num_train_epochs 10 \
+  --num_train_epochs 100 \
   --max_train_samples 500 \
   --max_eval_samples 500 \
   --output_dir /mnt/storage/hf-output/00_text-classification \

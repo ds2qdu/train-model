@@ -12,7 +12,7 @@ pip install --root-user-action=ignore transformers datasets accelerate evaluate 
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
-export WORLD_SIZE=4
+export WORLD_SIZE=2
 export RANK=${JOB_COMPLETION_INDEX:-0}
 export MASTER_PORT=29500
 export LOCAL_RANK=0
@@ -26,7 +26,7 @@ else
     echo "Waiting for master pod..."
     echo "My IP: $MY_IP"
     for i in $(seq 1 60); do
-        MASTER_ADDR=$(getent ahostsv4 ${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local 2>/dev/null | awk '{print $1}' | grep -v "^${MY_IP}$" | head -1)
+        MASTER_ADDR=$(getent ahostsv4 ${KUBE_TRAINJOB_NAME}-trainer-0-0.${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local 2>/dev/null | awk '{print $1}' | head -1)
         if [ -n "$MASTER_ADDR" ]; then
             echo "Found master: $MASTER_ADDR"
             break
@@ -71,7 +71,7 @@ torchrun \
   --do_eval \
   --per_device_train_batch_size 16 \
   --learning_rate 2e-5 \
-  --num_train_epochs 50 \
+  --num_train_epochs 100 \
   --max_train_samples 500 \
   --max_eval_samples 500 \
   --output_dir /mnt/storage/hf-output/01_token-classification \
