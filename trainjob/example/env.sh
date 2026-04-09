@@ -17,22 +17,17 @@ MY_IP=$(hostname -i | awk '{print $1}')
 MY_HOSTNAME=$(hostname)
 SVC_DNS="${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local"
 
-# WORLD_SIZE: use KUBE_NODE_SIZE if set, otherwise count pods from DNS
-if [ -n "$KUBE_NODE_SIZE" ]; then
-    export WORLD_SIZE=$KUBE_NODE_SIZE
-else
-    echo "KUBE_NODE_SIZE not set, resolving node count from DNS..."
-    for i in $(seq 1 60); do
-        NODE_COUNT=$(getent ahostsv4 "$SVC_DNS" 2>/dev/null | awk '{print $1}' | sort -u | wc -l)
-        if [ "$NODE_COUNT" -ge 2 ]; then
-            break
-        fi
-        echo "Waiting for peers... (found $NODE_COUNT, need >=2) ($i/60)"
-        sleep 1
-    done
-    export WORLD_SIZE=$NODE_COUNT
-    echo "Resolved WORLD_SIZE=$WORLD_SIZE from DNS"
-fi
+# [DEBUG] Dump all KUBE_* env vars to check what the container actually received
+echo "[DEBUG] === KUBE env vars ==="
+env | grep -E "^KUBE_" | sort || echo "[DEBUG] No KUBE_* env vars found"
+echo "[DEBUG] KUBE_NODE_SIZE raw value: '${KUBE_NODE_SIZE}'"
+echo "[DEBUG] KUBE_TRAINJOB_NAME raw value: '${KUBE_TRAINJOB_NAME}'"
+echo "[DEBUG] KUBE_PROJECT raw value: '${KUBE_PROJECT}'"
+echo "[DEBUG] JOB_COMPLETION_INDEX raw value: '${JOB_COMPLETION_INDEX}'"
+echo "[DEBUG] === All env vars ==="
+env | sort
+echo "[DEBUG] ====================="
+
 
 if echo "$MY_HOSTNAME" | grep -qE -- "-trainer-0-0$"; then
     export MASTER_ADDR=$MY_IP
@@ -49,7 +44,7 @@ else
             peer_full=$(getent hosts "$ip" 2>/dev/null)
             peer=$(echo "$peer_full" | awk '{print $2}')
             echo "[DEBUG] reverse lookup ip=$ip => raw='$peer_full' => hostname='$peer'"
-            if echo "$peer" | grep -qE -- "-trainer-0-0$"; then
+            if echo "$peer" | grep -qE -- "-trainer-0-0(\.|$)"; then
                 MASTER_ADDR="$ip"
                 echo "[DEBUG] MATCHED master! ip=$ip hostname=$peer"
                 break 2
@@ -63,7 +58,6 @@ else
 fi
 
 echo "=== Environment ==="
-#echo "WORLD_SIZE=$WORLD_SIZE"
 echo "RANK=$RANK"
 echo "MASTER_ADDR=$MASTER_ADDR"
 echo "MASTER_PORT=$MASTER_PORT"
