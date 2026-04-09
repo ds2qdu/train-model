@@ -12,7 +12,7 @@ pip install --root-user-action=ignore transformers datasets accelerate evaluate 
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
-export WORLD_SIZE=2
+export WORLD_SIZE=1
 export RANK=${JOB_COMPLETION_INDEX:-0}
 export MASTER_PORT=29500
 export LOCAL_RANK=0
