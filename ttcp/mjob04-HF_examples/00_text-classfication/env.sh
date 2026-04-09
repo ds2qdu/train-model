@@ -7,7 +7,7 @@ pip install --root-user-action=ignore transformers datasets accelerate evaluate 
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
-export WORLD_SIZE=2
+export WORLD_SIZE=4
 export RANK=${JOB_COMPLETION_INDEX:-0}
 export MASTER_PORT=29500
 export LOCAL_RANK=0
@@ -66,7 +66,7 @@ torchrun \
   --max_seq_length 128 \
   --per_device_train_batch_size 16 \
   --learning_rate 2e-5 \
-  --num_train_epochs 100 \
+  --num_train_epochs 10 \
   --max_train_samples 500 \
   --max_eval_samples 500 \
   --output_dir /mnt/storage/hf-output/00_text-classification \
