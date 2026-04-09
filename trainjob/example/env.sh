@@ -18,7 +18,7 @@ export LOCAL_RANK=0
 MY_IP=$(hostname -i | awk '{print $1}')
 MY_HOSTNAME=$(hostname)
 
-if echo "$MY_HOSTNAME" | grep -q -- "-trainer-0-0-"; then
+if echo "$MY_HOSTNAME" | grep -qE -- "-trainer-0-0$"; then
     export MASTER_ADDR=$MY_IP
     echo "I am master (rank-0): $MASTER_ADDR"
 else
@@ -29,7 +29,7 @@ else
         # DNS returns all pod IPs; reverse-resolve each to find -trainer-0-0-
         for ip in $(getent ahostsv4 "$SVC_DNS" 2>/dev/null | awk '{print $1}' | sort -u); do
             peer=$(getent hosts "$ip" 2>/dev/null | awk '{print $2}')
-            if echo "$peer" | grep -q -- "-trainer-0-0-"; then
+            if echo "$peer" | grep -qE -- "-trainer-0-0$"; then
                 MASTER_ADDR="$ip"
                 break 2
             fi
