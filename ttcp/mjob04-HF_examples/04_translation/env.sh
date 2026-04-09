@@ -26,7 +26,7 @@ else
     echo "Waiting for master pod..."
     echo "My IP: $MY_IP"
     for i in $(seq 1 60); do
-        MASTER_ADDR=$(getent ahostsv4 ${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local 2>/dev/null | awk '{print $1}' | grep -v "^${MY_IP}$" | head -1)
+        MASTER_ADDR=$(getent ahostsv4 ${KUBE_TRAINJOB_NAME}-trainer-0-0.${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local 2>/dev/null | awk '{print $1}' | head -1)
         if [ -n "$MASTER_ADDR" ]; then
             echo "Found master: $MASTER_ADDR"
             break
@@ -73,7 +73,7 @@ torchrun \
   --do_eval \
   --per_device_train_batch_size 8 \
   --learning_rate 2e-5 \
-  --num_train_epochs 3 \
+  --num_train_epochs 100 \
   --max_source_length 128 \
   --max_target_length 128 \
   --max_train_samples 200 \
