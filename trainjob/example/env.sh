@@ -7,16 +7,32 @@ pip install --root-user-action=ignore yfinance scikit-learn transformers chromad
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
-#export WORLD_SIZE=2
 export RANK=${JOB_COMPLETION_INDEX:-0}
 export MASTER_PORT=29500
 export LOCAL_RANK=0
 
 # MASTER_ADDR: Find rank-0 pod IP via hostname pattern
-# Pod naming: {trainjob}-trainer-0-{index}-{random}
-# Rank 0 = hostname contains "-trainer-0-0-"
+# Pod naming: {trainjob}-trainer-0-{index}
 MY_IP=$(hostname -i | awk '{print $1}')
 MY_HOSTNAME=$(hostname)
+SVC_DNS="${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local"
+
+# WORLD_SIZE: use KUBE_NODE_SIZE if set, otherwise count pods from DNS
+if [ -n "$KUBE_NODE_SIZE" ]; then
+    export WORLD_SIZE=$KUBE_NODE_SIZE
+else
+    echo "KUBE_NODE_SIZE not set, resolving node count from DNS..."
+    for i in $(seq 1 60); do
+        NODE_COUNT=$(getent ahostsv4 "$SVC_DNS" 2>/dev/null | awk '{print $1}' | sort -u | wc -l)
+        if [ "$NODE_COUNT" -ge 2 ]; then
+            break
+        fi
+        echo "Waiting for peers... (found $NODE_COUNT, need >=2) ($i/60)"
+        sleep 1
+    done
+    export WORLD_SIZE=$NODE_COUNT
+    echo "Resolved WORLD_SIZE=$WORLD_SIZE from DNS"
+fi
 
 if echo "$MY_HOSTNAME" | grep -qE -- "-trainer-0-0$"; then
     export MASTER_ADDR=$MY_IP
@@ -24,7 +40,6 @@ if echo "$MY_HOSTNAME" | grep -qE -- "-trainer-0-0$"; then
 else
     echo "Waiting for master pod (rank-0)..."
     echo "My hostname: $MY_HOSTNAME, My IP: $MY_IP"
-    SVC_DNS="${KUBE_TRAINJOB_NAME}.${KUBE_PROJECT}.svc.cluster.local"
     for i in $(seq 1 60); do
         # DNS returns all pod IPs; reverse-resolve each to find -trainer-0-0-
         for ip in $(getent ahostsv4 "$SVC_DNS" 2>/dev/null | awk '{print $1}' | sort -u); do
