@@ -85,7 +85,7 @@ if [ "$RANK" != "0" ]; then
 fi
 
 torchrun \
-  --nnodes=$KUB_NODE_SIZE \
+  --nnodes=$KUBE_NODE_SIZE \
   --nproc_per_node=1 \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
