@@ -105,7 +105,7 @@ torchrun \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \
-  /workspace/train.py \
+  /workspace/train-s3.py \
   --epochs=$EPOCH_COUNT \
   --batch-size=32 \
   --lr=0.0001 \
