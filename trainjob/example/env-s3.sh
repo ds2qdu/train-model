@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-# Install dependencies
+# Install dependencies (+ boto3 for S3/MinIO)
 echo "=== Installing dependencies ==="
-pip install --root-user-action=ignore yfinance scikit-learn transformers chromadb onnxscript pytz tensorboard
+pip install --root-user-action=ignore yfinance scikit-learn transformers chromadb onnxscript pytz tensorboard boto3
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
@@ -24,6 +24,18 @@ echo "[DEBUG] KUBE_NODE_SIZE raw value: '${KUBE_NODE_SIZE}'"
 echo "[DEBUG] KUBE_TRAINJOB_NAME raw value: '${KUBE_TRAINJOB_NAME}'"
 echo "[DEBUG] KUBE_PROJECT raw value: '${KUBE_PROJECT}'"
 echo "[DEBUG] JOB_COMPLETION_INDEX raw value: '${JOB_COMPLETION_INDEX}'"
+
+# [DEBUG] Check S3/MinIO env vars injected by bizkube-api from data_config.s3
+echo "[DEBUG] === S3/MinIO env vars ==="
+if [ -n "$AWS_ACCESS_KEY_ID" ]; then
+    echo "[DEBUG] AWS_ACCESS_KEY_ID is set (${#AWS_ACCESS_KEY_ID} chars)"
+else
+    echo "[DEBUG] AWS_ACCESS_KEY_ID is NOT set"
+fi
+echo "[DEBUG] AWS_ENDPOINT_URL='${AWS_ENDPOINT_URL}'"
+echo "[DEBUG] S3_ENDPOINT_URL='${S3_ENDPOINT_URL}'"
+echo "[DEBUG] S3_BUCKET='${S3_BUCKET}'"
+echo "[DEBUG] AWS_DEFAULT_REGION='${AWS_DEFAULT_REGION}'"
 echo "[DEBUG] === All env vars ==="
 env | sort
 echo "[DEBUG] ====================="
@@ -84,13 +96,16 @@ if [ "$RANK" != "0" ]; then
     done
 fi
 
+# S3 prefix default (overridable via env)
+: "${S3_MODEL_PREFIX:=models/stock_predictor}"
+
 torchrun \
   --nnodes=$KUBE_NODE_SIZE \
   --nproc_per_node=1 \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \
-  /workspace/train.py \
+  /workspace/train-s3.py \
   --epochs=$EPOCH_COUNT \
   --batch-size=32 \
   --lr=0.0001 \
@@ -103,4 +118,5 @@ torchrun \
   --checkpoint-dir=/mnt/storage/checkpoints \
   --export-dir=/mnt/storage/models \
   --chromadb-dir=/mnt/storage/chromadb \
-  --tensorboard-dir=/mnt/tensorboard
+  --tensorboard-dir=/mnt/tensorboard \
+  --s3-model-prefix=${S3_MODEL_PREFIX}
