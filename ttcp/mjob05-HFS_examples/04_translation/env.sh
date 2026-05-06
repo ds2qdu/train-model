@@ -12,7 +12,7 @@ pip install --root-user-action=ignore --upgrade transformers datasets accelerate
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
-export WORLD_SIZE=${CLUSH_NUM_NODES:-2}
+export WORLD_SIZE=${KUBE_NODE_SIZE:-2}
 export RANK=${JOB_COMPLETION_INDEX:-0}
 export MASTER_PORT=29500
 export LOCAL_RANK=0
