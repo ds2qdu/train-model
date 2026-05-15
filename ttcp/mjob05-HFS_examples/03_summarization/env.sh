@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# â”€â”€ Summarization â”€â”€
+# ?€?€ Summarization ?€?€
 # Script: examples/pytorch/summarization/run_summarization.py
 # Model:  t5-small
 # Data:   xsum
@@ -59,7 +59,7 @@ fi
 
 torchrun \
   --nnodes=$WORLD_SIZE \
-  --nproc_per_node=1 \
+  --nproc_per_node=${CLUSH_GPU_PER_NODE:-1} \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \

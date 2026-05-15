@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# â”€â”€ Multiple Choice â”€â”€
+# ?€?€ Multiple Choice ?€?€
 # Script: examples/pytorch/multiple-choice/run_swag.py
 # Model:  distilbert-base-uncased
 # Data:   swag (regular)
@@ -59,7 +59,7 @@ fi
 
 torchrun \
   --nnodes=$WORLD_SIZE \
-  --nproc_per_node=1 \
+  --nproc_per_node=${CLUSH_GPU_PER_NODE:-1} \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \

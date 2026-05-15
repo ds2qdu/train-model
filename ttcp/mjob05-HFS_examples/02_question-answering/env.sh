@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# â”€â”€ Question Answering â”€â”€
+# ?€?€ Question Answering ?€?€
 # Script: examples/pytorch/question-answering/run_qa.py
 # Model:  distilbert-base-uncased
 # Data:   squad
@@ -59,7 +59,7 @@ fi
 
 torchrun \
   --nnodes=$WORLD_SIZE \
-  --nproc_per_node=1 \
+  --nproc_per_node=${CLUSH_GPU_PER_NODE:-1} \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \

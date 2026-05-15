@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# â”€â”€ Image Classification â”€â”€
+# ?€?€ Image Classification ?€?€
 # Script: examples/pytorch/image-classification/run_image_classification.py
 # Model:  google/vit-base-patch16-224-in21k
 # Data:   cifar10
@@ -59,7 +59,7 @@ fi
 
 torchrun \
   --nnodes=$WORLD_SIZE \
-  --nproc_per_node=1 \
+  --nproc_per_node=${CLUSH_GPU_PER_NODE:-1} \
   --node_rank=$RANK \
   --master_addr=$MASTER_ADDR \
   --master_port=$MASTER_PORT \
