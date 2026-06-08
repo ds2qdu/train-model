@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# ?€?€ Causal Language Modeling ?€?€
+# â”€â”€ Causal Language Modeling â”€â”€
 # Script: examples/pytorch/language-modeling/run_clm.py
 # Model:  distilgpt2
 # Data:   wikitext (wikitext-2-raw-v1)
@@ -65,7 +65,7 @@ torchrun \
   --master_port=$MASTER_PORT \
   /workspace/train.py \
   --model_name_or_path distilgpt2 \
-  --dataset_name wikitext \
+  --dataset_name Salesforce/wikitext \
   --dataset_config_name wikitext-2-raw-v1 \
   --do_train \
   --do_eval \
