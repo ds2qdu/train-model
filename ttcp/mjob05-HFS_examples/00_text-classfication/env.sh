@@ -5,6 +5,9 @@ set -e
 # Fix for huggingface_hub >= 1.16 which requires 'namespace/name' dataset IDs
 # Pin PyArrow for ARM environment stability (signal 7 bus error fix)
 echo "=== Installing HuggingFace dependencies ==="
+# First install build tools
+pip install --root-user-action=ignore --upgrade setuptools wheel
+# Then install dependencies
 pip install --root-user-action=ignore \
   "transformers>=4.40.0" \
   "datasets>=4.8.5" \
