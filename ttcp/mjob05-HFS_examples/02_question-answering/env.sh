@@ -9,10 +9,12 @@ set -e
 # Install HuggingFace dependencies with specific versions
 # Fix for huggingface_hub >= 1.16 which requires 'namespace/name' dataset IDs
 # and datasets >= 4.8.5 for List feature type support in rajpurkar/squad metadata
+# Pin PyArrow for ARM environment stability (signal 7 bus error fix)
 echo "=== Installing HuggingFace dependencies ==="
 pip install --root-user-action=ignore \
   "transformers>=4.40.0" \
   "datasets>=4.8.5" \
+  "pyarrow>=13.0.0,<15.0.0" \
   "huggingface-hub>=1.16.0" \
   "accelerate>=0.24.0" \
   "evaluate>=0.4.0" \
