@@ -10,13 +10,13 @@ set -e
 # Fix for huggingface_hub >= 1.16 which requires 'namespace/name' dataset IDs
 # Pin PyArrow for ARM environment stability (signal 7 bus error fix)
 echo "=== Installing HuggingFace dependencies ==="
-# First install build tools
-pip install --root-user-action=ignore --upgrade setuptools wheel
-# Then install dependencies
+# First install build tools and PyArrow separately to avoid build-env issues
+pip install --root-user-action=ignore --upgrade --no-build-isolation setuptools wheel
+pip install --root-user-action=ignore --no-build-isolation --only-binary=pyarrow "pyarrow==14.0.1"
+# Then install remaining dependencies
 pip install --root-user-action=ignore \
   "transformers>=4.40.0" \
   "datasets>=4.8.5" \
-  "pyarrow>=13.0.0,<15.0.0" \
   "huggingface-hub>=1.16.0" \
   "accelerate>=0.24.0" \
   "evaluate>=0.4.0" \
