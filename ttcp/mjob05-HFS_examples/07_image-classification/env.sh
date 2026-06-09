@@ -1,14 +1,23 @@
 #!/bin/bash
 set -e
 
-# ?€?€ Image Classification ?€?€
+# ?ï¿½?ï¿½ Image Classification ?ï¿½?ï¿½
 # Script: examples/pytorch/image-classification/run_image_classification.py
 # Model:  google/vit-base-patch16-224-in21k
 # Data:   cifar10
 
-# Install HuggingFace dependencies
+# Install HuggingFace dependencies with specific versions
+# Fix for huggingface_hub >= 1.16 which requires 'namespace/name' dataset IDs
 echo "=== Installing HuggingFace dependencies ==="
-pip install --root-user-action=ignore transformers datasets accelerate evaluate scikit-learn torchvision Pillow
+pip install --root-user-action=ignore \
+  "transformers>=4.40.0" \
+  "datasets>=4.8.5" \
+  "huggingface-hub>=1.16.0" \
+  "accelerate>=0.24.0" \
+  "evaluate>=0.4.0" \
+  "scikit-learn>=1.3.0" \
+  "torchvision>=0.18.0" \
+  "Pillow>=10.0.0"
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
@@ -65,7 +74,7 @@ torchrun \
   --master_port=$MASTER_PORT \
   /workspace/train.py \
   --model_name_or_path google/vit-base-patch16-224-in21k \
-  --dataset_name cifar10 \
+  --dataset_name uoft-cs/cifar10 \
   --do_train \
   --do_eval \
   --per_device_train_batch_size 16 \

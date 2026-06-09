@@ -1,9 +1,16 @@
 #!/bin/bash
 set -e
 
-# Install HuggingFace dependencies
+# Install HuggingFace dependencies with specific versions
+# Fix for huggingface_hub >= 1.16 which requires 'namespace/name' dataset IDs
 echo "=== Installing HuggingFace dependencies ==="
-pip install --root-user-action=ignore transformers datasets accelerate evaluate scikit-learn
+pip install --root-user-action=ignore \
+  "transformers>=4.40.0" \
+  "datasets>=4.8.5" \
+  "huggingface-hub>=1.16.0" \
+  "accelerate>=0.24.0" \
+  "evaluate>=0.4.0" \
+  "scikit-learn>=1.3.0"
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
@@ -60,6 +67,7 @@ torchrun \
   --master_port=$MASTER_PORT \
   /workspace/train.py \
   --model_name_or_path distilbert-base-uncased \
+  --dataset_name nyu-mll/glue \
   --task_name sst2 \
   --do_train \
   --do_eval \

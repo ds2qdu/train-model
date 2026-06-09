@@ -1,14 +1,23 @@
 #!/bin/bash
 set -e
 
-# ?€?€ Translation ?€?€
+# ?ï¿½?ï¿½ Translation ?ï¿½?ï¿½
 # Script: examples/pytorch/translation/run_translation.py
 # Model:  Helsinki-NLP/opus-mt-en-ro
 # Data:   wmt16 (en-ro)
 
-# Install HuggingFace dependencies
+# Install HuggingFace dependencies with specific versions
+# Fix for huggingface_hub >= 1.16 which requires 'namespace/name' dataset IDs
 echo "=== Installing HuggingFace dependencies ==="
-pip install --root-user-action=ignore --upgrade transformers datasets accelerate evaluate sacrebleu sentencepiece scikit-learn
+pip install --root-user-action=ignore \
+  "transformers>=4.40.0" \
+  "datasets>=4.8.5" \
+  "huggingface-hub>=1.16.0" \
+  "accelerate>=0.24.0" \
+  "evaluate>=0.4.0" \
+  "sacrebleu>=2.4.0" \
+  "sentencepiece>=0.1.99" \
+  "scikit-learn>=1.3.0"
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
@@ -65,7 +74,7 @@ torchrun \
   --master_port=$MASTER_PORT \
   /workspace/train.py \
   --model_name_or_path Helsinki-NLP/opus-mt-en-ro \
-  --dataset_name wmt16 \
+  --dataset_name wmt/wmt16 \
   --dataset_config_name ro-en \
   --source_lang en \
   --target_lang ro \

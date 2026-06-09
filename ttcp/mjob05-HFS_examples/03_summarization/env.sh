@@ -1,14 +1,23 @@
 #!/bin/bash
 set -e
 
-# ?€?€ Summarization ?€?€
+# ?ï¿½?ï¿½ Summarization ?ï¿½?ï¿½
 # Script: examples/pytorch/summarization/run_summarization.py
 # Model:  t5-small
 # Data:   xsum
 
-# Install HuggingFace dependencies
+# Install HuggingFace dependencies with specific versions
+# Fix for huggingface_hub >= 1.16 which requires 'namespace/name' dataset IDs
 echo "=== Installing HuggingFace dependencies ==="
-pip install --root-user-action=ignore transformers datasets accelerate evaluate rouge_score nltk scikit-learn
+pip install --root-user-action=ignore \
+  "transformers>=4.40.0" \
+  "datasets>=4.8.5" \
+  "huggingface-hub>=1.16.0" \
+  "accelerate>=0.24.0" \
+  "evaluate>=0.4.0" \
+  "rouge_score>=0.1.2" \
+  "nltk>=3.8.0" \
+  "scikit-learn>=1.3.0"
 echo "=== Dependencies installed successfully ==="
 
 # Environment setup
@@ -65,7 +74,7 @@ torchrun \
   --master_port=$MASTER_PORT \
   /workspace/train.py \
   --model_name_or_path t5-small \
-  --dataset_name xsum \
+  --dataset_name EdinburghNLP/xsum \
   --do_train \
   --do_eval \
   --per_device_train_batch_size 8 \
