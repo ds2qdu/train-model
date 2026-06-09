@@ -21,9 +21,12 @@ echo "=== Dependencies installed successfully ==="
 # PyArrow memory mapping fix for NFS (Signal 7 SIGBUS issue on ARM)
 # Disable memory mapped I/O to avoid bus errors when reading from NFS cache
 export ARROW_MEMORY_MAPPED_IO=0
-# Use local /tmp for dataset cache instead of NFS PVC for better ARM compatibility
+# Use local /tmp for dataset cache (faster, avoids NFS race conditions)
 export HF_DATASETS_CACHE=/tmp/hf_cache
 mkdir -p /tmp/hf_cache
+# Use NFS for model cache (shared across all ranks in distributed training)
+export HF_HOME=/mnt/storage/huggingface
+mkdir -p /mnt/storage/huggingface
 
 # Environment setup
 export WORLD_SIZE=${KUBE_NODE_SIZE:-2}
