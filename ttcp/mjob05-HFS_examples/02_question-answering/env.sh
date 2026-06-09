@@ -24,6 +24,13 @@ pip install --root-user-action=ignore \
   "scikit-learn>=1.3.0"
 echo "=== Dependencies installed successfully ==="
 
+# PyArrow memory mapping fix for NFS (Signal 7 SIGBUS issue on ARM)
+# Disable memory mapped I/O to avoid bus errors when reading from NFS cache
+export ARROW_MEMORY_MAPPED_IO=0
+# Use local /tmp for dataset cache instead of NFS PVC for better ARM compatibility
+export HF_DATASETS_CACHE=/tmp/hf_cache
+mkdir -p /tmp/hf_cache
+
 # Environment setup
 export WORLD_SIZE=${KUBE_NODE_SIZE:-2}
 export RANK=${JOB_COMPLETION_INDEX:-0}
